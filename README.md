@@ -1,6 +1,6 @@
 # pgfwa
 
-PostgreSQL tools for working with British Columbia's [Freshwater Atlas](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater)
+PostgreSQL tools for working with British Columbia's [Freshwater Atlas](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater). Mostly a scripting language agnostic replacement for Python tools in [fwakit](https://github.com/smnorris/fwakit)
 
 ## Requirements
 
