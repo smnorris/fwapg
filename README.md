@@ -2,6 +2,27 @@
 
 PostgreSQL tools for working with British Columbia's [Freshwater Atlas](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater). Mostly a scripting language agnostic replacement for Python tools in [fwakit](https://github.com/smnorris/fwakit).
 
+## Rationale
+
+BC FWA data is already available on request [via WFS](https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=WHSE_BASEMAPPING.FWA_LAKES_POLY&outputFormat=json&SRSNAME=epsg%3A3005&CQL_FILTER=GNIS_NAME_1=%27Quamichan%20Lake%27) and via R and Python WFS wrappers such as:
+
+- [fwabc](https://github.com/poissonconsulting/fwabc)
+- [bcdata (R)](https://github.com/bcgov/bcdata)
+- [bcdata (Python)](https://github.com/smnorris/bcdata)
+
+These work well but using WFS has some specific limitations for Provincal analysis:
+
+- requesting many features is surprisingly stable (with a good internet connection), but for larger FWA tables it can be error prone (there are 4.9M individual stream segments, or 1M for the Fraser system alone)
+- non-spatial FWA lookup tables required for some workloads (such as [linking fish observations to waterbodies](https://github.com/smnorris/bcfishobs)) are not published via WFS ([example](https://catalogue.data.gov.bc.ca/dataset/freshwater-atlas-20k-50k-stream-cross-reference-table))
+- querying WFS via `CQL_FILTER` expressions works well but the WFS does not specifically support upstream/downstream relationships built into the FWA data
+
+The total FWA data package is only about 20G - by downloading this and loading to Postgres, we can:
+
+- leverage the upstream/downstream materialized paths built into FWA watershed codes by using the Postgres [`ltree` module](https://www.postgresql.org/docs/current/ltree.html)
+- add additional convenience tables (named streams, optimized watershed groups)
+- connect directly to the database to run various ad-hoc queries using spatial SQL and tools that support the PostgreSQL / PostGIS ecosystem
+
+
 ## Requirements
 
 - PostgreSQL/PostGIS (tested with v11.2/2.5.2)
