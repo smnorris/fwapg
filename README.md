@@ -4,11 +4,12 @@ PostgreSQL tools for working with British Columbia's [Freshwater Atlas](https://
 
 ## Rationale
 
-BC FWA data is already available on request [via WFS](https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=WHSE_BASEMAPPING.FWA_LAKES_POLY&outputFormat=json&SRSNAME=epsg%3A3005&CQL_FILTER=GNIS_NAME_1=%27Quamichan%20Lake%27) and via R and Python WFS wrappers such as:
+BC FWA data can be requested [via WFS](https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=WHSE_BASEMAPPING.FWA_LAKES_POLY&outputFormat=json&SRSNAME=epsg%3A3005&CQL_FILTER=GNIS_NAME_1=%27Quamichan%20Lake%27) and via WFS wrappers such as:
 
-- [fwabc](https://github.com/poissonconsulting/fwabc)
+- [fwabc (R)](https://github.com/poissonconsulting/fwabc)
 - [bcdata (R)](https://github.com/bcgov/bcdata)
 - [bcdata (Python)](https://github.com/smnorris/bcdata)
+- [pgsql-ogr-fdw (PostgreSQL extension)](https://github.com/pramsey/pgsql-ogr-fdw)
 
 These work well but using WFS has some specific limitations for Provincal analysis:
 
