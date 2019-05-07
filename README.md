@@ -10,9 +10,9 @@ PostgreSQL tools for working with British Columbia's [Freshwater Atlas](https://
 
 ## Installation
 
-The repository is a collection of sql files and shell scripts, no installation is required, just download the files:
+The repository is a collection of sql files and shell scripts - no installation is required, just download the files:
 
-    git clone pgfwa
+    git clone https://github.com/smnorris/fwapg.git
 
 
 ## Configuration
@@ -49,7 +49,7 @@ Create the required extensions and schema:
 
 ### Load
 
-Download `FWA.zip`, extract the zipfile and run the load script which uses `ogr2ogr` to load all tables to the staging schema `fwa_load`. For example:
+Download `FWA.zip`, extract the zipfile and run the load script. For example (requires `awscli`):
 
     aws s3 cp s3://bc-fwa-gpkg/FWA.zip FWA.zip
     unzip FWA.zip
