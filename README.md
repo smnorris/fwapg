@@ -16,7 +16,7 @@ These work well but using WFS has some specific limitations for Provincal analys
 - non-spatial FWA lookup tables required for some workloads (such as [linking fish observations to waterbodies](https://github.com/smnorris/bcfishobs)) are not published via WFS ([example](https://catalogue.data.gov.bc.ca/dataset/freshwater-atlas-20k-50k-stream-cross-reference-table))
 - querying WFS via `CQL_FILTER` expressions works well but the WFS does not specifically support upstream/downstream relationships built into the FWA data
 
-The total FWA data package is only about 20G - by downloading this and loading to Postgres, we can:
+As a zipped geopackage, the FWA is under 7G - by downloading this and loading to Postgres, we can:
 
 - leverage the upstream/downstream materialized paths built into FWA watershed codes by using the Postgres [`ltree` module](https://www.postgresql.org/docs/current/ltree.html)
 - add additional convenience tables (named streams, optimized watershed groups)
