@@ -20,6 +20,7 @@ As a zipped geopackage, the FWA is under 7G - by downloading this and loading to
 
 - leverage the upstream/downstream materialized paths built into FWA watershed codes by using the Postgres [`ltree` module](https://www.postgresql.org/docs/current/ltree.html)
 - add additional convenience tables (named streams, optimized watershed groups)
+- populate the empty `gradient` column in the streams table for ongoing use
 - connect directly to the database to run various ad-hoc queries using spatial SQL and tools that support the PostgreSQL / PostGIS ecosystem
 
 
