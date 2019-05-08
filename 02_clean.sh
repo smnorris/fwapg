@@ -1,3 +1,6 @@
+#!/bin/bash
+set -euxo pipefail
+
 # index for speed, this takes some time
 psql -f sql/create_indexes.sql
 
