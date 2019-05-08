@@ -1,6 +1,3 @@
-#!/bin/bash
-set -euxo pipefail
-
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
