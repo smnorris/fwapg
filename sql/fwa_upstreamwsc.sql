@@ -22,8 +22,6 @@ fwakit=# SELECT FWW_UpstreamWSC('100.100000'::ltree, '100.100000'::ltree,
  t
 (1 row)
 
-Note that this function currently has a very large performance cost -
-the indexes may not be used - it does not get 'inlined'
 */
 
 CREATE OR REPLACE FUNCTION fwa_upstreamwsc(
@@ -35,8 +33,7 @@ CREATE OR REPLACE FUNCTION fwa_upstreamwsc(
 
 RETURNS boolean AS $$
 
-SELECT true
-WHERE
+SELECT
   -- Simple case, where watershed code and local code of (a) are equivalent.
   -- Return TRUE for all records in (b) that are children of (a)
     (wscode_ltree_a = localcode_ltree_a AND
