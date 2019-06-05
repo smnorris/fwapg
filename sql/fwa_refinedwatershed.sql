@@ -186,10 +186,8 @@ SELECT
   to_agg.localcode_ltree,
   ROUND((sum(st_area(to_agg.geom)) / 10000)::numeric, 2)  as area_ha,
   m.refine_method,
-  ST_Transform(
-    ST_Buffer(
-      ST_Collect(to_agg.geom), 0.001),
-       4326) as geom
+  ST_Buffer(
+    ST_Collect(to_agg.geom), 0.001) AS geom
 FROM
 (SELECT
  wscode_ltree,
