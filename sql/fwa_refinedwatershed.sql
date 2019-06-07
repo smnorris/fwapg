@@ -31,7 +31,11 @@ WITH ref_point AS
   s.wscode_ltree,
   s.localcode_ltree,
   s.waterbody_key,
-  wb.waterbody_type,
+  -- identify canals as waterbody type 'C'
+  CASE
+   WHEN r.feature_code = 'GA03950000' THEN 'C'
+   ELSE wb.waterbody_type
+  END as waterbody_type
   ST_LineInterpolatePoint(
     (ST_Dump(s.geom)).geom,
     ROUND(CAST((meas - s.downstream_route_measure) / s.length_metre AS NUMERIC), 5)
@@ -40,6 +44,8 @@ WITH ref_point AS
 FROM whse_basemapping.fwa_stream_networks_sp s
 LEFT OUTER JOIN whse_basemapping.fwa_waterbodies wb
 ON s.waterbody_key = wb.waterbody_key
+LEFT OUTER JOIN whse_basemapping.fwa_manmade_waterbodies_poly r
+ON s.waterbody_key = r.waterbody_key
 WHERE s.blue_line_key = blkey
 AND s.downstream_route_measure <= meas
 ORDER BY s.downstream_route_measure desc
@@ -50,7 +56,7 @@ wsd AS
 (SELECT
   array_agg(watershed_feature_id) as wsds,
   ST_Union(wsd.geom) as geom
- FROM whse_basemapping.fwa_watersheds_poly_sp wsd
+ FROM whse_basemapping.fwa_watersheds_poly wsd
  INNER JOIN ref_point pt
  ON ST_DWithin(wsd.geom, pt.geom_pt, 5)
 ),
@@ -114,7 +120,9 @@ b.measure as len_to_bottom,
     -- ** todo: a notable exception would be at the mouth of a river, where
     -- r.measure_str=0 and b.measure <=50. This isn't a major issue as cutting
     -- is computationally cheap and seems to work fine, even if point is at 0**
-    WHEN r.waterbody_key IS NOT NULL THEN 'CUT'
+    WHEN r.waterbody_key IN ('C', 'R') THEN 'CUT'
+    -- lakes and reservoirs have special treatment
+    WHEN r.waterbody_key IN ('L', 'X') THEN 'LAKE'
     -- if the location of interest is < 100m from the top of the local stream,
     -- just drop the watershed in which it falls
     WHEN r.waterbody_key IS NULL AND t.measure <= 100 THEN 'DROP'
@@ -139,7 +147,7 @@ prelim AS (
   w.watershed_feature_id,
   ST_Force2D(w.geom) as geom
 FROM ref_point s
-INNER JOIN whse_basemapping.fwa_watersheds_poly_sp w
+INNER JOIN whse_basemapping.fwa_watersheds_poly w
 ON
   (s.wscode_ltree = s.localcode_ltree AND
     w.wscode_ltree <@ s.wscode_ltree
@@ -164,7 +172,7 @@ SELECT
   w.watershed_feature_id,
   ST_Force2D(w.geom) as geom
 FROM ref_point s
-INNER JOIN whse_basemapping.fwa_watersheds_poly_sp w
+INNER JOIN whse_basemapping.fwa_watersheds_poly w
 ON (s.wscode_ltree = w.wscode_ltree AND
    s.localcode_ltree = w.localcode_ltree)
 AND NOT ST_Intersects(w.geom, s.geom_pt)
@@ -204,7 +212,7 @@ SELECT
     WHEN refine_method = 'KEEP' THEN
      (SELECT
         ST_Force2D(ST_Multi(wsd.geom)) as geom
-      FROM whse_basemapping.fwa_watersheds_poly_sp wsd
+      FROM whse_basemapping.fwa_watersheds_poly wsd
       INNER JOIN ref_point pt
       ON ST_DWithin(wsd.geom, pt.geom_pt, 5)
      )

@@ -43,7 +43,7 @@ wsds_river_prelim AS
   wsd.watershed_feature_id,
   wsd.waterbody_key,
   wsd.geom
- FROM whse_basemapping.fwa_watersheds_poly_sp wsd
+ FROM whse_basemapping.fwa_watersheds_poly wsd
  INNER JOIN ref_point pt
   ON (wsd.waterbody_key = pt.waterbody_key
      AND ST_DWithin(wsd.geom, pt.geom, 100))
@@ -54,7 +54,7 @@ wsds_river AS
 (SELECT DISTINCT watershed_feature_id, waterbody_key, geom
 FROM (
 (SELECT wsd.watershed_feature_id, wsd.waterbody_key, wsd.geom
-FROM whse_basemapping.fwa_watersheds_poly_sp wsd
+FROM whse_basemapping.fwa_watersheds_poly wsd
 INNER JOIN wsds_river_prelim p ON ST_Intersects(wsd.geom, p.geom)
 WHERE wsd.watershed_feature_id != p.watershed_feature_id
 AND wsd.waterbody_key != 0
@@ -72,7 +72,7 @@ wsds_adjacent AS
   wsd.watershed_feature_id,
   wsd.geom,
   ST_Distance(s.geom, wsd.geom) as dist_to_site
-FROM whse_basemapping.fwa_watersheds_poly_sp wsd
+FROM whse_basemapping.fwa_watersheds_poly wsd
 INNER JOIN wsds_river r
 ON (r.geom && wsd.geom AND ST_Relate(r.geom, wsd.geom, '****1****'))
 INNER JOIN ref_point s ON ST_DWithin(s.geom, r.geom, 5)
@@ -180,7 +180,7 @@ FROM
    UNION ALL
    SELECT watershed_feature_id, geom FROM wsds_river
    UNION ALL
-   SELECT wsd.watershed_feature_id, wsd.geom FROM whse_basemapping.fwa_watersheds_poly_sp wsd
+   SELECT wsd.watershed_feature_id, wsd.geom FROM whse_basemapping.fwa_watersheds_poly wsd
    INNER JOIN ref_point pt
    ON ST_DWithin(wsd.geom, pt.geom, 100)
    WHERE wsd.waterbody_key != 0) AS bar

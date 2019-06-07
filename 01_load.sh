@@ -280,3 +280,5 @@ ogr2ogr \
   -dialect SQLITE \
   -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree, downstream_route_measure + ST_Length(geom) as upstream_route_measure FROM FWA_STREAM_NETWORKS_SP" \
   FWA.gpkg
+
+echo 'Data load complete, consider removing FWA.gpkg to save disk space'
