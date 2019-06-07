@@ -35,7 +35,7 @@ WITH ref_point AS
   CASE
    WHEN r.feature_code = 'GA03950000' THEN 'C'
    ELSE wb.waterbody_type
-  END as waterbody_type
+  END as waterbody_type,
   ST_LineInterpolatePoint(
     (ST_Dump(s.geom)).geom,
     ROUND(CAST((meas - s.downstream_route_measure) / s.length_metre AS NUMERIC), 5)
@@ -120,9 +120,9 @@ b.measure as len_to_bottom,
     -- ** todo: a notable exception would be at the mouth of a river, where
     -- r.measure_str=0 and b.measure <=50. This isn't a major issue as cutting
     -- is computationally cheap and seems to work fine, even if point is at 0**
-    WHEN r.waterbody_key IN ('C', 'R') THEN 'CUT'
+    WHEN r.waterbody_type IN ('C', 'R') THEN 'CUT'
     -- lakes and reservoirs have special treatment
-    WHEN r.waterbody_key IN ('L', 'X') THEN 'LAKE'
+    WHEN r.waterbody_type IN ('L', 'X') THEN 'LAKE'
     -- if the location of interest is < 100m from the top of the local stream,
     -- just drop the watershed in which it falls
     WHEN r.waterbody_key IS NULL AND t.measure <= 100 THEN 'DROP'
