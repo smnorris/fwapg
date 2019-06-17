@@ -3,8 +3,6 @@
 -- Given a point as (blue_line_key, downstream_route_measure),
 -- return upstream watershed boundary for portion of watershed outside of BC.
 
-DROP FUNCTION fwa_watershedexbc(integer,double precision);
-
 CREATE OR REPLACE FUNCTION fwa_watershedexbc(blkey integer, meas float)
 
 RETURNS TABLE(src text, geom geometry) AS

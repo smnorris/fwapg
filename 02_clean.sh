@@ -17,4 +17,6 @@ psql -f sql/fwa_lengthdownstream.sql
 psql -f sql/fwa_lengthupstream.sql
 psql -f sql/fwa_lengthinstream.sql
 psql -f sql/fwa_slicewatershedatpoint.sql
+psql -f sql/create_fwa_approx_borders.sql
+psql -f sql/fwa_watershedexbc.sql
 psql -f sql/fwa_refinedwatershed.sql
