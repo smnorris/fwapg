@@ -223,37 +223,44 @@ begin
         )
 
         SELECT
-          to_agg.wscode_ltree,
-          to_agg.localcode_ltree,
+          m.wscode_ltree,
+          m.localcode_ltree,
           ROUND((sum(st_area(to_agg.geom)) / 10000)::numeric, 2)  as area_ha,
           m.refine_method,
           ST_Buffer(
             ST_Collect(to_agg.geom), 0.001) AS geom
         FROM
-        (SELECT
-         p.wscode_ltree,
-         p.localcode_ltree,
-         p.geom
-        FROM prelim p
-        WHERE watershed_feature_id NOT IN (SELECT unnest(wsds) from cut)
-        UNION ALL
-        SELECT
-          m.wscode_ltree,
-          m.localcode_ltree,
-          CASE
-            WHEN m.refine_method = 'CUT' THEN (SELECT c.geom FROM cut c)
-            WHEN m.refine_method = 'KEEP' THEN
-             (SELECT
-                ST_Force2D(ST_Multi(wsd.geom)) as geom
-              FROM whse_basemapping.fwa_watersheds_poly wsd
-              INNER JOIN ref_point pt
-              ON ST_DWithin(wsd.geom, pt.geom_pt, 5)
-             )
-             END as geom
-        FROM method m) as to_agg,
-        method m
+        (
 
-        GROUP BY to_agg.wscode_ltree, to_agg.localcode_ltree, m.refine_method;
+          SELECT
+           p.geom
+          FROM prelim p
+          WHERE watershed_feature_id NOT IN (SELECT unnest(wsds) from cut)
+
+        UNION ALL
+
+          SELECT
+            CASE
+              WHEN m.refine_method = 'CUT' THEN (SELECT c.geom FROM cut c)
+              WHEN m.refine_method = 'KEEP' THEN
+               (SELECT
+                  ST_Force2D(ST_Multi(wsd.geom)) as geom
+                FROM whse_basemapping.fwa_watersheds_poly wsd
+                INNER JOIN ref_point pt
+                ON ST_DWithin(wsd.geom, pt.geom_pt, 5)
+               )
+               END as geom
+          FROM method m
+
+        UNION ALL
+
+          -- add watersheds outside of BC
+          SELECT exbc.geom
+          FROM fwa_watershedexbc(blkey, meas) exbc
+
+        ) as to_agg,
+        method m
+        GROUP BY m.wscode_ltree, m.localcode_ltree, m.refine_method;
 
     else
 
@@ -311,8 +318,16 @@ begin
                  w.localcode_ltree >= s.localcode_ltree)
             )
           )
-        )
+        ),
 
+        exbc AS
+        (SELECT
+          s.wscode_ltree,
+          s.localcode_ltree,
+          ex.geom
+         FROM outlet s,
+         fwa_watershedexbc(blkey, meas) ex
+        )
         -- aggregate the result
         SELECT
             w.wscode_ltree,
@@ -321,7 +336,12 @@ begin
             'LAKE' AS refine_method,
             ST_Buffer(
                 ST_Collect(w.geom), 0.001) AS geom
-        FROM wsd w
+        FROM
+        (
+        SELECT * FROM wsd
+        UNION ALL
+        SELECT * FROM exbc
+        ) w
         GROUP BY w.wscode_ltree, w.localcode_ltree, refine_method;
 
     end if;
