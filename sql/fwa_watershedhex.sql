@@ -32,7 +32,7 @@ WITH pt AS (
 wsd AS (
   SELECT w.watershed_feature_id, w.geom
   FROM pt
-  INNER JOIN whse_basemapping.fwa_watersheds_poly_sp w
+  INNER JOIN whse_basemapping.fwa_watersheds_poly w
   ON ST_Intersects(pt.geom, w.geom)
 ),
 
