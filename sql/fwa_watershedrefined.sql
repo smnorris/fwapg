@@ -23,7 +23,7 @@
 
 
 
-CREATE OR REPLACE FUNCTION fwa_refinedwatershed(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION fwa_watershedrefined(blkey integer, meas float)
 
 RETURNS TABLE(wscode_ltree ltree, localcode_ltree ltree, area_ha numeric, refine_method text, geom geometry)
 AS
