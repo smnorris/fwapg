@@ -72,7 +72,7 @@ Create the required extensions and schema:
 
 ### Load
 
-Download `https://bc-fwa-gpkg.s3-us-west-2.amazonaws.com/FWA.zip` (FWA as a single file and more current than the files posted at [FWA FTP](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public)), extract the zipfile and run the load script. For example:
+Download [`FWA.zip`](https://bc-fwa-gpkg.s3-us-west-2.amazonaws.com/FWA.zip). This file is an extract from BCGW that includes most FWA tables in a single file, and includes data fixes not yet reflected in the files posted at [FWA FTP](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public)). Once downloaded, extract the zipfile and run the load script. For example:
 
     wget https://bc-fwa-gpkg.s3-us-west-2.amazonaws.com/FWA.zip
     unzip FWA.zip
@@ -80,10 +80,7 @@ Download `https://bc-fwa-gpkg.s3-us-west-2.amazonaws.com/FWA.zip` (FWA as a sing
 
 Loading is relatively quick, but to speed it up even more, the `ogr2ogr` commands in the script can be run in parallel (requires [GNU parallel](https://www.gnu.org/software/parallel), sed usage plagiarized from [here](https://catonmat.net/sed-one-liners-explained-part-one)):
 
-    cat load.sh | sed 's/^[ \t]*//' | sed -e :a -e '/\\$/N; s/\\\n//; ta' | parallel {}
-
-To run the load script on Windows, rename to `load.bat` and change the line continuation characters from `\` to `^`.
-
+    cat 01_load.sh | sed 's/^[ \t]*//' | sed -e :a -e '/\\$/N; s/\\\n//; ta' | parallel {}
 
 ### Clean / optimize
 
@@ -97,3 +94,9 @@ It takes time to build all the indexes but once done you have a Provincial FWA d
 For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), data from neighbouring jurisdictions is required:
 
     ./03_neighbours.sh
+
+### Windows
+The scripts should be usable on Windows with minor modifications:
+ - change the filename extensions to `.bat`
+ - change the line continuation characters from `\` to `^`
+ - wrap PG environment variables in `%` characters rather than prefixing with `$`
