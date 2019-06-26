@@ -324,6 +324,7 @@ begin
         (SELECT
           s.wscode_ltree,
           s.localcode_ltree,
+          0 as watershed_feature_id,
           ex.geom
          FROM outlet s,
          fwa_watershedexbc(blkey, meas) ex
