@@ -72,9 +72,9 @@ Create the required extensions and schema:
 
 ### Load
 
-Download `FWA.zip`, extract the zipfile and run the load script. For example (requires `awscli`):
+Download `https://bc-fwa-gpkg.s3-us-west-2.amazonaws.com/FWA.zip` (FWA as a single file and more current than the files posted at [FWA FTP](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public)), extract the zipfile and run the load script. For example:
 
-    aws s3 cp s3://bc-fwa-gpkg/FWA.zip FWA.zip
+    wget https://bc-fwa-gpkg.s3-us-west-2.amazonaws.com/FWA.zip
     unzip FWA.zip
     ./01_load.sh
 
@@ -92,3 +92,8 @@ To run the load script on Windows, rename to `load.bat` and change the line cont
 It takes time to build all the indexes but once done you have a Provincial FWA database ready for speedy queries.
 
 
+### Extras
+
+For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), data from neighbouring jurisdictions is required:
+
+    ./03_neighbours.sh
