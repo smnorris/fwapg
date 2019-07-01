@@ -25,7 +25,12 @@
 
 CREATE OR REPLACE FUNCTION fwa_watershedrefined(blkey integer, meas float)
 
-RETURNS TABLE(wscode_ltree ltree, localcode_ltree ltree, area_ha numeric, refine_method text, geom geometry)
+RETURNS TABLE
+ (wscode_ltree ltree,
+  localcode_ltree ltree,
+  area_ha numeric,
+  refine_method text,
+  geom geometry)
 AS
 
 
@@ -220,15 +225,18 @@ begin
         (SELECT
           slice.wsds, ST_Force2D(slice.geom) as geom
         FROM FWA_SliceWatershedAtPoint(blkey, meas) slice
-        )
+        ),
 
+        -- aggregate the result and dump to singlepart
+        agg as
+        (
         SELECT
           m.wscode_ltree,
           m.localcode_ltree,
-          ROUND((sum(st_area(to_agg.geom)) / 10000)::numeric, 2)  as area_ha,
           m.refine_method,
-          ST_Buffer(
-            ST_Collect(to_agg.geom), 0.001) AS geom
+          (ST_Dump(ST_Buffer(
+            ST_Collect(to_agg.geom), 0.001)
+            )).geom AS geom
         FROM
         (
 
@@ -260,7 +268,23 @@ begin
 
         ) as to_agg,
         method m
-        GROUP BY m.wscode_ltree, m.localcode_ltree, m.refine_method;
+        GROUP BY m.wscode_ltree, m.localcode_ltree, m.refine_method)
+
+        -- dump to singlepart and extract largest result -
+        -- sometimes there can be extra polygons leftover.
+        -- for example, at Fort Steel bridge over Kootenay R,
+        -- (blue_line_key=356570348, downstream_route_measure=520327.8)
+        -- the watershed gets cut, but two non-contiguous polys adjacent to
+        -- river have the same local code and get included after the cut
+        SELECT
+        agg.wscode_ltree,
+        agg.localcode_ltree,
+        ROUND((st_area(agg.geom) / 10000)::numeric, 2)  as area_ha,
+        agg.refine_method,
+        agg.geom
+        FROM agg
+        ORDER BY st_area(agg.geom) desc
+        LIMIT 1;
 
     else
 
