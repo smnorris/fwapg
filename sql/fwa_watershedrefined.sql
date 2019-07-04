@@ -255,7 +255,7 @@ begin
                   ST_Force2D(ST_Multi(wsd.geom)) as geom
                 FROM whse_basemapping.fwa_watersheds_poly wsd
                 INNER JOIN ref_point pt
-                ON ST_DWithin(wsd.geom, pt.geom_pt, 5)
+                ON ST_Intersects(wsd.geom, pt.geom_pt)
                )
                END as geom
           FROM method m
