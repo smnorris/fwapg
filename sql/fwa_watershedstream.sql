@@ -77,6 +77,8 @@ AND b.linear_feature_id != a.linear_feature_id
 AND b.blue_line_key != a.blue_line_key
 -- same watershed code
 AND a.wscode_ltree = b.wscode_ltree
+-- not a side channel that may be downstream
+AND b.localcode_ltree IS NOT NULL
 )
 -- or upstream on the same blueline
 OR (b.blue_line_key = a.blue_line_key AND
