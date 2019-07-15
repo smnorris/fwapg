@@ -22,9 +22,10 @@ SELECT
   b.border,
   s.linear_feature_id,
   ST_ClosestPoint(
-    -- I am not sure why we shift the intersection down by 75m, one would think
-    -- that this depends on which border is being considered??
-    ST_Translate(b.geom, 0, -75),
+    -- I am not sure why we shift the border down by 50m, one would think
+    -- that this depends on which border is being considered?
+    -- this likely only works on 49th parallel...
+    ST_Translate(b.geom, 0, -50),
     ST_Intersection(s.geom, b.geom)
   ) as geom
 FROM pt

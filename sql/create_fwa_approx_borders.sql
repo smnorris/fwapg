@@ -34,7 +34,7 @@ SELECT
    AS geom
 FROM (SELECT
         generate_series(-123.3, -114.06, .01) AS x,
-        49.0005 AS y) AS segments
+        49.00025 AS y) AS segments
 
 UNION ALL
 
