@@ -72,9 +72,9 @@ Create the required extensions and schema:
 
 ### Load
 
-Download [`FWA.zip`](https://bc-fwa-gpkg.s3-us-west-2.amazonaws.com/FWA.zip). This file is an extract from BCGW that includes most FWA tables in a single file, and includes data fixes not yet reflected in the files posted at [FWA FTP](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public). Once downloaded, extract the zipfile and run the load script. For example:
+Download [`FWA.zip`](https://geobc.s3-us-west-2.amazonaws.com/FWA.zip). This file is an extract from BCGW that includes most FWA tables in a single file, and includes data fixes not yet reflected in the files posted at [FWA FTP](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public). Once downloaded, extract the zipfile and run the load script. For example:
 
-    wget https://bc-fwa-gpkg.s3-us-west-2.amazonaws.com/FWA.zip
+    wget https://geobc.s3-us-west-2.amazonaws.com/FWA.zip
     unzip FWA.zip
     ./01_load.sh
 
