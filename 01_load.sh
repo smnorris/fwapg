@@ -46,7 +46,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_assessment_watersheds_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -62,7 +62,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_bays_and_channels_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -77,7 +77,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTILINESTRING \
   -nln fwa_coastlines_sp \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -93,7 +93,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_glaciers_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -109,7 +109,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_islands_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -125,7 +125,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_lakes_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -141,7 +141,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_manmade_waterbodies_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -157,7 +157,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOINT \
   -nln fwa_obstructions_sp \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -173,7 +173,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_rivers_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -189,7 +189,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_watershed_groups_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -204,7 +204,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_wetlands_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -220,7 +220,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTIPOLYGON \
   -nln fwa_named_watersheds_poly \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -236,7 +236,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTILINESTRING \
   -nln fwa_linear_boundaries_sp \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
@@ -253,7 +253,7 @@ ogr2ogr \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
   -nlt PROMOTE_TO_MULTI \
-  -nln fwa_watersheds_poly \
+  -nln MULTIPOLYGON \
   -t_srs EPSG:3005 \
   -lco SPATIAL_INDEX=NONE \
   -lco GEOMETRY_NAME=geom \
@@ -268,7 +268,7 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
+  -nlt MULTILINESTRING \
   -nln fwa_stream_networks_sp \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
