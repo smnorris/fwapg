@@ -252,8 +252,8 @@ ogr2ogr \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt PROMOTE_TO_MULTI \
-  -nln MULTIPOLYGON \
+  -nlt MULTIPOLYGON \
+  -nln fwa_watersheds_poly \
   -t_srs EPSG:3005 \
   -lco SPATIAL_INDEX=NONE \
   -lco GEOMETRY_NAME=geom \
