@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euxo pipefail
 
+# add m values to streams before indexing
+psql -f sql/add_m.sql
+
 # index for speed, this takes some time
 psql -f sql/create_indexes.sql
 
