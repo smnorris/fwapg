@@ -27,8 +27,9 @@ As a zipped geopackage, the FWA is under 7G - by downloading this and loading to
 
 ## Requirements
 
-- PostgreSQL/PostGIS (tested with v11.2/2.5.2)
-- GDAL (tested with v2.4.1)
+- PostgreSQL (tested with v12.2, requires >= v12)
+- PostGIS (tested with v3.0.1)
+- GDAL (tested with v2.4.4)
 
 
 ## Installation
