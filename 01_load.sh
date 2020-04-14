@@ -1,3 +1,6 @@
+#!/bin/bash
+set -euxo pipefail
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -55,8 +58,8 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=WATERSHED_FEATURE_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_ASSESSMENT_WATERSHEDS_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_ASSESSMENT_WATERSHEDS_POLY
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -86,8 +89,8 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=LINEAR_FEATURE_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_COASTLINES_SP" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_COASTLINES_SP
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -102,8 +105,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=WATERBODY_POLY_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_GLACIERS_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_GLACIERS_POLY
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -118,8 +122,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=ISLAND_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_ISLANDS_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_ISLANDS_POLY
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -134,8 +139,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=WATERBODY_POLY_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_LAKES_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_LAKES_POLY
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -150,8 +156,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=WATERBODY_POLY_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_MANMADE_WATERBODIES_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_MANMADE_WATERBODIES_POLY
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -166,8 +173,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=OBSTRUCTION_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_OBSTRUCTIONS_SP" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_OBSTRUCTIONS_SP
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -182,8 +190,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=WATERBODY_POLY_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_RIVERS_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_RIVERS_POLY
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -213,8 +222,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=WATERBODY_POLY_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_WETLANDS_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_WETLANDS_POLY
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -229,8 +239,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=NAMED_WATERSHED_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree FROM FWA_NAMED_WATERSHEDS_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_NAMED_WATERSHEDS_POLY
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -245,8 +256,9 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=LINEAR_FEATURE_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_LINEAR_BOUNDARIES_SP" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_LINEAR_BOUNDARIES_SP
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
@@ -261,15 +273,16 @@ ogr2ogr \
   -s_srs EPSG:3005 \
   -lco FID=WATERSHED_FEATURE_ID \
   -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree FROM FWA_WATERSHEDS_POLY" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_WATERSHEDS_POLY
+
 ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -lco OVERWRITE=YES \
   -lco SCHEMA=whse_basemapping \
-  -nlt MULTILINESTRING \
-  -nln fwa_stream_networks_sp \
+  -nlt LINESTRING \
+  -nln fwa_stream_networks_sp_load \
   -t_srs EPSG:3005 \
   -lco GEOMETRY_NAME=geom \
   -dim XYZ \
@@ -277,8 +290,7 @@ ogr2ogr \
   -lco SPATIAL_INDEX=NONE \
   -lco FID=LINEAR_FEATURE_ID \
   -lco FID64=TRUE \
-  -dialect SQLITE \
-  -sql "SELECT *, REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.') as wscode_ltree, REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.') as localcode_ltree, downstream_route_measure + ST_Length(geom) as upstream_route_measure FROM FWA_STREAM_NETWORKS_SP" \
-  FWA.gpkg
+  FWA.gpkg \
+  FWA_STREAM_NETWORKS_SP
 
 echo 'Data load complete, consider removing FWA.gpkg to save disk space'

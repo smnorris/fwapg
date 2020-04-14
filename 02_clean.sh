@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
 
-# add m values to streams before indexing
-psql -f sql/add_m.sql
+# add m / ltree / gradient / upstream route measuer values to streams
+psql -f sql/create_fwa_stream_networks_sp.sql
 
 # index for speed, this takes some time
 psql -f sql/create_indexes.sql
