@@ -30,3 +30,6 @@ psql -f sql/fwa_watershedexbc.sql
 psql -f sql/fwa_watershedrefined.sql
 psql -f sql/fwa_watershedhex.sql
 psql -f sql/fwa_watershedstream.sql
+
+# apply some fixes that have not yet made it into the warehouse
+psql -f sql/fixes.sql

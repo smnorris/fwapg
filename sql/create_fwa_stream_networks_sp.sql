@@ -23,8 +23,8 @@ CREATE TABLE whse_basemapping.fwa_stream_networks_sp (
   watershed_key_50k bigint,
   watershed_group_code_50k character varying(4),
   gradient double precision GENERATED ALWAYS AS (round((((ST_Z (ST_PointN (geom, - 1)) - ST_Z
-    (ST_PointN (geom, 1))) / ST_Length (geom))::numeric), 4)) STORED, feature_code character
-    varying(10),
+    (ST_PointN (geom, 1))) / ST_Length (geom))::numeric), 4)) STORED,
+  feature_code character varying(10),
   wscode_ltree ltree GENERATED ALWAYS AS (REPLACE(REPLACE(fwa_watershed_code,
     '-000000', ''), '-', '.')::ltree) STORED,
   localcode_ltree ltree GENERATED ALWAYS AS
