@@ -11,18 +11,18 @@ FWA_downstream_linear(
 )
 
 Provided two sets of blue_line_key, downtream_route_measure and watershed codes,
-(a and b), compare the values codes and return TRUE when the values for b are downstream
+(a and b), compare the values and return TRUE when the values for b are downstream
 of the values for a.
 
 */
 
 CREATE OR REPLACE FUNCTION fwa_downstream_linear(
     blue_line_key_a integer,
-    downstream_route_measure_a float,
+    downstream_route_measure_a double precision,
     wscode_ltree_a ltree,
     localcode_ltree_a ltree,
     blue_line_key_b integer,
-    downstream_route_measure_b float,
+    downstream_route_measure_b double precision,
     wscode_ltree_b ltree,
     localcode_ltree_b ltree
 )
@@ -30,10 +30,10 @@ CREATE OR REPLACE FUNCTION fwa_downstream_linear(
 RETURNS boolean AS $$
 
 SELECT
--- criteria 1 - on the same stream and lower down
+-- criteria 1 - on the same stream and lower down (minus fudge factor)
     (
         blue_line_key_a = blue_line_key_b AND
-        downstream_route_measure_a > downstream_route_measure_b
+        downstream_route_measure_a - .001 > downstream_route_measure_b
     )
 OR
 -- criteria 2 - watershed code a is a descendant of watershed code b

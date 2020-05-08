@@ -43,7 +43,7 @@ SELECT
           wscode_ltree_a = localcode_ltree_a AND
           (
               (blue_line_key_b <> blue_line_key_a OR
-               downstream_route_measure_a < downstream_route_measure_b + .01)
+               downstream_route_measure_a + .001 < downstream_route_measure_b)
           )
        THEN TRUE
        -- next, the more complicated case - where wscode and localcode are not equal
@@ -52,7 +52,7 @@ SELECT
           (
            -- higher up the blue line (plus fudge factor)
               (blue_line_key_b = blue_line_key_a AND
-               downstream_route_measure_a < downstream_route_measure_b + .01 )
+               downstream_route_measure_a + .001 < downstream_route_measure_b)
               OR
            -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
               (wscode_ltree_b > localcode_ltree_a AND
