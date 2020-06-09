@@ -19,6 +19,9 @@ psql -f sql/fwa_upstreamwsc.sql
 psql -f sql/fwa_lengthdownstream.sql
 psql -f sql/fwa_lengthinstream.sql
 psql -f sql/fwa_lengthupstream.sql
+psql -f sql/fwa_downstream.sql
+psql -f sql/fwa_upstream_linear.sql
+psql -f sql/fwa_downstream_or_equivalent.sql
 
 # watershed functions
 psql -f sql/create_fwa_approx_borders.sql
