@@ -11,11 +11,13 @@ psql -f sql/create_indexes.sql
 psql -f sql/add_watershed_codes_wsg.sql
 
 # create additional convenience tables
-# this query does not complete with latest FWA data
-#psql -f sql/create_fwa_assessment_watersheds_streams.sql
 psql -f sql/create_fwa_named_streams.sql
 psql -f sql/create_fwa_waterbodies.sql
 psql -f sql/create_fwa_watershed_groups_subdivided.sql
+psql -f sql/create_fwa_basins_poly.sql
+
+# this query does not complete with latest FWA data
+#psql -f sql/create_fwa_assessment_watersheds_streams.sql
 
 # linear functions
 psql -f sql/fwa_upstreamwsc.sql

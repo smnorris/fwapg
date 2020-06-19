@@ -45,3 +45,5 @@ WHERE a.watershed_feature_id IN
 (10757763,8442818,9505820,7871010,10757737,7776650,8332110,7748584,10638500,10052632,9996583)
 AND st_area(st_intersection(a.geom, b.geom)) > 100
 ORDER BY a.watershed_feature_id, st_area(st_intersection(a.geom, b.geom)) desc"
+
+psql -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_feature_id)"
