@@ -156,19 +156,19 @@ localcode_ltree <@ '100.500560'::ltree;
 
 --chilako
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET basin_id = 4
+SET basin_id = 5
 WHERE wscode_ltree <@ '100.567134'::ltree AND
 localcode_ltree <@ '100.567134'::ltree;
 
 -- salmon
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET basin_id = 5
+SET basin_id = 6
 WHERE wscode_ltree <@ '100.591289'::ltree AND
 localcode_ltree <@ '100.591289'::ltree;
 
 -- mcgregor
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET basin_id = 6
+SET basin_id = 7
 WHERE wscode_ltree <@ '100.639480'::ltree AND
 localcode_ltree <@ '100.639480'::ltree;
 
