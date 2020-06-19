@@ -9,7 +9,7 @@
 DROP TABLE IF EXISTS whse_basemapping.fwa_basins_poly;
 
 CREATE TABLE whse_basemapping.fwa_basins_poly
-(watershed_cache_id serial primary key,
+(basin_id serial primary key,
  basin_name text,
  wscode_ltree ltree,
  localcode_ltree ltree,
@@ -124,42 +124,42 @@ GROUP BY basin_name, '300.625474'::ltree, '300.625474'::ltree;
 ALTER TABLE whse_basemapping.fwa_watershed_groups_poly ADD COLUMN IF NOT EXISTS basin_id integer;
 
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET watershed_cache_id = 1
+SET basin_id = 1
 WHERE wscode_ltree <@ '100.190442'::ltree AND
 localcode_ltree <@ '100.190442'::ltree;
 
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET watershed_cache_id = 2
+SET basin_id = 2
 WHERE wscode_ltree <@ '100.458399'::ltree AND
 localcode_ltree <@ '100.458399'::ltree;
 
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET watershed_cache_id = 3
+SET basin_id = 3
 WHERE wscode_ltree <@ '100.500560'::ltree AND
 localcode_ltree <@ '100.500560'::ltree;
 
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET watershed_cache_id = 4
+SET basin_id = 4
 WHERE wscode_ltree <@ '100.567134'::ltree AND
 localcode_ltree <@ '100.567134'::ltree;
 
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET watershed_cache_id = 5
+SET basin_id = 5
 WHERE wscode_ltree <@ '100.591289'::ltree AND
 localcode_ltree <@ '100.591289'::ltree;
 
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET watershed_cache_id = 6
+SET basin_id = 6
 WHERE wscode_ltree <@ '100.639480'::ltree AND
 localcode_ltree <@ '100.639480'::ltree;
 
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET watershed_cache_id = 7
+SET basin_id = 7
 WHERE wscode_ltree <@ '100.342455'::ltree AND
 localcode_ltree <@ '100.342455'::ltree;
 
 UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET watershed_cache_id = 8
+SET basin_id = 8
 WHERE wscode_ltree <@ '300.625474'::ltree AND
 localcode_ltree <@ '300.625474'::ltree;
 
