@@ -4,7 +4,7 @@
 psql -c "DROP TABLE IF EXISTS whse_basemapping.fwa_assessment_watersheds_lut;"
 psql -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut
 (watershed_feature_id integer PRIMARY KEY,
-assmnt_watershed_feature_id integer,
+assmnt_watershed_id integer,
 watershed_group_code text,
 watershed_group_id integer)"
 
@@ -35,7 +35,7 @@ time psql -t -P border=0,footer=no \
 psql -c "INSERT INTO whse_basemapping.fwa_assessment_watersheds_lut
 SELECT distinct on (a.watershed_feature_id)
   a.watershed_feature_id as watershed_feature_id,
-  b.watershed_feature_id as assmnt_watershed_feature_id,
+  b.watershed_feature_id as assmnt_watershed_id,
   a.watershed_group_code,
   a.watershed_group_id
 FROM whse_basemapping.fwa_watersheds_poly a
@@ -46,4 +46,4 @@ WHERE a.watershed_feature_id IN
 AND st_area(st_intersection(a.geom, b.geom)) > 100
 ORDER BY a.watershed_feature_id, st_area(st_intersection(a.geom, b.geom)) desc"
 
-psql -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_feature_id)"
+psql -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
