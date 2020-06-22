@@ -96,6 +96,13 @@ For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), data fro
 
     ./03_neighbours.sh
 
+The lookup `fwa_assessment_watersheds_lut`, relating `fwa_watersheds_poly` to `fwa_assessment_watersheds_poly` is already loaded via `01_load.sh`.
+The script for generating it from scratch is provided as reference:
+
+    ./04_assmnt_wsds_lut.sh
+
+
+
 ### Windows
 
 The scripts should be usable on Windows with minor modifications:

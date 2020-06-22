@@ -36,7 +36,7 @@ psql -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
 # so I've cached them here:
 # https://www.hillcrestgeo.ca/outgoing/public/hydrosheds.zip
 
-wget https://www.hillcrestgeo.ca/outgoing/public/hydrosheds.zip
+wget https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip
 unzip hydrosheds.zip
 
 psql -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'

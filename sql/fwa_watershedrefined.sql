@@ -70,10 +70,10 @@ begin
            WHEN r.feature_code = 'GA03950000' THEN 'C'
            ELSE wb.waterbody_type
           END as waterbody_type,
-          ST_LineInterpolatePoint(
-            (ST_Dump(s.geom)).geom,
-            ROUND(CAST((meas - s.downstream_route_measure) / s.length_metre AS NUMERIC), 5)
-                ) as geom_pt,
+          (ST_Dump(
+             ST_LocateAlong(s.geom, meas)
+             )
+          ).geom::geometry(PointZM, 3005) AS geom_pt,
           s.geom as geom_str
         FROM whse_basemapping.fwa_stream_networks_sp s
         LEFT OUTER JOIN whse_basemapping.fwa_waterbodies wb
@@ -173,40 +173,76 @@ begin
         FROM ref_point r, length_to_top t, length_to_bottom b
         ),
 
-        prelim AS (
-
-        -- get upstream watersheds
+        -- get any upstream basins/groups/assessment wsds
+        -- (to minimize features that need to be aggregated)
+        -- first, the basins
+        wsdbasins AS
+        (
           SELECT
-          s.wscode_ltree,
-          s.localcode_ltree,
-          w.watershed_feature_id,
-          ST_Force2D(w.geom) as geom
-        FROM ref_point s
-        INNER JOIN whse_basemapping.fwa_watersheds_poly w
-        ON
-          (s.wscode_ltree = s.localcode_ltree AND
-            w.wscode_ltree <@ s.wscode_ltree
-          )
-        OR
-          (s.wscode_ltree != s.localcode_ltree AND
-           w.wscode_ltree <@ s.wscode_ltree AND
-            (
-                (w.wscode_ltree > s.localcode_ltree AND NOT
-                 w.wscode_ltree <@ s.localcode_ltree)
-                OR
-                (w.wscode_ltree = s.wscode_ltree AND
-                 w.localcode_ltree >= s.localcode_ltree)
-            )
-          )
-        WHERE watershed_feature_id NOT IN (SELECT unnest(wsds) from wsd)
+            b.basin_id,
+            ST_Force2D(b.geom)
+          FROM ref_point a
+          INNER JOIN whse_basemapping.fwa_basins_poly b
+          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+        ),
+
+        -- similarly, get any upstream watershed groups
+        -- (that are not covered by the pre-aggregated watersheds)
+        wsdgroups AS (
+          SELECT
+            b.watershed_group_id,
+            b.basin_id,
+            ST_Force2D(b.geom) as geom
+          FROM ref_point a
+          INNER JOIN whse_basemapping.fwa_watershed_groups_poly b
+          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          LEFT OUTER JOIN wsdbasins ON b.basin_id = wsdbasins.basin_id
+          WHERE wsdbasins.basin_id IS NULL
+        ),
+
+        -- next, assessment watersheds
+        wsdassmnt AS (
+          SELECT
+            b.watershed_feature_id as assmnt_watershed_id,
+            g.watershed_group_id,
+            g.basin_id,
+            ST_Force2D(b.geom)
+          FROM ref_point a
+          INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
+          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          LEFT OUTER JOIN wsdgroups c ON b.watershed_group_id = c.watershed_group_id
+          LEFT OUTER JOIN whse_basemapping.fwa_watershed_groups_poly g
+          ON b.watershed_group_id = g.watershed_group_id
+          WHERE c.watershed_group_id IS NULL AND g.basin_id IS NULL
+
+        ),
+
+        -- finally, fundamental watersheds
+        prelim AS (
+          SELECT
+            b.watershed_feature_id,
+            ST_Force2d(b.geom) as geom
+          FROM ref_point a
+          INNER JOIN whse_basemapping.fwa_watersheds_poly b
+          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          LEFT OUTER JOIN whse_basemapping.fwa_assessment_watersheds_lut l
+          ON b.watershed_feature_id = l.watershed_feature_id
+          LEFT OUTER JOIN wsdassmnt c ON l.assmnt_watershed_id = c.assmnt_watershed_id
+          LEFT OUTER JOIN wsdgroups d ON b.watershed_group_id = d.watershed_group_id
+          LEFT OUTER JOIN whse_basemapping.fwa_watershed_groups_poly g
+          ON b.watershed_group_id = g.watershed_group_id
+          WHERE c.assmnt_watershed_id IS NULL
+          AND d.watershed_group_id IS NULL
+          AND g.basin_id IS NULL
+          -- don't include the fundamental watershed(s) in which the point lies
+          AND b.watershed_feature_id NOT IN (SELECT unnest(wsds) from wsd)
+
 
         UNION
 
         -- add watersheds from adjacent lakes/reservoirs with equivalent watershed
         -- codes, in which the point does not lie. This is a bit of a quirk
         SELECT
-          s.wscode_ltree,
-          s.localcode_ltree,
           w.watershed_feature_id,
           ST_Force2D(w.geom) as geom
         FROM ref_point s
@@ -239,6 +275,12 @@ begin
             )).geom AS geom
         FROM
         (
+          SELECT geom FROM wsdbasins
+          UNION ALL
+          SELECT geom FROM wsdgroups
+          UNION ALL
+          SELECT geom FROM wsdassmnt
+          UNION ALL
 
           SELECT
            p.geom
@@ -319,29 +361,64 @@ begin
         ORDER BY waterbody_key, wscode_ltree, localcode_ltree, downstream_route_measure
         ),
 
+        wsdbasins AS
+        (
+          SELECT
+            b.basin_id,
+            ST_Force2D(b.geom)
+          FROM outlet a
+          INNER JOIN whse_basemapping.fwa_basins_poly b
+          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+        ),
+
+        -- similarly, get any upstream watershed groups
+        -- (that are not covered by the pre-aggregated watersheds)
+        wsdgroups AS (
+          SELECT
+            b.watershed_group_id,
+            b.basin_id,
+            ST_Force2D(b.geom)
+          FROM outlet a
+          INNER JOIN whse_basemapping.fwa_watershed_groups_poly b
+          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          LEFT OUTER JOIN wsdbasins ON b.basin_id = wsdbasins.basin_id
+          WHERE wsdbasins.basin_id IS NULL
+        ),
+
+        -- next, assessment watersheds
+        wsdassmnt AS (
+          SELECT
+            b.watershed_feature_id as assmnt_watershed_id,
+            g.watershed_group_id,
+            g.basin_id,
+            ST_Force2D(b.geom)
+          FROM outlet a
+          INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
+          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          LEFT OUTER JOIN wsdgroups c ON b.watershed_group_id = c.watershed_group_id
+          LEFT OUTER JOIN whse_basemapping.fwa_watershed_groups_poly g
+          ON b.watershed_group_id = g.watershed_group_id
+          WHERE c.watershed_group_id IS NULL AND g.basin_id IS NULL
+
+        ),
+
         -- get upstream watersheds
-        wsd AS (SELECT
-        s.wscode_ltree,
-        s.localcode_ltree,
-        w.watershed_feature_id,
-        ST_Force2D(w.geom) as geom
-        FROM outlet s
-        INNER JOIN whse_basemapping.fwa_watersheds_poly w
-        ON
-          (s.wscode_ltree = s.localcode_ltree AND
-            w.wscode_ltree <@ s.wscode_ltree
-          )
-        OR
-          (s.wscode_ltree != s.localcode_ltree AND
-           w.wscode_ltree <@ s.wscode_ltree AND
-            (
-                (w.wscode_ltree > s.localcode_ltree AND NOT
-                 w.wscode_ltree <@ s.localcode_ltree)
-                OR
-                (w.wscode_ltree = s.wscode_ltree AND
-                 w.localcode_ltree >= s.localcode_ltree)
-            )
-          )
+        prelim AS (
+          SELECT
+            b.watershed_feature_id,
+            b.geom
+          FROM outlet a
+          INNER JOIN whse_basemapping.fwa_watersheds_poly b
+          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          LEFT OUTER JOIN whse_basemapping.fwa_assessment_watersheds_lut l
+          ON b.watershed_feature_id = l.watershed_feature_id
+          LEFT OUTER JOIN wsdassmnt c ON l.assmnt_watershed_id = c.assmnt_watershed_id
+          LEFT OUTER JOIN wsdgroups d ON b.watershed_group_id = d.watershed_group_id
+          LEFT OUTER JOIN whse_basemapping.fwa_watershed_groups_poly g
+          ON b.watershed_group_id = g.watershed_group_id
+          WHERE c.assmnt_watershed_id IS NULL
+          AND d.watershed_group_id IS NULL
+          AND g.basin_id IS NULL
         ),
 
         exbc AS
@@ -355,19 +432,26 @@ begin
         )
         -- aggregate the result
         SELECT
-            w.wscode_ltree,
-            w.localcode_ltree,
+            o.wscode_ltree,
+            o.localcode_ltree,
             ROUND((sum(st_area(w.geom)) / 10000)::numeric, 2)  as area_ha,
             'LAKE' AS refine_method,
             ST_Buffer(
                 ST_Collect(w.geom), 0.001) AS geom
         FROM
+        outlet o,
         (
-        SELECT * FROM wsd
-        UNION ALL
-        SELECT * FROM exbc
+          SELECT geom FROM wsdbasins
+          UNION ALL
+          SELECT geom FROM wsdgroups
+          UNION ALL
+          SELECT geom FROM wsdassmnt
+          UNION ALL
+          SELECT p.geom FROM prelim p
+          UNION ALL
+          SELECT e.geom from exbc e
         ) w
-        GROUP BY w.wscode_ltree, w.localcode_ltree, refine_method;
+        GROUP BY o.wscode_ltree, o.localcode_ltree, refine_method;
 
     end if;
 

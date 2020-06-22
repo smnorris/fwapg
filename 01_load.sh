@@ -293,4 +293,20 @@ ogr2ogr \
   FWA.gpkg \
   FWA_STREAM_NETWORKS_SP
 
+# Rather than running script 04_assmnt_wsds_lut.sh to create the fundamental wsd <-> asssessment wsd lookup
+# (it takes a very long time), just download the lookup as csv
+wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip
+unzip fwa_assessment_watersheds_lut.csv.zip
+
+psql -c "DROP TABLE IF EXISTS whse_basemapping.fwa_assessment_watersheds_lut;"
+psql -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut
+(watershed_feature_id integer PRIMARY KEY,
+assmnt_watershed_id integer,
+watershed_group_code text,
+watershed_group_id integer)"
+psql -c "\copy whse_basemapping.fwa_assessment_watersheds_lut FROM 'fwa_assessment_watersheds_lut.csv' delimiter ',' csv header"
+psql -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
+rm fwa_assessment_watersheds_lut.csv.zip
+rm fwa_assessment_watersheds_lut.csv
+
 echo 'Data load complete, consider removing FWA.gpkg to save disk space'
