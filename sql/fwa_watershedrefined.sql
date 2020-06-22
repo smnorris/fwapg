@@ -180,7 +180,7 @@ begin
         (
           SELECT
             b.basin_id,
-            ST_Force2D(b.geom)
+            ST_Force2D(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_basins_poly b
           ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
@@ -206,7 +206,7 @@ begin
             b.watershed_feature_id as assmnt_watershed_id,
             g.watershed_group_id,
             g.basin_id,
-            ST_Force2D(b.geom)
+            ST_Force2D(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
           ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
@@ -275,11 +275,11 @@ begin
             )).geom AS geom
         FROM
         (
-          SELECT geom FROM wsdbasins
+          SELECT wsdbasins.geom FROM wsdbasins
           UNION ALL
-          SELECT geom FROM wsdgroups
+          SELECT wsdgroups.geom FROM wsdgroups
           UNION ALL
-          SELECT geom FROM wsdassmnt
+          SELECT wsdassmnt.geom FROM wsdassmnt
           UNION ALL
 
           SELECT
@@ -365,7 +365,7 @@ begin
         (
           SELECT
             b.basin_id,
-            ST_Force2D(b.geom)
+            ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_basins_poly b
           ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
@@ -377,7 +377,7 @@ begin
           SELECT
             b.watershed_group_id,
             b.basin_id,
-            ST_Force2D(b.geom)
+            ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_watershed_groups_poly b
           ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
@@ -391,7 +391,7 @@ begin
             b.watershed_feature_id as assmnt_watershed_id,
             g.watershed_group_id,
             g.basin_id,
-            ST_Force2D(b.geom)
+            ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
           ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
