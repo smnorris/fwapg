@@ -18,15 +18,10 @@ WITH local_segment AS
   s.localcode_ltree,
   ST_Force2D(
     ST_Multi(
-      ST_LineSubstring((ST_Dump(s.geom)).geom,
-                   ((meas - s.downstream_route_measure) / s.length_metre),
-                   1)
-                   )
+      ST_LocateBetween(s.geom, meas, s.upstream_route_measure)
+    )
   ) AS geom,
-ST_LineInterpolatePoint(
-      (ST_Dump(s.geom)).geom,
-      ROUND(CAST((meas - s.downstream_route_measure) / s.length_metre AS NUMERIC), 5)
-          ) as geom_pt
+  ST_LocateAlong(s.geom, meas) as geom_pt
 FROM whse_basemapping.fwa_stream_networks_sp s
 WHERE s.blue_line_key = blkey
 AND s.downstream_route_measure <= meas
@@ -43,7 +38,7 @@ wsd AS
 
 SELECT
   linear_feature_id,
-  geom
+  ST_Multi(geom) as geom
 from local_segment
 UNION ALL
 SELECT
@@ -54,24 +49,7 @@ INNER JOIN whse_basemapping.fwa_stream_networks_sp b
 ON
 -- upstream, but not same blue_line_key
 (
-  (
-    (a.wscode_ltree = a.localcode_ltree AND
-    b.wscode_ltree <@ a.wscode_ltree)
-  OR
-    (
-      a.wscode_ltree != a.localcode_ltree
-      AND
-      b.wscode_ltree <@ a.wscode_ltree
-      AND
-      (
-          (b.wscode_ltree > a.localcode_ltree AND NOT
-           b.wscode_ltree <@ a.localcode_ltree)
-          OR
-          (b.wscode_ltree = a.wscode_ltree AND
-          b.localcode_ltree >= a.localcode_ltree)
-      )
-     )
-  )
+FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
 -- not the same line or blue_line_key
 AND b.linear_feature_id != a.linear_feature_id
 AND b.blue_line_key != a.blue_line_key

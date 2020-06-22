@@ -197,6 +197,11 @@ CREATE INDEX ON whse_basemapping.fwa_waterbodies_20k_50k (waterbody_poly_id_20k)
 CREATE INDEX ON whse_basemapping.fwa_waterbodies_20k_50k (fwa_watershed_code_20k);
 CREATE INDEX ON whse_basemapping.fwa_waterbodies_20k_50k (watershed_code_50k);
 
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (wscode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING BTREE (wscode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (localcode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING BTREE (localcode_ltree);
+
 -- Cluster the stream and watersheds data on disk on the watershed code GIST
 -- index - this may slightly speed up upstream/downstream queries by making
 -- nearby features also nearby on disk
