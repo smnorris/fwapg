@@ -210,6 +210,8 @@ begin
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
           ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          -- do not include the assmnt watershed with equivalent codes
+          AND NOT (a.wscode_ltree = b.wscode_ltree AND a.localcode_ltree = b.localcode_ltree)
           LEFT OUTER JOIN wsdgroups c ON b.watershed_group_id = c.watershed_group_id
           LEFT OUTER JOIN whse_basemapping.fwa_watershed_groups_poly g
           ON b.watershed_group_id = g.watershed_group_id
@@ -395,6 +397,8 @@ begin
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
           ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          -- do not include the assmnt watershed with equivalent codes
+          AND NOT (a.wscode_ltree = b.wscode_ltree AND a.localcode_ltree = b.localcode_ltree)
           LEFT OUTER JOIN wsdgroups c ON b.watershed_group_id = c.watershed_group_id
           LEFT OUTER JOIN whse_basemapping.fwa_watershed_groups_poly g
           ON b.watershed_group_id = g.watershed_group_id
