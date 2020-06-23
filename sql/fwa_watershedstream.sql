@@ -43,7 +43,7 @@ from local_segment
 UNION ALL
 SELECT
   b.linear_feature_id,
-  b.geom
+  ST_Multi(b.geom) as geom
 FROM local_segment a
 INNER JOIN whse_basemapping.fwa_stream_networks_sp b
 ON
