@@ -96,7 +96,7 @@ For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), data fro
 
     ./03_neighbours.sh
 
-It is convenient for some workflows to relate `fwa_assessment_watersheds_poly` to stream segments and fundamental watersheds. Rather than do this spatially every time it is needed, lookups can be created. Lookups are provided and loaded in above `01_load.sh`, but they can be created from scratch with this script:
+Some workflows require relating `fwa_assessment_watersheds_poly` to stream segments and fundamental watersheds. There are no existing links in the attribues so this relation requires a resource intensive spatial query.  Rather than running a spatial query every time, we can create lookups. The lookups are provided at `https://hillcrestgeo.ca/outgoing/public/fwapg/` and loaded by `01_load.sh`, but they can be created from scratch with this script:
 
     ./04_assessment_watersheds_lookups.sh
 
