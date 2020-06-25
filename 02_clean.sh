@@ -19,14 +19,14 @@ psql -f sql/create_fwa_basins_poly.sql
 # this query does not complete with latest FWA data
 #psql -f sql/create_fwa_assessment_watersheds_streams.sql
 
+# up and downstream functions
+psql -f sql/fwa_upstream.sql
+psql -f sql/fwa_downstream.sql
+
 # linear functions
-psql -f sql/fwa_upstreamwsc.sql
 psql -f sql/fwa_lengthdownstream.sql
 psql -f sql/fwa_lengthinstream.sql
 psql -f sql/fwa_lengthupstream.sql
-psql -f sql/fwa_downstream.sql
-psql -f sql/fwa_upstream_linear.sql
-psql -f sql/fwa_downstream_or_equivalent.sql
 
 # watershed functions
 psql -f sql/create_fwa_approx_borders.sql

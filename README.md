@@ -101,8 +101,6 @@ The script for generating it from scratch is provided as reference:
 
     ./04_assmnt_wsds_lut.sh
 
-
-
 ### Windows
 
 The scripts should be usable on Windows with minor modifications:
@@ -110,3 +108,12 @@ The scripts should be usable on Windows with minor modifications:
  - change the filename extensions to `.bat`
  - change the line continuation characters from `\` to `^`
  - wrap PG environment variables in `%` characters rather than prefixing with `$`
+
+### Testing
+
+Extremely basic tests are included for selected functions.
+If changing a covered function, run the individual test. For example:
+
+    psql -f tests/test_fwa_upstream.sql
+
+All results should be true.
