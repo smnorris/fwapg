@@ -90,16 +90,6 @@ Loading is relatively quick, but to speed it up even more, the `ogr2ogr` command
 It takes time to build all the indexes but once done you have a Provincial FWA database ready for speedy queries.
 
 
-### Extras
-
-For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), data from neighbouring jurisdictions is required:
-
-    ./03_neighbours.sh
-
-Some workflows require relating `fwa_assessment_watersheds_poly` to stream segments and fundamental watersheds. There are no existing links in the attribues so this relation requires a resource intensive spatial query.  Rather than running a spatial query every time, we can create lookups. The lookups are provided at `https://hillcrestgeo.ca/outgoing/public/fwapg/` and loaded by `01_load.sh`, but they can be created from scratch with this script:
-
-    ./04_assessment_watersheds_lookups.sh
-
 ### Windows
 
 The scripts should be usable on Windows with minor modifications:
