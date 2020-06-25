@@ -79,10 +79,6 @@ Download [`FWA.zip`](https://geobc.s3-us-west-2.amazonaws.com/FWA.zip). This fil
     unzip FWA.zip
     ./01_load.sh
 
-Loading is relatively quick, but to speed it up even more, the `ogr2ogr` commands in the script can be run in parallel (requires [GNU parallel](https://www.gnu.org/software/parallel), sed usage plagiarized from [here](https://catonmat.net/sed-one-liners-explained-part-one)):
-
-    cat 01_load.sh | sed 's/^[ \t]*//' | sed -e :a -e '/\\$/N; s/\\\n//; ta' | parallel {}
-
 ### Clean / optimize
 
     ./02_clean.sh
