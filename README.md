@@ -27,9 +27,9 @@ As a zipped geopackage, the FWA is under 7G - by downloading this and loading to
 
 ## Requirements
 
-- PostgreSQL (tested with v12.2, requires >= v12)
-- PostGIS (tested with v3.0.1)
-- GDAL (tested with v2.4.4)
+- PostgreSQL (requires >= v12)
+- PostGIS (tested with >=v3.0.1)
+- GDAL (tested with >= v2.4.4)
 
 
 ## Installation
@@ -41,14 +41,14 @@ The repository is a collection of sql files and shell scripts - no installation 
 
 ## Configuration
 
-The data load scripts require that the [postgres environment variables](https://www.postgresql.org/docs/11/libpq-envars.html) `$PGHOST`, `$PGUSER`,`$PGDATABASE`,`$PGPORT` are set to point at the database you wish to use. For example, on linux/mac:
+The data load scripts require that the [postgres environment variables](https://www.postgresql.org/docs/current/libpq-envars.html) `$PGHOST`, `$PGUSER`,`$PGDATABASE`,`$PGPORT` are set to point at the database you wish to use. For example:
 
     export PGHOST=localhost
     export PGUSER=postgres
     export PGPORT=5432
     export PGDATABASE=postgis
 
-To provide the script with a password to the database, either [create a password file]( https://www.postgresql.org/docs/11/libpq-pgpass.html) or modify the connection strings in the script.
+To provide the script with a password to the database, either [create a password file]( https://www.postgresql.org/docs/current/libpq-pgpass.html) or modify the connection strings in the script.
 
 This document does not cover PostgreSQL setup - this is a detailed topic which depends on hardware and workload. See these links for more:
 
@@ -56,9 +56,7 @@ This document does not cover PostgreSQL setup - this is a detailed topic which d
 - [sample setup script for GIS processing on MacOS](https://github.com/bcgov/designatedlands/blob/master/scripts/postgres_mac_setup.sh)
 
 
-## Data load
-
-### Setup
+## Setup
 
 Create the target database if it does not already exist, with a command something like this:
 
@@ -70,10 +68,9 @@ Create the required extensions and schema:
     psql -c "CREATE EXTENSION IF NOT EXISTS ltree"
     psql -c "CREATE SCHEMA IF NOT EXISTS whse_basemapping"
 
-
 ### Load
 
-Download [`FWA.zip`](https://geobc.s3-us-west-2.amazonaws.com/FWA.zip). This file is an extract from BCGW that includes most FWA tables in a single file, and includes data fixes not yet reflected in the files posted at [FWA FTP](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public). Once downloaded, extract the zipfile and run the load script. For example:
+Download [`FWA.zip`](https://geobc.s3-us-west-2.amazonaws.com/FWA.zip). This file is an extract from BCGW that includes most FWA tables in a single file. Once downloaded, extract the zipfile and run the load script. For example:
 
     wget https://geobc.s3-us-west-2.amazonaws.com/FWA.zip
     unzip FWA.zip
@@ -85,16 +82,7 @@ Download [`FWA.zip`](https://geobc.s3-us-west-2.amazonaws.com/FWA.zip). This fil
 
 It takes time to build all the indexes but once done you have a Provincial FWA database ready for speedy queries.
 
-
-### Windows
-
-The scripts should be usable on Windows with minor modifications:
-
- - change the filename extensions to `.bat`
- - change the line continuation characters from `\` to `^`
- - wrap PG environment variables in `%` characters rather than prefixing with `$`
-
-### Testing
+## Testing
 
 Extremely basic tests are included for selected functions.
 If changing a covered function, run the individual test. For example:
