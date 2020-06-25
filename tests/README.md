@@ -1,0 +1,1 @@
+Very basic tests. All queries should return true.
