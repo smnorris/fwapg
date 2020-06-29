@@ -31,6 +31,7 @@ eg:
 (1 row)
 
 2. FWA_Upstream(
+    integer blue_line_key_a,
     double precision downstream_route_measure_a,
     ltree wscode_ltree_a,
     ltree localcode_ltree_a,
