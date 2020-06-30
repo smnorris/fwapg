@@ -7,3 +7,7 @@ For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), non-FWA 
 Some workflows require relating `fwa_assessment_watersheds_poly` to stream segments and fundamental watersheds. There are no existing links in the attribues so this relation requires a resource intensive spatial query.  Rather than running a spatial query every time, we can create lookups. The lookups are provided at `https://hillcrestgeo.ca/outgoing/public/fwapg/` and loaded by `01_load.sh`, but they can be created from scratch with this script:
 
     ./assessment_watersheds_lookups.sh
+
+Rather than calculate upstream area as needed, this draft script will add and populate an `upstream_area` column in the streams table (currently requires [`pgdata`](https://github.com/smnorris/pgdata) and is extremely slow)
+
+    python add_upstream_area.py

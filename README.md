@@ -70,10 +70,12 @@ Create the required extensions and schema:
 
 ### Load
 
-Download [`FWA.zip`](https://geobc.s3-us-west-2.amazonaws.com/FWA.zip). This file is an extract from BCGW that includes most FWA tables in a single file. Once downloaded, extract the zipfile and run the load script. For example:
+Note that all data are licensed under the [Open Government Licence – British Columbia](https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc)
 
-    wget https://geobc.s3-us-west-2.amazonaws.com/FWA.zip
-    unzip FWA.zip
+Download the zipped FWA data file - an extract that includes most FWA tables in a single file - then unzip and run the load script. For example:
+
+    wget https://geobc.s3-us-west-2.amazonaws.com/FWA_20200629.zip
+    unzip FWA_20200629.zip
     ./01_load.sh
 
 ### Clean / optimize
