@@ -34,9 +34,20 @@ As a zipped geopackage, the FWA is under 7G - by downloading this and loading to
 
 ## Installation
 
-The repository is a collection of sql files and shell scripts - no installation is required, just download the files:
+The repository is a collection of sql files and shell scripts - no installation is required.
+
+Download and unzip the [latest release](https://github.com/smnorris/fwapg/releases):
+
+Eg:
+
+    wget https://github.com/smnorris/fwapg/archive/v0.0.1.zip -O v0.0.1.zip
+    unzip v0.0.1.zip
+    cd fwapg-0.0.1
+
+Or get the latest:
 
     git clone https://github.com/smnorris/fwapg.git
+    cd fwapg
 
 
 ## Configuration
