@@ -9,7 +9,7 @@ AND s.localcode_ltree != w.localcode_ltree
 WHERE s.watershed_group_code = %s
 GROUP BY s.linear_feature_id)
 
-UPDATE temp.fwa_stream_networks_sp a
+UPDATE whse_basemapping.fwa_stream_networks_sp a
 SET upstream_area_ha = upstr.upstream_area_ha
 FROM upstr
 WHERE a.linear_feature_id = upstr.linear_feature_id;
