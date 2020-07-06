@@ -10,4 +10,4 @@ Some workflows require relating `fwa_assessment_watersheds_poly` to stream segme
 
 Rather than calculate upstream area as needed, this draft script will add and populate an `upstream_area` column in the streams table (currently requires [`pgdata`](https://github.com/smnorris/pgdata) and is extremely slow)
 
-    python add_upstream_area.py
+    python add_upstream_area_ha.py

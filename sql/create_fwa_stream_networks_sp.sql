@@ -1,26 +1,28 @@
+-- load all the stream data, populating ltree codes etc
+
 DROP TABLE IF EXISTS whse_basemapping.fwa_stream_networks_sp;
 
 CREATE TABLE whse_basemapping.fwa_stream_networks_sp (
-  linear_feature_id bigint PRIMARY KEY,
-  watershed_group_id bigint NOT NULL,
-  edge_type bigint NOT NULL,
-  blue_line_key bigint NOT NULL,
-  watershed_key bigint NOT NULL,
+    linear_feature_id bigint PRIMARY KEY,
+  watershed_group_id integer NOT NULL,
+  edge_type integer NOT NULL,
+  blue_line_key integer NOT NULL,
+  watershed_key integer NOT NULL,
   fwa_watershed_code character varying(143) NOT NULL,
   local_watershed_code character varying(143),
   watershed_group_code character varying(4) NOT NULL,
   downstream_route_measure double precision NOT NULL,
   length_metre double precision NOT NULL,
   feature_source character varying(15),
-  gnis_id bigint,
+  gnis_id integer,
   gnis_name character varying(80),
   left_right_tributary character varying(7),
-  stream_order bigint,
-  stream_magnitude bigint,
-  waterbody_key bigint,
-  blue_line_key_50k bigint,
+  stream_order integer,
+  stream_magnitude integer,
+  waterbody_key integer,
+  blue_line_key_50k integer,
   watershed_code_50k character varying(45),
-  watershed_key_50k bigint,
+  watershed_key_50k integer,
   watershed_group_code_50k character varying(4),
   gradient double precision GENERATED ALWAYS AS (round((((ST_Z (ST_PointN (geom, - 1)) - ST_Z
     (ST_PointN (geom, 1))) / ST_Length (geom))::numeric), 4)) STORED,
@@ -31,6 +33,7 @@ CREATE TABLE whse_basemapping.fwa_stream_networks_sp (
     (REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.')::ltree) STORED,
   upstream_route_measure double precision GENERATED ALWAYS AS (downstream_route_measure +
     ST_Length (geom)) STORED,
+  upstream_area_ha double precision,
   geom geometry(LineStringZM, 3005)
 );
 
@@ -66,5 +69,5 @@ SELECT
 FROM
   whse_basemapping.fwa_stream_networks_sp_load;
 
--- drop the temp table
+-- drop the initial load table
 DROP TABLE whse_basemapping.fwa_stream_networks_sp_load;
