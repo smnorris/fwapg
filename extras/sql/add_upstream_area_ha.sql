@@ -1,44 +1,105 @@
-WITH upstr as
-(SELECT
-  s.linear_feature_id,
-  SUM(ST_Area(w.geom)) / 10000 as upstream_area_ha
-FROM whse_basemapping.fwa_stream_networks_sp s
-INNER JOIN whse_basemapping.fwa_watersheds_poly w
-ON FWA_Upstream(s.wscode_ltree, s.localcode_ltree, w.wscode_ltree, w.localcode_ltree)
-AND s.localcode_ltree != w.localcode_ltree
-WHERE s.watershed_group_code = %s
-GROUP BY s.linear_feature_id)
+WITH
+-- query only the watershed group of interest
+wsg AS
+(
+  SELECT *
+  FROM whse_basemapping.fwa_watershed_groups_poly a
+  WHERE watershed_group_code = %s
+),
 
-INSERT INTO whse_basemapping.fwa_stream_networks_sp_tmp
-(linear_feature_id, watershed_group_id,
-  edge_type, blue_line_key, watershed_key, fwa_watershed_code, local_watershed_code,
-  watershed_group_code, downstream_route_measure, length_metre, feature_source, gnis_id, gnis_name,
-  left_right_tributary, stream_order, stream_magnitude, waterbody_key, blue_line_key_50k,
-  watershed_code_50k, watershed_key_50k, watershed_group_code_50k, feature_code, upstream_area_ha, geom)
+-- extract streams within watershed group
+streams AS
+(
+  SELECT s.*
+  FROM whse_basemapping.fwa_stream_networks_sp s
+  INNER JOIN wsg
+  ON s.watershed_group_code = wsg.watershed_group_code
+),
+
+-- find any upstream watershed groups upstream of the group
+groups AS
+(
+  SELECT
+    b.watershed_group_id,
+    b.wscode_ltree,
+    b.localcode_ltree,
+    ST_Area(b.geom) as area
+  FROM wsg a
+  INNER JOIN whse_basemapping.fwa_watershed_groups_poly b
+  ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+  AND a.localcode_ltree != b.localcode_ltree
+),
+
+-- find fundamental watersheds upstream of each stream segment
+-- (not covered by upstream assessment wsds and within the same watershed group,
+-- and not with the same local code)
+fund AS
+(
 SELECT
-  l.linear_feature_id,
-  l.watershed_group_id,
-  l.edge_type,
-  l.blue_line_key,
-  l.watershed_key,
-  l.fwa_watershed_code,
-  l.local_watershed_code,
-  l.watershed_group_code,
-  l.downstream_route_measure,
-  l.length_metre,
-  l.feature_source,
-  l.gnis_id,
-  l.gnis_name,
-  l.left_right_tributary,
-  l.stream_order,
-  l.stream_magnitude,
-  l.waterbody_key,
-  l.blue_line_key_50k,
-  l.watershed_code_50k,
-  l.watershed_key_50k,
-  l.watershed_group_code_50k,
-  l.feature_code,
-  upstr.upstream_area_ha,
-  l.geom
-FROM whse_basemapping.fwa_stream_networks_sp l
-INNER JOIN upstr ON l.linear_feature_id = upstr.linear_feature_id;
+  a.linear_feature_id,
+  a.wscode_ltree,
+  a.localcode_ltree,
+  ST_Area(b.geom) as area
+FROM streams a
+INNER JOIN whse_basemapping.fwa_watersheds_poly b
+ON a.watershed_group_code = b.watershed_group_code
+AND FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+AND a.localcode_ltree != b.localcode_ltree
+
+),
+
+-- find watersheds upstream of each single line stream flow segment
+-- that are in lakes/reservoirs (they get missed by above query
+-- because they have equivalent watershed codes)
+wb AS
+(SELECT
+  a.linear_feature_id,
+  a.wscode_ltree,
+  a.localcode_ltree,
+  ST_Area(w.geom) as area
+FROM streams a
+INNER JOIN whse_basemapping.fwa_watersheds_poly w
+ON a.wscode_ltree = w.wscode_ltree AND
+   a.localcode_ltree = w.localcode_ltree AND
+   a.watershed_group_code = w.watershed_group_code
+INNER JOIN whse_basemapping.fwa_waterbodies wb
+ON w.waterbody_key = wb.waterbody_key
+WHERE wb.waterbody_type IN ('L', 'X')
+AND a.edge_type in (1000, 1050, 1100, 2000, 2300)
+)
+
+-- add things up and put it all together
+INSERT INTO whse_basemapping.fwa_stream_networks_sp_upstr_area
+(linear_feature_id, upstream_area_ha)
+
+  SELECT
+    a.linear_feature_id,
+    round(((a.area_f + coalesce(b.area_wb, 0) + coalesce(g.area_groups, 0)) / 10000)::numeric, 4) as upstream_area_ha
+  FROM
+  (
+    SELECT
+      linear_feature_id,
+      wscode_ltree,
+      localcode_ltree,
+      SUM(area) as area_f
+    FROM fund
+    GROUP BY linear_feature_id, wscode_ltree, localcode_ltree
+  ) a
+  LEFT OUTER JOIN
+  (
+    SELECT
+      linear_feature_id,
+      SUM(area) as area_wb
+    FROM wb
+    GROUP BY linear_feature_id
+  ) b
+  ON a.linear_feature_id = b.linear_feature_id
+  LEFT OUTER JOIN
+  (
+    SELECT
+      min(wscode_ltree::text) as wscode_ltree,
+      min(localcode_ltree::text) as localcode_ltree,
+      SUM(area) as area_groups
+    FROM groups
+  ) g
+  ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, g.wscode_ltree::ltree, g.localcode_ltree::ltree);
