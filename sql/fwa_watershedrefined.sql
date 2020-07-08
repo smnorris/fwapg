@@ -445,11 +445,11 @@ begin
         FROM
         outlet o,
         (
-          SELECT geom FROM wsdbasins
+          SELECT b.geom FROM wsdbasins b
           UNION ALL
-          SELECT geom FROM wsdgroups
+          SELECT g.geom FROM wsdgroups g
           UNION ALL
-          SELECT geom FROM wsdassmnt
+          SELECT a.geom FROM wsdassmnt a
           UNION ALL
           SELECT p.geom FROM prelim p
           UNION ALL
