@@ -4,17 +4,17 @@ set -euxo pipefail
 # add m / ltree / gradient / upstream route measuer values to streams
 psql -f sql/create_fwa_stream_networks_sp.sql
 
-# index for speed, this takes some time
-psql -f sql/create_indexes.sql
-
-# add watershed codes to watershed groups table
-psql -f sql/add_watershed_codes_wsg.sql
-
 # create additional convenience tables
 psql -f sql/create_fwa_named_streams.sql
 psql -f sql/create_fwa_waterbodies.sql
 psql -f sql/create_fwa_watershed_groups_subdivided.sql
 psql -f sql/create_fwa_basins_poly.sql
+
+# index for speed, this takes some time
+psql -f sql/create_indexes.sql
+
+# add watershed codes to watershed groups table
+psql -f sql/add_watershed_codes_wsg.sql
 
 # up and downstream functions
 psql -f sql/fwa_upstream.sql

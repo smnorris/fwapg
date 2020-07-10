@@ -49,7 +49,7 @@ INNER JOIN whse_basemapping.fwa_stream_networks_sp b
 ON
 -- upstream, but not same blue_line_key
 (
-FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
 -- not the same line or blue_line_key
 AND b.linear_feature_id != a.linear_feature_id
 AND b.blue_line_key != a.blue_line_key
