@@ -2,9 +2,9 @@
 set -euxo pipefail
 
 # add the Juno/lostgis ST_Safe* functions
+psql -f sql/ST_Safe_Repair.sql
 psql -f sql/ST_Safe_Difference.sql
 psql -f sql/ST_Safe_Intersection.sql
-psql -f sql/ST_Safe_Repair.sql
 
 # add m / ltree / gradient / upstream route measuer values to streams
 psql -f sql/create_fwa_stream_networks_sp.sql
