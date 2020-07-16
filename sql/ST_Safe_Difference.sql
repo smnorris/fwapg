@@ -57,7 +57,7 @@ begin
     when others
         then
             begin
-                raise notice 'ST_Safe_Difference: making everything valid (%%)', message;
+                raise notice 'ST_Safe_Difference: making everything valid (%)', message;
                 return
                 ST_Translate(
                     ST_Safe_Repair(
@@ -72,7 +72,7 @@ begin
                 exception
                 when others
                     then
-                        raise warning 'ST_Safe_Difference: everything failed (%%)', message;
+                        raise warning 'ST_Safe_Difference: everything failed (%)', message;
                         return ST_Safe_Repair(geom_a);
             end;
 end

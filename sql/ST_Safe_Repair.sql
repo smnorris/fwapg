@@ -37,7 +37,7 @@ $$
 begin
     if ST_IsEmpty(geom)
     then
-        raise debug 'ST_Safe_Repair: geometry is empty (%%)', message;
+        raise debug 'ST_Safe_Repair: geometry is empty (%)', message;
 -- empty POLYGON makes ST_Segmentize fail, replace it with empty GEOMETRYCOLLECTION
         return ST_SetSRID('GEOMETRYCOLLECTION EMPTY' :: geometry, ST_SRID(geom));
     end if;

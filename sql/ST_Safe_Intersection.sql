@@ -40,7 +40,7 @@ $$
 begin
     if geom_b is null
     then
-        raise notice 'ST_Safe_Intersection: second geometry is NULL (%%)', message;
+        raise notice 'ST_Safe_Intersection: second geometry is NULL (%)', message;
         return geom_b;
     end if;
     return
@@ -54,7 +54,7 @@ begin
     when others
         then
             begin
-                raise notice 'ST_Safe_Intersection: making everything valid (%%)', message;
+                raise notice 'ST_Safe_Intersection: making everything valid (%)', message;
                 return
                 ST_Translate(
                     ST_Safe_Repair(
@@ -70,7 +70,7 @@ begin
                 when others
                     then
                         begin
-                            raise notice 'ST_Safe_Intersection: buffering everything (%%)', message;
+                            raise notice 'ST_Safe_Intersection: buffering everything (%)', message;
                             return
                             ST_Safe_Repair(
                                 ST_Intersection(
@@ -87,7 +87,7 @@ begin
                             exception
                             when others
                                 then
-                                    raise exception 'ST_Safe_Intersection: everything failed (%%)', message;
+                                    raise exception 'ST_Safe_Intersection: everything failed (%)', message;
                         end;
             end;
 end
