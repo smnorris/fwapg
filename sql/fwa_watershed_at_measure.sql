@@ -179,7 +179,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_basins_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
         ),
 
         -- similarly, get any upstream watershed groups
@@ -191,7 +191,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_watershed_groups_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           LEFT OUTER JOIN wsdbasins ON b.basin_id = wsdbasins.basin_id
           WHERE wsdbasins.basin_id IS NULL
         ),
@@ -205,7 +205,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           -- do not include the assmnt watershed with equivalent codes
           AND NOT (a.wscode_ltree = b.wscode_ltree AND a.localcode_ltree = b.localcode_ltree)
           LEFT OUTER JOIN wsdgroups c ON b.watershed_group_id = c.watershed_group_id
@@ -222,7 +222,7 @@ begin
             ST_Force2d(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_watersheds_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           LEFT OUTER JOIN whse_basemapping.fwa_assessment_watersheds_lut l
           ON b.watershed_feature_id = l.watershed_feature_id
           LEFT OUTER JOIN wsdassmnt c ON l.assmnt_watershed_id = c.assmnt_watershed_id
@@ -366,7 +366,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_basins_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
         ),
 
         -- similarly, get any upstream watershed groups
@@ -378,7 +378,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_watershed_groups_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           LEFT OUTER JOIN wsdbasins ON b.basin_id = wsdbasins.basin_id
           WHERE wsdbasins.basin_id IS NULL
         ),
@@ -392,7 +392,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           -- do not include the assmnt watershed with equivalent codes
           AND NOT (a.wscode_ltree = b.wscode_ltree AND a.localcode_ltree = b.localcode_ltree)
           LEFT OUTER JOIN wsdgroups c ON b.watershed_group_id = c.watershed_group_id
@@ -409,7 +409,7 @@ begin
             b.geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_watersheds_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           LEFT OUTER JOIN whse_basemapping.fwa_assessment_watersheds_lut l
           ON b.watershed_feature_id = l.watershed_feature_id
           LEFT OUTER JOIN wsdassmnt c ON l.assmnt_watershed_id = c.assmnt_watershed_id
@@ -460,3 +460,5 @@ begin
 end
 $$
 language 'plpgsql' immutable strict parallel safe;
+
+COMMENT ON FUNCTION postgisftw.fwa_watershed_at_measure IS 'Return watershed boundary upstream of provided blue_line_key and downstream_route_measure';
