@@ -19,7 +19,7 @@
 
 -- TODO - what happens if cut returns an invalid geometry?
 
-CREATE OR REPLACE FUNCTION postgisftw.fwa_watershed_at_point(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION postgisftw.fwa_watershed_at_measure(blkey integer, meas float)
 
 RETURNS TABLE
  (wscode_ltree text,
