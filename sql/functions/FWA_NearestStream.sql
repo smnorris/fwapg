@@ -110,3 +110,5 @@ LIMIT num_features
 
 $$
 language 'sql' immutable parallel safe;
+
+COMMENT ON FUNCTION postgisftw.fwa_neareststream IS 'Provided a point (as x, y, srid), return stream(s) nearest to the point within specified tolerance';

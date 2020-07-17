@@ -461,4 +461,4 @@ end
 $$
 language 'plpgsql' immutable strict parallel safe;
 
-COMMENT ON FUNCTION postgisftw.fwa_watershed_at_measure IS 'Return watershed boundary upstream of provided blue_line_key and downstream_route_measure';
+COMMENT ON FUNCTION postgisftw.fwa_watershedatmeasure IS 'Provided a blue_line_key and downstream_route_measure, return the watershed boundary upstream of that location';

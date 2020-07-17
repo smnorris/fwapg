@@ -3,7 +3,7 @@ Changes
 
 0.1.0 (2020- - )
 ------------------
-- add functions to be exposed in API - FWA_WatershedAtMeasure, FWA_NearestStream
+- add functions to be exposed in API - postgisftw.FWA_WatershedAtMeasure, postgisftw.FWA_NearestStream
 - fix bug when creating watershed from a position in a lake (#21)
 - stabilize upstream_area_ha calculations
 - standardize function names on CamelCase
