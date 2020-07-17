@@ -18,16 +18,12 @@
 
 
 -- TODO - what happens if cut returns an invalid geometry?
---      - speed things up with pre-aggregated assessment wsds or using the
---        st_intersect trick
 
-
-
-CREATE OR REPLACE FUNCTION fwa_watershedrefined(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedAtMeasure(blkey integer, meas float)
 
 RETURNS TABLE
- (wscode_ltree ltree,
-  localcode_ltree ltree,
+ (wscode_ltree text,
+  localcode_ltree text,
   area_ha numeric,
   refine_method text,
   geom geometry)
@@ -183,7 +179,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_basins_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
         ),
 
         -- similarly, get any upstream watershed groups
@@ -195,7 +191,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_watershed_groups_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           LEFT OUTER JOIN wsdbasins ON b.basin_id = wsdbasins.basin_id
           WHERE wsdbasins.basin_id IS NULL
         ),
@@ -209,7 +205,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           -- do not include the assmnt watershed with equivalent codes
           AND NOT (a.wscode_ltree = b.wscode_ltree AND a.localcode_ltree = b.localcode_ltree)
           LEFT OUTER JOIN wsdgroups c ON b.watershed_group_id = c.watershed_group_id
@@ -226,7 +222,7 @@ begin
             ST_Force2d(b.geom) as geom
           FROM ref_point a
           INNER JOIN whse_basemapping.fwa_watersheds_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           LEFT OUTER JOIN whse_basemapping.fwa_assessment_watersheds_lut l
           ON b.watershed_feature_id = l.watershed_feature_id
           LEFT OUTER JOIN wsdassmnt c ON l.assmnt_watershed_id = c.assmnt_watershed_id
@@ -321,11 +317,11 @@ begin
         -- the watershed gets cut, but two non-contiguous polys adjacent to
         -- river have the same local code and get included after the cut
         SELECT
-        agg.wscode_ltree,
-        agg.localcode_ltree,
-        ROUND((st_area(agg.geom) / 10000)::numeric, 2)  as area_ha,
-        agg.refine_method,
-        agg.geom
+          agg.wscode_ltree::text,
+          agg.localcode_ltree::text,
+          ROUND((st_area(agg.geom) / 10000)::numeric, 2)  as area_ha,
+          agg.refine_method,
+          ST_Safe_Repair(agg.geom) as geom
         FROM agg
         ORDER BY st_area(agg.geom) desc
         LIMIT 1;
@@ -370,7 +366,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_basins_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
         ),
 
         -- similarly, get any upstream watershed groups
@@ -382,7 +378,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_watershed_groups_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           LEFT OUTER JOIN wsdbasins ON b.basin_id = wsdbasins.basin_id
           WHERE wsdbasins.basin_id IS NULL
         ),
@@ -396,7 +392,7 @@ begin
             ST_Force2D(b.geom) as geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           -- do not include the assmnt watershed with equivalent codes
           AND NOT (a.wscode_ltree = b.wscode_ltree AND a.localcode_ltree = b.localcode_ltree)
           LEFT OUTER JOIN wsdgroups c ON b.watershed_group_id = c.watershed_group_id
@@ -413,7 +409,7 @@ begin
             b.geom
           FROM outlet a
           INNER JOIN whse_basemapping.fwa_watersheds_poly b
-          ON FWA_UpstreamWSC(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+          ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
           LEFT OUTER JOIN whse_basemapping.fwa_assessment_watersheds_lut l
           ON b.watershed_feature_id = l.watershed_feature_id
           LEFT OUTER JOIN wsdassmnt c ON l.assmnt_watershed_id = c.assmnt_watershed_id
@@ -436,12 +432,14 @@ begin
         )
         -- aggregate the result
         SELECT
-            o.wscode_ltree,
-            o.localcode_ltree,
+            o.wscode_ltree::text,
+            o.localcode_ltree::text,
             ROUND((sum(st_area(w.geom)) / 10000)::numeric, 2)  as area_ha,
             'LAKE' AS refine_method,
-            ST_Buffer(
-                ST_Collect(w.geom), 0.001) AS geom
+            ST_Safe_Repair(
+              ST_Buffer(
+                ST_Collect(w.geom), 0.001)
+                ) AS geom
         FROM
         outlet o,
         (
@@ -462,3 +460,5 @@ begin
 end
 $$
 language 'plpgsql' immutable strict parallel safe;
+
+COMMENT ON FUNCTION postgisftw.fwa_watershed_at_measure IS 'Return watershed boundary upstream of provided blue_line_key and downstream_route_measure';

@@ -43,7 +43,7 @@ of the values for a. The tolerance specifies how much to nudge measure a downstr
 in order to avoid returning records in b with equivalent bluelinekey/measure.
 */
 
-CREATE OR REPLACE FUNCTION fwa_downstream(
+CREATE OR REPLACE FUNCTION FWA_Downstream(
     wscode_ltree_a ltree,
     localcode_ltree_a ltree,
     wscode_ltree_b ltree,

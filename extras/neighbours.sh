@@ -56,6 +56,7 @@ ogr2ogr \
   -f PostgreSQL \
   "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
   -t_srs EPSG:3005 \
+  -lco OVERWRITE=YES \
   -lco SCHEMA=hydrosheds \
   -lco GEOMETRY_NAME=geom \
   -nlt PROMOTE_TO_MULTI \
@@ -68,5 +69,9 @@ psql -c "ALTER TABLE hydrosheds.hybas_na_lev12_v1c RENAME TO hybas_lev12_v1c"
 psql -c "INSERT INTO hydrosheds.hybas_lev12_v1c SELECT * FROM hydrosheds.hybas_ar_lev12_v1c"
 psql -c "DROP TABLE hydrosheds.hybas_ar_lev12_v1c"
 
+# ogr loads the pk as a numeric, switch to integer
+psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ALTER COLUMN hybas_id TYPE bigint;"
+
 psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 psql -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
+

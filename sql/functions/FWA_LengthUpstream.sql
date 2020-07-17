@@ -17,7 +17,7 @@
 -- have a local code - this cannot be referenced on the network
 
 
-CREATE OR REPLACE FUNCTION fwa_lengthupstream(
+CREATE OR REPLACE FUNCTION FWA_LengthUpstream(
     blkey integer,
     measure double precision,
     padding numeric DEFAULT .001

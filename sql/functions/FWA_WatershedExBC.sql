@@ -3,7 +3,7 @@
 -- Given a point as (blue_line_key, downstream_route_measure),
 -- return upstream watershed boundary for portion of watershed outside of BC.
 
-CREATE OR REPLACE FUNCTION fwa_watershedexbc(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION FWA_WatershedExBC(blkey integer, meas float)
 
 RETURNS TABLE(src text, geom geometry) AS
 
@@ -16,7 +16,7 @@ BEGIN
 
 -- find points at which stream flows into BC
 SELECT border
-FROM fwa_upstreambordercrossings(blkey, meas)
+FROM FWA_UpstreamBorderCrossings(blkey, meas)
 LIMIT 1 into borderval;
 
 IF borderval = 'USA_49' THEN return query
@@ -25,7 +25,7 @@ IF borderval = 'USA_49' THEN return query
     (
         SELECT huc12, wsd.geom
         FROM usgs.wbdhu12 wsd
-        INNER JOIN (select * FROM fwa_upstreambordercrossings(blkey, meas)) as pt
+        INNER JOIN (select * FROM FWA_UpstreamBorderCrossings(blkey, meas)) as pt
         ON ST_Intersects(wsd.geom, pt.geom)
 
         UNION ALL
@@ -46,7 +46,7 @@ ELSE return query
         (
             SELECT hybas_id, wsd.geom
             FROM hydrosheds.hybas_lev12_v1c wsd
-            INNER JOIN (select * FROM fwa_upstreambordercrossings(blkey, meas)) as pt
+            INNER JOIN (select * FROM FWA_UpstreamBorderCrossings(blkey, meas)) as pt
             ON ST_Intersects(wsd.geom, pt.geom)
 
             UNION ALL

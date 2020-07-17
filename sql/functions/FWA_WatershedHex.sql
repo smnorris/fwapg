@@ -3,7 +3,7 @@
 -- watershed
 
 
-CREATE OR REPLACE FUNCTION fwa_watershedhex(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION FWA_WatershedHex(blkey integer, meas float)
 
 RETURNS TABLE(hex_id bigint, geom geometry)
 AS

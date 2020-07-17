@@ -47,7 +47,7 @@ of the values for a.
 
 */
 
-CREATE OR REPLACE FUNCTION fwa_upstream(
+CREATE OR REPLACE FUNCTION FWA_Upstream(
     wscode_ltree_a ltree,
     localcode_ltree_a ltree,
     wscode_ltree_b ltree,

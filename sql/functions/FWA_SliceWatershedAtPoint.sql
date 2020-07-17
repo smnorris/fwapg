@@ -7,7 +7,7 @@
 -- Then cut these polys with a blade spanning between the input point and
 -- the closest points on the opposite edges of the bank/adjacent watershed poly
 
-CREATE OR REPLACE FUNCTION fwa_slicewatershedatpoint(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION FWA_SliceWatershedAtPoint(blkey integer, meas float)
 
 RETURNS TABLE(wsds integer[], geom geometry)  AS $$
 

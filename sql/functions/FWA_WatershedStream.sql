@@ -1,7 +1,7 @@
 -- Given a point as a blue_line_key, route_measure, return
 -- stream segments upstream in the same first order watershed
 
-CREATE OR REPLACE FUNCTION fwa_watershedstream(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION FWA_WatershedStream(blkey integer, meas float)
 
 RETURNS TABLE(linear_feature_id bigint, geom geometry)
 AS

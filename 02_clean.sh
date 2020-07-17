@@ -1,45 +1,40 @@
 #!/bin/bash
 set -euxo pipefail
 
-# add the Juno/lostgis ST_Safe* functions
-psql -f sql/ST_Safe_Repair.sql
-psql -f sql/ST_Safe_Difference.sql
-psql -f sql/ST_Safe_Intersection.sql
+# add third party functions - the Juno/lostgis / CartoDB
+psql -f sql/functions/ST_Safe_Repair.sql
+psql -f sql/functions/ST_Safe_Difference.sql
+psql -f sql/functions/ST_Safe_Intersection.sql
+psql -f sql/functions/CDB_MakeHexagon.sql
 
 # add m / ltree / gradient / upstream route measuer values to streams
-psql -f sql/create_fwa_stream_networks_sp.sql
+psql -f sql/data_load/create_fwa_stream_networks_sp.sql
 
 # create additional convenience tables
-psql -f sql/create_fwa_named_streams.sql
-psql -f sql/create_fwa_waterbodies.sql
-psql -f sql/create_fwa_watershed_groups_subdivided.sql
-psql -f sql/create_fwa_basins_poly.sql
+psql -f sql/data_load/create_fwa_named_streams.sql
+psql -f sql/data_load/create_fwa_waterbodies.sql
+psql -f sql/data_load/create_fwa_watershed_groups_subdivided.sql
+psql -f sql/data_load/create_fwa_basins_poly.sql
+psql -f sql/data_load/create_fwa_approx_borders.sql
 
 # index for speed, this takes some time
-psql -f sql/create_indexes.sql
+psql -f sql/data_load/create_indexes.sql
 
 # add watershed codes to watershed groups table
-psql -f sql/add_watershed_codes_wsg.sql
+psql -f sql/data_load/add_watershed_codes_wsg.sql
 
-# up and downstream functions
-psql -f sql/fwa_upstream.sql
-psql -f sql/fwa_downstream.sql
+# load FWA functions
+psql -f sql/functions/FWA_Upstream.sql
+psql -f sql/functions/FWA_Downstream.sql
+psql -f sql/functions/FWA_LengthDownstream.sql
+psql -f sql/functions/FWA_LengthInstream.sql
+psql -f sql/functions/FWA_LengthUpstream.sql
+psql -f sql/functions/FWA_UpstreamBorderCrossings.sql
+psql -f sql/functions/FWA_SliceWatershedAtPoint.sql
+psql -f sql/functions/FWA_WatershedExBC.sql
+psql -f sql/functions/FWA_WatershedAtMeasure.sql
+psql -f sql/functions/FWA_WatershedHex.sql
+psql -f sql/functions/FWA_WatershedStream.sql
 
-# linear functions
-psql -f sql/fwa_lengthdownstream.sql
-psql -f sql/fwa_lengthinstream.sql
-psql -f sql/fwa_lengthupstream.sql
-
-# watershed functions
-psql -f sql/create_fwa_approx_borders.sql
-psql -f sql/CDB_MakeHexagon.sql
-psql -f sql/fwa_upstreambordercrossings.sql
-psql -f sql/fwa_slicewatershedatpoint.sql
-
-psql -f sql/fwa_watershedexbc.sql
-psql -f sql/fwa_watershedrefined.sql
-psql -f sql/fwa_watershedhex.sql
-psql -f sql/fwa_watershedstream.sql
-
-# apply some fixes that have not yet made it into the warehouse
-psql -f sql/fixes.sql
+# apply some data fixes that have not yet made it into the warehouse
+psql -f sql/data_fixes/fixes.sql
