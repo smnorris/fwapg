@@ -1,10 +1,12 @@
 Changes
 =======
 
-0.0.2 (2020- - )
+0.1.0 (2020- - )
 ------------------
-- stabilize upstream_area_ha calculations
+- add functions to be exposed in API - FWA_WatershedAtMeasure, FWA_NearestStream
 - fix bug when creating watershed from a position in a lake (#21)
+- stabilize upstream_area_ha calculations
+- standardize function names on CamelCase
 
 0.0.1 (2020-06-29)
 ------------------
