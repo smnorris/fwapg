@@ -105,8 +105,8 @@ begin
         ST_CoveredBy(
             ST_LineSubstring(
               str.geom,
-              .1 / ST_Length(str.geom),
-              (ST_Length(str.geom) - .1) / ST_Length(str.geom)
+              .004 / ST_Length(str.geom),
+              (ST_Length(str.geom) - .004) / ST_Length(str.geom)
             ),
           wsd.geom
         )
@@ -128,8 +128,8 @@ begin
         ST_CoveredBy(
             ST_LineSubstring(
               str.geom,
-              .1 / ST_Length(str.geom),
-              (ST_Length(str.geom) - .1) / ST_Length(str.geom)
+              .004 / ST_Length(str.geom),
+              (ST_Length(str.geom) - .004) / ST_Length(str.geom)
             ),
           wsd.geom
         )
