@@ -3,7 +3,7 @@
 -- watershed
 
 
-CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedHex(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedHex(blue_line_key integer, downstream_route_measure float)
 
 RETURNS TABLE(hex_id bigint, geom geometry)
 AS
@@ -17,11 +17,11 @@ WITH pt AS (
     s.linear_feature_id,
     s.blue_line_key,
     s.downstream_route_measure,
-    ST_LocateAlong(s.geom, meas) AS geom
+    ST_LocateAlong(s.geom, downstream_route_measure) AS geom
   FROM whse_basemapping.fwa_stream_networks_sp s
-  WHERE s.blue_line_key = blkey
-  AND s.downstream_route_measure <= meas
-  AND upstream_route_measure > meas
+  WHERE s.blue_line_key = blue_line_key
+  AND s.downstream_route_measure <= downstream_route_measure
+  AND s.upstream_route_measure > downstream_route_measure
 ),
 
 -- find the watershed in which the point falls

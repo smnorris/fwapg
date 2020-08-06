@@ -4,7 +4,7 @@
 -- Typical use is for generating pour 'points' (linear pour points as per
 -- https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/watershed.htm)
 
-CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedStream(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedStream(blue_line_key integer, downstream_route_measure float)
 
 RETURNS TABLE(linear_feature_id bigint, geom geometry)
 AS
@@ -16,18 +16,18 @@ WITH local_segment AS
 (SELECT
   s.linear_feature_id,
   s.blue_line_key,
-  meas as downstream_route_measure,
+  downstream_route_measure as measure,
   s.wscode_ltree,
   s.localcode_ltree,
   ST_Force2D(
     ST_Multi(
-      ST_LocateBetween(s.geom, meas, s.upstream_route_measure)
+      ST_LocateBetween(s.geom, downstream_route_measure, s.upstream_route_measure)
     )
   ) AS geom,
-  ST_LocateAlong(s.geom, meas) as geom_pt
+  ST_LocateAlong(s.geom, downstream_route_measure) as geom_pt
 FROM whse_basemapping.fwa_stream_networks_sp s
-WHERE s.blue_line_key = blkey
-AND s.downstream_route_measure <= meas
+WHERE s.blue_line_key = blue_line_key
+AND s.downstream_route_measure <= downstream_route_measure
 ORDER BY s.downstream_route_measure desc
 LIMIT 1),
 
@@ -63,7 +63,7 @@ AND b.localcode_ltree IS NOT NULL
 )
 -- or upstream on the same blueline
 OR (b.blue_line_key = a.blue_line_key AND
-b.downstream_route_measure > a.downstream_route_measure)
+b.downstream_route_measure > a.measure)
 
 -- within same first order watershed as input location
 INNER JOIN wsd
