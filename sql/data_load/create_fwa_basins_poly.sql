@@ -13,7 +13,7 @@ CREATE TABLE whse_basemapping.fwa_basins_poly
  basin_name text,
  wscode_ltree ltree,
  localcode_ltree ltree,
- geom Geometry);
+ geom Geometry(Polygon, 3005));
 
 INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
