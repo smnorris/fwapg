@@ -3,7 +3,7 @@
 -- watershed
 
 
-CREATE OR REPLACE FUNCTION FWA_WatershedHex(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedHex(blkey integer, meas float)
 
 RETURNS TABLE(hex_id bigint, geom geometry)
 AS
@@ -17,15 +17,11 @@ WITH pt AS (
     s.linear_feature_id,
     s.blue_line_key,
     s.downstream_route_measure,
-    ST_LineInterpolatePoint(
-      (ST_Dump(s.geom)).geom,
-      ROUND(CAST((meas - s.downstream_route_measure) / s.length_metre AS NUMERIC), 5)
-          ) as geom
+    ST_LocateAlong(s.geom, meas) AS geom
   FROM whse_basemapping.fwa_stream_networks_sp s
   WHERE s.blue_line_key = blkey
   AND s.downstream_route_measure <= meas
-  ORDER BY s.downstream_route_measure desc
-  LIMIT 1
+  AND upstream_route_measure > meas
 ),
 
 -- find the watershed in which the point falls
@@ -54,3 +50,5 @@ INNER JOIN wsd b ON ST_Intersects(a.geom, b.geom);
 
 $$
 language 'sql' immutable parallel safe;
+
+COMMENT ON FUNCTION postgisftw.fwa_watershedhex IS 'Provided a location as blue_line_key and downstream_route_measure, return the 25m hex grid covering first order watershed in which location lies';

@@ -24,6 +24,9 @@ psql -f sql/data_load/create_indexes.sql
 psql -f sql/data_load/add_watershed_codes_wsg.sql
 
 # load FWA functions
+# As some of these live in postgisftw schema (for access via pg_featureserv),
+# we add this schema to default search path for this database.
+psql -c "ALTER database "$PGDATABASE" SET search_path TO "$PGUSER", public, topology, sde, postgisftw;"
 psql -f sql/functions/FWA_Upstream.sql
 psql -f sql/functions/FWA_Downstream.sql
 psql -f sql/functions/FWA_LengthDownstream.sql

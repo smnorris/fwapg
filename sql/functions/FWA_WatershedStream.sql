@@ -1,7 +1,10 @@
--- Given a point as a blue_line_key, route_measure, return
--- stream segments upstream in the same first order watershed
+-- Provided a location as blue_line_key and downstream_route_measure,
+-- return upstream stream segments within the same first order watershed
 
-CREATE OR REPLACE FUNCTION FWA_WatershedStream(blkey integer, meas float)
+-- Typical use is for generating pour 'points' (linear pour points as per
+-- https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/watershed.htm)
+
+CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedStream(blkey integer, meas float)
 
 RETURNS TABLE(linear_feature_id bigint, geom geometry)
 AS
@@ -69,5 +72,4 @@ ON ST_Within(b.geom, ST_Buffer(wsd.geom, .1))
 $$
 language 'sql' immutable parallel safe;
 
-
-
+COMMENT ON FUNCTION postgisftw.fwa_watershedstream IS 'Provided a location as blue_line_key and downstream_route_measure, return upstream stream segments within the same first order watershed';
