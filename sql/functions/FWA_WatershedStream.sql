@@ -12,24 +12,33 @@ AS
 
 $$
 
+declare
+   blkey    integer := blue_line_key;
+   meas     float := downstream_route_measure;
+
+
+begin
+
+return query
+
 WITH local_segment AS
 (SELECT
   s.linear_feature_id,
   s.blue_line_key,
-  downstream_route_measure as measure,
+  meas as measure,
   s.wscode_ltree,
   s.localcode_ltree,
   ST_Force2D(
     ST_Multi(
-      ST_LocateBetween(s.geom, downstream_route_measure, s.upstream_route_measure)
+      ST_LocateBetween(s.geom, meas, s.upstream_route_measure)
     )
   ) AS geom,
-  ST_LocateAlong(s.geom, downstream_route_measure) as geom_pt
+  ST_LocateAlong(s.geom, meas) as geom_pt
 FROM whse_basemapping.fwa_stream_networks_sp s
-WHERE s.blue_line_key = blue_line_key
-AND s.downstream_route_measure <= downstream_route_measure
-ORDER BY s.downstream_route_measure desc
-LIMIT 1),
+WHERE s.blue_line_key = blkey
+AND s.downstream_route_measure <= meas
+AND s.upstream_route_measure > meas
+),
 
 wsd AS
 (SELECT
@@ -40,9 +49,9 @@ wsd AS
 )
 
 SELECT
-  linear_feature_id,
-  ST_Multi(geom) as geom
-from local_segment
+  ls.linear_feature_id,
+  ST_Multi(ls.geom) as geom
+from local_segment ls
 UNION ALL
 SELECT
   b.linear_feature_id,
@@ -67,9 +76,11 @@ b.downstream_route_measure > a.measure)
 
 -- within same first order watershed as input location
 INNER JOIN wsd
-ON ST_Within(b.geom, ST_Buffer(wsd.geom, .1))
+ON ST_Within(b.geom, ST_Buffer(wsd.geom, .1));
+
+end
 
 $$
-language 'sql' immutable parallel safe;
+language 'plpgsql' immutable parallel safe;
 
-COMMENT ON FUNCTION postgisftw.fwa_watershedstream IS 'Provided a location as blue_line_key and downstream_route_measure, return upstream stream segments within the same first order watershed';
+COMMENT ON FUNCTION postgisftw.fwa_watershedstream IS 'Provided a location as blue_line_key and downstream_route_measure, return stream segments upstream, within the same first order watershed.';

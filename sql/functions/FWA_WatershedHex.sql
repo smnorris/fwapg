@@ -11,17 +11,26 @@ AS
 
 $$
 
+declare
+   blkey    integer := blue_line_key;
+   meas     float := downstream_route_measure;
+
+
+begin
+
+return query
+
 -- interpolate point on stream
 WITH pt AS (
   SELECT
     s.linear_feature_id,
     s.blue_line_key,
     s.downstream_route_measure,
-    ST_LocateAlong(s.geom, downstream_route_measure) AS geom
+    ST_LocateAlong(s.geom, meas) AS geom
   FROM whse_basemapping.fwa_stream_networks_sp s
-  WHERE s.blue_line_key = blue_line_key
-  AND s.downstream_route_measure <= downstream_route_measure
-  AND s.upstream_route_measure > downstream_route_measure
+  WHERE s.blue_line_key = blkey
+  AND s.downstream_route_measure <= meas
+  AND s.upstream_route_measure > meas
 ),
 
 -- find the watershed in which the point falls
@@ -34,7 +43,7 @@ wsd AS (
 
 -- generate a hex grid (with 25m sides) covering the entire watershed polygon
 hex AS (
-  SELECT ST_ForceRHR(ST_Force2D(CDB_HexagonGrid(ST_Buffer(geom, 25), 25))) as geom
+  SELECT ST_ForceRHR(ST_Force2D(CDB_HexagonGrid(ST_Buffer(wsd.geom, 25), 25))) as geom
   FROM wsd
 )
 
@@ -48,7 +57,8 @@ SELECT
  FROM hex a
 INNER JOIN wsd b ON ST_Intersects(a.geom, b.geom);
 
+end
 $$
-language 'sql' immutable parallel safe;
+language 'plpgsql' immutable parallel safe;
 
-COMMENT ON FUNCTION postgisftw.fwa_watershedhex IS 'Provided a location as blue_line_key and downstream_route_measure, return the 25m hex grid covering first order watershed in which location lies';
+COMMENT ON FUNCTION postgisftw.fwa_watershedhex IS 'Provided a location as blue_line_key and downstream_route_measure, return a 25m hexagon grid covering first order watershed in which location lies';

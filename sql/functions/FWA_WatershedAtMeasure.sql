@@ -31,6 +31,11 @@ AS
 
 
 $$
+
+declare
+   blkey    integer := blue_line_key;
+   meas     float := downstream_route_measure;
+
 begin
     if (
         -- is provided location in a lake or a non-canal reservoir?
@@ -44,8 +49,8 @@ begin
         ON s.waterbody_key = wb.waterbody_key
         LEFT OUTER JOIN whse_basemapping.fwa_manmade_waterbodies_poly r
         ON s.waterbody_key = r.waterbody_key
-        WHERE s.blue_line_key = blue_line_key
-        AND s.downstream_route_measure <= downstream_route_measure
+        WHERE s.blue_line_key = blkey
+        AND s.downstream_route_measure <= meas
         ORDER BY s.downstream_route_measure desc
         LIMIT 1
     ) is false
@@ -57,7 +62,7 @@ begin
           s.linear_feature_id,
           s.blue_line_key,
           s.downstream_route_measure as measure_str,
-          downstream_route_measure as measure_pt,
+          meas as measure_pt,
           s.wscode_ltree,
           s.localcode_ltree,
           s.waterbody_key,
@@ -76,8 +81,8 @@ begin
         ON s.waterbody_key = wb.waterbody_key
         LEFT OUTER JOIN whse_basemapping.fwa_manmade_waterbodies_poly r
         ON s.waterbody_key = r.waterbody_key
-        WHERE s.blue_line_key = blue_line_key
-        AND s.downstream_route_measure <= downstream_route_measure
+        WHERE s.blue_line_key = blkey
+        AND s.downstream_route_measure <= meas
         ORDER BY s.downstream_route_measure desc
         LIMIT 1),
 
@@ -258,7 +263,7 @@ begin
         cut AS
         (SELECT
           slice.wsds, ST_Force2D(slice.geom) as geom
-        FROM FWA_SliceWatershedAtPoint(blue_line_key, downstream_route_measure) slice
+        FROM FWA_SliceWatershedAtPoint(blkey, meas) slice
         ),
 
         -- aggregate the result and dump to singlepart
@@ -304,7 +309,7 @@ begin
 
           -- add watersheds outside of BC
           SELECT exbc.geom
-          FROM fwa_watershedexbc(blue_line_key, downstream_route_measure) exbc
+          FROM fwa_watershedexbc(blkey, meas) exbc
 
         ) as to_agg,
         method m
@@ -337,8 +342,8 @@ begin
         (SELECT
           s.waterbody_key
         FROM whse_basemapping.fwa_stream_networks_sp s
-        WHERE s.blue_line_key = blue_line_key
-        AND s.downstream_route_measure <= downstream_route_measure
+        WHERE s.blue_line_key = blkey
+        AND s.downstream_route_measure <= meas
         ORDER BY s.downstream_route_measure desc
         LIMIT 1),
 
@@ -356,7 +361,7 @@ begin
         ON s.waterbody_key = src_pt.waterbody_key
         WHERE s.fwa_watershed_code NOT LIKE '999-999999%'
         AND s.localcode_ltree IS NOT NULL
-        ORDER BY waterbody_key, wscode_ltree, localcode_ltree, downstream_route_measure
+        ORDER BY s.waterbody_key, s.wscode_ltree, s.localcode_ltree, s.downstream_route_measure
         ),
 
         wsdbasins AS
@@ -428,7 +433,7 @@ begin
           0 as watershed_feature_id,
           ex.geom
          FROM outlet s,
-         fwa_watershedexbc(blue_line_key, downstream_route_measure) ex
+         fwa_watershedexbc(blkey, meas) ex
         )
         -- aggregate the result
         SELECT
@@ -461,4 +466,4 @@ end
 $$
 language 'plpgsql' immutable strict parallel safe;
 
-COMMENT ON FUNCTION postgisftw.fwa_watershedatmeasure IS 'Provided a location as blue_line_key and downstream_route_measure, return the watershed boundary upstream of that location';
+COMMENT ON FUNCTION postgisftw.fwa_watershedatmeasure IS 'Provided a location as blue_line_key and downstream_route_measure, return the entire watershed boundary upstream of the location';
