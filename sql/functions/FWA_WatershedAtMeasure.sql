@@ -236,7 +236,7 @@ begin
           ON b.watershed_group_id = g.watershed_group_id
           WHERE c.assmnt_watershed_id IS NULL
           AND d.watershed_group_id IS NULL
-          AND g.basin_id IS NULL
+          AND g.basin_id NOT IN (SELECT basin_id FROM wsdbasins)
           -- don't include the fundamental watershed(s) in which the point lies
           AND b.watershed_feature_id NOT IN (SELECT unnest(wsds) from wsd)
 
@@ -423,7 +423,7 @@ begin
           ON b.watershed_group_id = g.watershed_group_id
           WHERE c.assmnt_watershed_id IS NULL
           AND d.watershed_group_id IS NULL
-          AND g.basin_id IS NULL
+          AND g.basin_id NOT IN (SELECT basin_id FROM wsdbasins)
         ),
 
         exbc AS
