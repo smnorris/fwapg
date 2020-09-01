@@ -3,7 +3,7 @@
 -- but - Based on FWA linework and includes additional smaller units.
 -- Currently only used to speed generation of watershed polygons
 -- todo: add more basins for greater utility
--- Fraser, Columbia, Peace, Liard, Fraser, Nass, Skeena, Stikine,
+-- Fraser, Columbia, Peace, Liard, Nass, Skeena, Stikine,
 -- plus any other grouping of >2-3 watershed groups that is a complete (within BC) watershed
 
 DROP TABLE IF EXISTS whse_basemapping.fwa_basins_poly;
@@ -127,6 +127,25 @@ WHERE
  localcode_ltree <@ '300.625474'::ltree
 GROUP BY basin_name, '300.625474'::ltree, '300.625474'::ltree;
 
+INSERT INTO whse_basemapping.fwa_basins_poly
+(basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
+SELECT
+ 8 as basin_id,
+ 'Beatton River' as basin_name,
+'200.948755.796981'::ltree as wscode_ltree,
+'200.948755.796981'::ltree as localcode_ltree,
+ ST_Union(geom) as geom
+FROM whse_basemapping.fwa_watershed_groups_poly
+WHERE
+ wscode_ltree <@ '200.948755.796981' AND
+ localcode_ltree <@ '200.948755.796981'::ltree
+GROUP BY basin_name, '200.948755.796981'::ltree, '200.948755.796981'::ltree;
+
+
+
+
+
+
 -- we want to be able to quickly relate these back to watershed groups
 ALTER TABLE whse_basemapping.fwa_watershed_groups_poly ADD COLUMN IF NOT EXISTS basin_id integer;
 
@@ -177,5 +196,12 @@ UPDATE whse_basemapping.fwa_watershed_groups_poly
 SET basin_id = 8
 WHERE wscode_ltree <@ '300.625474'::ltree AND
 localcode_ltree <@ '300.625474'::ltree;
+
+-- beatton
+UPDATE fwa_watershed_groups_poly
+SET basin_id = 9
+WHERE wscode_ltree <@ '200.948755.796981'::ltree AND
+localcode_ltree <@ '200.948755.796981'::ltree;
+
 
 CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (geom);

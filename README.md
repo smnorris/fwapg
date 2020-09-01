@@ -13,7 +13,7 @@ BC FWA data can be requested [via WFS](https://openmaps.gov.bc.ca/geo/pub/wfs?se
 
 These work well but using WFS has some specific limitations for Provincal analysis:
 
-- requesting many features is surprisingly stable (with a good internet connection), but for larger FWA tables it can be error prone (there are 4.9M individual stream segments, or 1M for the Fraser system alone)
+- requesting tens of thousands of features is generally stable (with a good internet connection), but for larger tables it can be error prone (there are 4.9M individual stream segments, or 1M for the Fraser system alone)
 - non-spatial FWA lookup tables required for some workloads (such as [linking fish observations to waterbodies](https://github.com/smnorris/bcfishobs)) are not published via WFS ([example](https://catalogue.data.gov.bc.ca/dataset/freshwater-atlas-20k-50k-stream-cross-reference-table))
 - querying WFS via `CQL_FILTER` expressions works well but the WFS does not specifically support upstream/downstream relationships built into the FWA data
 
@@ -23,6 +23,8 @@ As a zipped geopackage, the FWA is under 7G - by downloading this and loading to
 - add additional convenience tables (named streams, optimized watershed groups)
 - populate the empty `gradient` column in the streams table for ongoing use
 - connect directly to the database to run various ad-hoc queries using spatial SQL and tools that support the PostgreSQL / PostGIS ecosystem
+- serve FWA data direct from the db as MVT (vector tiles) via [`pg_tileserv`](https://github.com/CrunchyData/pg_tileserv) (example [MVT service](https://www.hillcrestgeo.ca/pg_tileserv))
+- serve FWA data features and linear referencing functions via API provided by [`pg_featureserv`](https://github.com/CrunchyData/pg_featureserv) (example [API](https://www.hillcrestgeo.ca/fwapg) and [R client](https://github.com/poissonconsulting/fwapgr/))
 
 
 ## Requirements
@@ -36,13 +38,7 @@ As a zipped geopackage, the FWA is under 7G - by downloading this and loading to
 
 The repository is a collection of sql files and shell scripts - no installation is required.
 
-Download and unzip the [latest release](https://github.com/smnorris/fwapg/releases):
-
-Eg:
-
-    wget https://github.com/smnorris/fwapg/archive/v0.0.1.zip -O v0.0.1.zip
-    unzip v0.0.1.zip
-    cd fwapg-0.0.1
+Download and unzip the [latest release](https://github.com/smnorris/fwapg/releases)
 
 Or get the latest:
 
