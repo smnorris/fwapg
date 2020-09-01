@@ -19,10 +19,13 @@ These work well but using WFS has some specific limitations for Provincal analys
 
 As a zipped geopackage, the FWA is under 7G - by downloading this and loading to Postgres, we can:
 
-- leverage the upstream/downstream materialized paths built into FWA watershed codes by using the Postgres [`ltree` module](https://www.postgresql.org/docs/current/ltree.html)
+- leverage the upstream/downstream materialized paths built into FWA watershed codes by using the Postgres [`ltree` module](https://www.postgresql.org/docs/current/ltree.html) - this enables speedy upstream/downstream queries for answering questions like:
+    + [*how many salmon observations are there upstream of a point?*](https://github.com/smnorris/bcfishobs)
+    + [*what is the area of a watershed above a stream guage?*](https://github.com/smnorris/bcbasins)
+    + [*how many km of potential fish habitat are upstream of a failed culvert?*](https://github.com/smnorris/pscis)
 - add additional convenience tables (named streams, optimized watershed groups)
 - populate the empty `gradient` column in the streams table for ongoing use
-- connect directly to the database to run various ad-hoc queries using spatial SQL and tools that support the PostgreSQL / PostGIS ecosystem
+- connect directly to the database for mapping and to run various ad-hoc queries using spatial SQL and tools that support the PostgreSQL / PostGIS ecosystem
 - serve FWA data direct from the db as MVT (vector tiles) via [`pg_tileserv`](https://github.com/CrunchyData/pg_tileserv) (example [MVT service](https://www.hillcrestgeo.ca/pg_tileserv))
 - serve FWA data features and linear referencing functions via API provided by [`pg_featureserv`](https://github.com/CrunchyData/pg_featureserv) (example [API](https://www.hillcrestgeo.ca/fwapg) and [R client](https://github.com/poissonconsulting/fwapgr/))
 
