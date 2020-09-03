@@ -1,5 +1,6 @@
--- Find the n (default of 1) nearest streams within specified distance (default of 5km) of provided point
--- PLUS,
+-- Provided a point (as x,y coordinates and EPSG code), return the point indexed (snapped) to nearest stream(s) within specified tolerance (m)'
+
+-- Returns:
 -- - linear_feature_id        - primary key of the matched stream
 -- - gnis_name                - name of the nearest stream
 -- - wscode_ltree             - FWA Watershed Code of the nearest stream (as ltree)
@@ -8,9 +9,9 @@
 -- - downstream_route_measure - the measure at closest point of stream to the provided point
 -- - distance_to_stream       - the distance from point to closest point on the stream
 -- - bc_ind                   - indicates if the stream is in BC
--- - geom                     - geometry of closest point on the stream
+-- - geom                     - point geometry of closest location on the stream (at downstream_route_measure)
 
-CREATE OR REPLACE FUNCTION postgisftw.FWA_NearestStream(x float, y float, srid integer, tolerance float DEFAULT 5000, num_features integer DEFAULT 1)
+CREATE OR REPLACE FUNCTION postgisftw.FWA_IndexPoint(x float, y float, srid integer, tolerance float DEFAULT 5000, num_features integer DEFAULT 1)
 
 RETURNS TABLE
     (
@@ -111,4 +112,4 @@ LIMIT num_features
 $$
 language 'sql' immutable parallel safe;
 
-COMMENT ON FUNCTION postgisftw.fwa_neareststream IS 'Provided a point (x, y, srid), return stream(s) nearest to the point within specified tolerance';
+COMMENT ON FUNCTION postgisftw.fwa_IndexPoint IS 'Provided a point (as x,y coordinates and EPSG code), return the point indexed (snapped) to nearest stream(s) within specified tolerance (m)';
