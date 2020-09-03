@@ -29,6 +29,6 @@ AND s.upstream_route_measure > v_measure;
 END
 
 $$
-LANGUAGE 'PLPGSQL' IMMUTABLE STRICT PARALLEL SAFE;
+LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
 COMMENT ON FUNCTION postgisftw.fwa_IndexPoint IS 'Return a point on the stream network based on the location provided by blue_line_key and downstream_route_measure'
