@@ -20,7 +20,7 @@ SELECT
   (ST_Dump(ST_LocateAlong(s.geom, v_measure))).geom as geom
 FROM whse_basemapping.fwa_stream_networks_sp AS s
 WHERE s.blue_line_key = v_blkey
-AND s.downstream_route_measure < v_measure
+AND s.downstream_route_measure <= v_measure
 AND s.upstream_route_measure > v_measure
 INTO v_geom;
 

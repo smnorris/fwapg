@@ -61,7 +61,7 @@ SELECT
 FROM whse_basemapping.fwa_stream_networks_sp AS s
 INNER JOIN intervals i
 ON s.blue_line_key = i.blue_line_key
-AND s.downstream_route_measure < i.downstream_route_measure
+AND s.downstream_route_measure <= i.downstream_route_measure
 AND s.upstream_route_measure > i.downstream_route_measure
 )
 
