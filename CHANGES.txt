@@ -1,10 +1,14 @@
 Changes
 =======
 
+All issue numbers are relative to https://github.com/smnorris/fwapg/issues
+
 0.0.2 (2020-09- )
 ------------------
-- add functions to be exposed in API
+- add functions for publication via pg_featureserv:
     + postgisftw.FWA_IndexPoint
+    + postgisftw.FWA_LocateAlong (#25)
+    + postgisftw.FWA_LocateAlongInterval (#25)
     + postgisftw.FWA_WatershedAtMeasure
     + postgisftw.FWA_WatershedHex
     + postgisftw.FWA_WatershedStream
