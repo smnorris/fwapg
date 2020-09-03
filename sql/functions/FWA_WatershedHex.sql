@@ -12,8 +12,8 @@ AS
 $$
 
 declare
-   blkey    integer := blue_line_key;
-   meas     float := downstream_route_measure;
+   v_blkey    integer := blue_line_key;
+   v_measure  float := downstream_route_measure;
 
 
 begin
@@ -26,11 +26,11 @@ WITH pt AS (
     s.linear_feature_id,
     s.blue_line_key,
     s.downstream_route_measure,
-    ST_LocateAlong(s.geom, meas) AS geom
+    ST_LocateAlong(s.geom, v_measure) AS geom
   FROM whse_basemapping.fwa_stream_networks_sp s
-  WHERE s.blue_line_key = blkey
-  AND s.downstream_route_measure <= meas
-  AND s.upstream_route_measure > meas
+  WHERE s.blue_line_key = v_blkey
+  AND s.downstream_route_measure <= v_measure
+  AND s.upstream_route_measure > v_measure
 ),
 
 -- find the watershed in which the point falls

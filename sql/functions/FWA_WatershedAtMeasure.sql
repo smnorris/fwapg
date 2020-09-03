@@ -33,8 +33,8 @@ AS
 $$
 
 declare
-   blkey    integer := blue_line_key;
-   meas     float := downstream_route_measure;
+   v_blkey    integer := blue_line_key;
+   v_measure  float := downstream_route_measure;
 
 begin
     if (
@@ -49,8 +49,8 @@ begin
         ON s.waterbody_key = wb.waterbody_key
         LEFT OUTER JOIN whse_basemapping.fwa_manmade_waterbodies_poly r
         ON s.waterbody_key = r.waterbody_key
-        WHERE s.blue_line_key = blkey
-        AND s.downstream_route_measure <= meas
+        WHERE s.blue_line_key = v_blkey
+        AND s.downstream_route_measure <= v_measure
         ORDER BY s.downstream_route_measure desc
         LIMIT 1
     ) is false
@@ -62,7 +62,7 @@ begin
           s.linear_feature_id,
           s.blue_line_key,
           s.downstream_route_measure as measure_str,
-          meas as measure_pt,
+          v_measure as measure_pt,
           s.wscode_ltree,
           s.localcode_ltree,
           s.waterbody_key,
@@ -72,7 +72,7 @@ begin
            ELSE wb.waterbody_type
           END as waterbody_type,
           (ST_Dump(
-             ST_LocateAlong(s.geom, meas)
+             ST_LocateAlong(s.geom, v_measure)
              )
           ).geom::geometry(PointZM, 3005) AS geom_pt,
           s.geom as geom_str
@@ -81,8 +81,8 @@ begin
         ON s.waterbody_key = wb.waterbody_key
         LEFT OUTER JOIN whse_basemapping.fwa_manmade_waterbodies_poly r
         ON s.waterbody_key = r.waterbody_key
-        WHERE s.blue_line_key = blkey
-        AND s.downstream_route_measure <= meas
+        WHERE s.blue_line_key = v_blkey
+        AND s.downstream_route_measure <= v_measure
         ORDER BY s.downstream_route_measure desc
         LIMIT 1),
 
@@ -263,7 +263,7 @@ begin
         cut AS
         (SELECT
           slice.wsds, ST_Force2D(slice.geom) as geom
-        FROM FWA_SliceWatershedAtPoint(blkey, meas) slice
+        FROM FWA_SliceWatershedAtPoint(v_blkey, v_measure) slice
         ),
 
         -- aggregate the result and dump to singlepart
@@ -309,7 +309,7 @@ begin
 
           -- add watersheds outside of BC
           SELECT exbc.geom
-          FROM fwa_watershedexbc(blkey, meas) exbc
+          FROM fwa_watershedexbc(v_blkey, v_measure) exbc
 
         ) as to_agg,
         method m
@@ -342,7 +342,7 @@ begin
         (SELECT
           s.waterbody_key
         FROM whse_basemapping.fwa_stream_networks_sp s
-        WHERE s.blue_line_key = blkey
+        WHERE s.blue_line_key = v_blkey
         AND s.downstream_route_measure <= meas
         ORDER BY s.downstream_route_measure desc
         LIMIT 1),
@@ -433,7 +433,7 @@ begin
           0 as watershed_feature_id,
           ex.geom
          FROM outlet s,
-         fwa_watershedexbc(blkey, meas) ex
+         fwa_watershedexbc(v_blkey, v_measure) ex
         )
         -- aggregate the result
         SELECT

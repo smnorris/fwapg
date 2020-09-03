@@ -13,8 +13,8 @@ AS
 $$
 
 declare
-   blkey    integer := blue_line_key;
-   meas     float := downstream_route_measure;
+   v_blkey    integer := blue_line_key;
+   v_measure  float := downstream_route_measure;
 
 
 begin
@@ -25,19 +25,19 @@ WITH local_segment AS
 (SELECT
   s.linear_feature_id,
   s.blue_line_key,
-  meas as measure,
+  v_measure as measure,
   s.wscode_ltree,
   s.localcode_ltree,
   ST_Force2D(
     ST_Multi(
-      ST_LocateBetween(s.geom, meas, s.upstream_route_measure)
+      ST_LocateBetween(s.geom, v_measure, s.upstream_route_measure)
     )
   ) AS geom,
-  ST_LocateAlong(s.geom, meas) as geom_pt
+  ST_LocateAlong(s.geom, v_measure) as geom_pt
 FROM whse_basemapping.fwa_stream_networks_sp s
-WHERE s.blue_line_key = blkey
-AND s.downstream_route_measure <= meas
-AND s.upstream_route_measure > meas
+WHERE s.blue_line_key = v_blkey
+AND s.downstream_route_measure <= v_measure
+AND s.upstream_route_measure > v_measure
 ),
 
 wsd AS
