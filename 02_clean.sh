@@ -39,6 +39,8 @@ psql -f sql/functions/FWA_WatershedExBC.sql
 psql -f sql/functions/FWA_WatershedAtMeasure.sql
 psql -f sql/functions/FWA_WatershedHex.sql
 psql -f sql/functions/FWA_WatershedStream.sql
+psql -f sql/functions/FWA_LocateAlong.sql
+psql -f sql/functions/FWA_LocateAlongInterval.sql
 
 # apply some data fixes that have not yet made it into the warehouse
 psql -f sql/data_fixes/fixes.sql
