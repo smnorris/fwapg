@@ -110,3 +110,15 @@ SELECT fwa_upstream(
     '930.079351'::ltree,
     2
 ) is false as result;
+
+-- distributaries aren't upstream
+SELECT fwa_upstream(
+  356327050,
+  10,
+  '100.458399.191116.121473'::ltree,
+  '100.458399.191116.121473'::ltree,
+  356000802,
+  12,
+  '100.458399.191116.121473'::ltree,
+  '100.458399.191116.121473'::ltree
+) is false as result;
