@@ -30,7 +30,7 @@ SELECT FWA_Upstream(
 ) = false as result;
 
 -- watershed code and meausre comparisons
-SELECT fwa_upstream(
+SELECT FWA_Upstream(
     354133645,
     100,
     '930.079351'::ltree,
@@ -41,7 +41,7 @@ SELECT fwa_upstream(
     '930.079351'::ltree
 ) as result;
 
-SELECT fwa_upstream(
+SELECT FWA_Upstream(
     354133645,
     100,
     '930.079351'::ltree,
@@ -52,7 +52,7 @@ SELECT fwa_upstream(
     '930.079351'::ltree
 ) = false as result;
 
-SELECT fwa_upstream(
+SELECT FWA_Upstream(
     354133645,
     100,
     '930.079351'::ltree,
@@ -63,7 +63,7 @@ SELECT fwa_upstream(
     '930.079351.500724'::ltree
 ) as result;
 
-SELECT fwa_upstream(
+SELECT FWA_Upstream(
     354133645,
     100,
     '930.079351'::ltree,
@@ -74,7 +74,7 @@ SELECT fwa_upstream(
     '930.079351.500724'::ltree
 ) as result;
 
-SELECT fwa_upstream(
+SELECT FWA_Upstream(
     354133645,
     1900,
     '930.079351'::ltree,
@@ -86,7 +86,7 @@ SELECT fwa_upstream(
 ) is false as result;
 
 -- tolerance is less than distance between measures, result is true
-SELECT fwa_upstream(
+SELECT FWA_Upstream(
     354133645,
     100,
     '930.079351'::ltree,
@@ -99,7 +99,7 @@ SELECT fwa_upstream(
 ) as result;
 
 -- tolerance is greater than distance between measures, result is false
-SELECT fwa_upstream(
+SELECT FWA_Upstream(
     354133645,
     100,
     '930.079351'::ltree,
@@ -112,7 +112,7 @@ SELECT fwa_upstream(
 ) is false as result;
 
 -- distributaries aren't upstream
-SELECT fwa_upstream(
+SELECT FWA_Upstream(
   356327050,
   10,
   '100.458399.191116.121473'::ltree,
