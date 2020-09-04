@@ -102,26 +102,33 @@ CREATE OR REPLACE FUNCTION fwa_upstream(
 RETURNS boolean AS $$
 
 SELECT
-      -- conditional upstream join logic, based on whether watershed codes are equivalent
-    CASE
-      -- first, consider simple case - streams where wscode and localcode are equivalent
-      -- this is all segments with equivalent bluelinekey and a larger measure
-      -- (plus fudge factor)
-       WHEN
-          -- b is a child of a, always
-          wscode_ltree_b <@ wscode_ltree_a AND
+  -- b is a child of a, always
+  wscode_ltree_b <@ wscode_ltree_a AND
 
+    -- conditional upstream join logic, based on whether watershed codes are equivalent
+  (
+    CASE
+       -- first, consider simple case - streams where wscode and localcode are equivalent
+       WHEN
           wscode_ltree_a = localcode_ltree_a AND
           (
-              (blue_line_key_b <> blue_line_key_a OR
+              -- on the same stream with equivalent blkeys and a larger measure
+              -- (plus fudge factor)
+              (blue_line_key_b = blue_line_key_a AND
                downstream_route_measure_a + tolerance < downstream_route_measure_b)
+
+              -- Additionaly, include segments with equivalent codes but different blkeys.
+              -- This is rare (n=762), covering the case of selecting upstream of a
+              -- distributary. I'm not sure why they are included, results don't look good
+              -- so commenting out for now.
+
+              -- OR
+              --(blue_line_key_b != blue_line_key_a)
           )
        THEN TRUE
+
        -- next, the more complicated case - where wscode and localcode are not equal
-       WHEN
-          -- b is a child of a, always
-          wscode_ltree_b <@ wscode_ltree_a AND
-          wscode_ltree_a != localcode_ltree_a AND
+       WHEN wscode_ltree_a != localcode_ltree_a AND
           (
            -- higher up the blue line (plus fudge factor)
               (blue_line_key_b = blue_line_key_a AND
@@ -138,7 +145,6 @@ SELECT
         THEN TRUE
         ELSE FALSE
     END
-
+  )
 $$
 language 'sql' immutable parallel safe;
-
