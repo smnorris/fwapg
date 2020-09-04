@@ -111,7 +111,7 @@ SELECT FWA_Upstream(
     2
 ) is false as result;
 
--- distributaries aren't upstream
+-- We say that distributary branches are not upstream of one another.
 SELECT FWA_Upstream(
   356327050,
   10,
@@ -122,3 +122,15 @@ SELECT FWA_Upstream(
   '100.458399.191116.121473'::ltree,
   '100.458399.191116.121473'::ltree
 ) is false as result;
+
+/*
+-- Find features with equivalent codes and non equal blkeys provincially
+-- that would be similar to above test. (I'm presuming these are all distributaries)
+SELECT * FROM
+(SELECT wscode_ltree, localcode_ltree, count(distinct blue_line_key) as n
+FROM whse_basemapping.fwa_stream_networks_sp
+WHERE wscode_ltree = localcode_ltree
+GROUP BY wscode_ltree, localcode_ltree
+ORDER BY wscode_ltree, localcode_ltree)
+as f WHERE n > 1;
+*/
