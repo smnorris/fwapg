@@ -84,8 +84,8 @@ Note that all data are licensed under the [Open Government Licence – British C
 
 Download the zipped FWA data file - an extract that includes most FWA tables in a single file - then unzip and run the load script. For example:
 
-    wget https://geobc.s3-us-west-2.amazonaws.com/FWA_20200629.zip
-    unzip FWA_20200629.zip
+    wget https://geobc.s3-us-west-2.amazonaws.com/FWA_20201007.zip
+    unzip FWA_20201007.zip
     ./01_load.sh
 
 ### Clean / optimize
