@@ -57,7 +57,7 @@ begin
 
     then return query
         -- non-lake/reservoir based watershed
-        WITH ref_point AS
+        WITH ref_point_a AS
         (SELECT
           s.linear_feature_id,
           s.blue_line_key,
@@ -86,7 +86,22 @@ begin
         ORDER BY s.downstream_route_measure desc
         LIMIT 1),
 
-        -- find watershed polygons within 5m of the point
+        -- also get the waterbody key of the watershed in which the point lies,
+        -- *it is not always equivalent to the wbkey of the stream*
+        -- (for example, on a river that is mapped as a stretch of pools and lines,
+        -- the lines will also have a waterbody key value)
+        ref_point AS (
+        SELECT
+          r.*,
+          p.waterbody_key as waterbody_key_poly
+        FROM ref_point_a r
+        INNER JOIN whse_basemapping.fwa_watersheds_poly p
+        ON ST_Intersects(r.geom_pt, p.geom)
+        LIMIT 1 -- just in case the point intersects 2 polys (although hopefully this doesn't occur,
+                -- this merely avoids the issue rather than choosing the best match)
+        ),
+
+        -- find all watershed polygons within 5m of the point
         wsd AS
         (SELECT
           array_agg(watershed_feature_id) as wsds,
@@ -156,7 +171,9 @@ begin
 -- ** todo: a notable exception would be at the mouth of a river, where
 -- r.measure_str=0 and b.measure <=50. This isn't a major issue as cutting
 -- is computationally cheap and seems to work fine, even if point is at 0**
-            WHEN r.waterbody_type IN ('C', 'R') THEN 'CUT'
+            WHEN r.waterbody_type IN ('C', 'R')
+            AND r.waterbody_key_poly != 0 -- make sure point is actually in a waterbody when trying to cut
+            THEN 'CUT'
 -- if the location of interest is < 100m from the top of the local stream,
 -- just drop the watershed in which it falls
             WHEN (r.waterbody_key IS NULL OR r.waterbody_type = 'W') AND t.measure <= 100 THEN 'DROP'
@@ -166,7 +183,7 @@ begin
 -- otherwise, if location is on on single line stream and outside of above
 -- endpoint tolerances, note that the watershed should be post-processed
 -- with the DEM
-            WHEN (r.waterbody_key is NULL OR r.waterbody_type = 'W')
+            WHEN (r.waterbody_key is NULL OR r.waterbody_type = 'W' OR r.waterbody_key_poly = 0)
               AND t.measure > 100
               AND b.measure > 50 THEN 'DEM'
             END as refine_method
