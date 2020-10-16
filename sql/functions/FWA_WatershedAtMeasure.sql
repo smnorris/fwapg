@@ -308,8 +308,11 @@ begin
         UNION ALL
 
           -- add watersheds outside of BC
-          SELECT exbc.geom
+          SELECT
+            ST_Safe_Difference(exbc.geom, bc.geom) as geom
           FROM fwa_watershedexbc(v_blkey, v_measure) exbc
+          INNER JOIN whse_basemapping.fwa_bc_boundary bc
+          ON ST_Intersects(exbc.geom, bc.geom)
 
         ) as to_agg,
         method m
