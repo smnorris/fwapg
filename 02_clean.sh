@@ -16,6 +16,7 @@ psql -f sql/data_load/create_fwa_waterbodies.sql
 psql -f sql/data_load/create_fwa_watershed_groups_subdivided.sql
 psql -f sql/data_load/create_fwa_basins_poly.sql
 psql -f sql/data_load/create_fwa_approx_borders.sql
+psql -f sql/data_load/create_fwa_bcboundary.sql
 
 # index for speed, this takes some time
 psql -f sql/data_load/create_indexes.sql
