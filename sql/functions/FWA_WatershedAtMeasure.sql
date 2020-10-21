@@ -363,7 +363,7 @@ begin
           s.waterbody_key
         FROM whse_basemapping.fwa_stream_networks_sp s
         WHERE s.blue_line_key = v_blkey
-        AND s.downstream_route_measure <= meas
+        AND s.downstream_route_measure <= v_measure
         ORDER BY s.downstream_route_measure desc
         LIMIT 1),
 
