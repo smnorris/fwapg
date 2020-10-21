@@ -130,7 +130,7 @@ GROUP BY basin_name, '300.625474'::ltree, '300.625474'::ltree;
 INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
- 8 as basin_id,
+ 9 as basin_id,
  'Beatton River' as basin_name,
 '200.948755.796981'::ltree as wscode_ltree,
 '200.948755.796981'::ltree as localcode_ltree,
