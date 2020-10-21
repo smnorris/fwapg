@@ -3,8 +3,13 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.0.2 (2020-09- )
+0.0.3 (2020-10-21)
 ------------------
+- allow scripts to run correctly by fixing order and adding schema name to new fwa_bcboundary table
+
+0.0.2 (2020-10-19)
+------------------
+- use latest FWA export (2020-10-07) with several data fixes (#26, #6)
 - add functions for publication via pg_featureserv:
     + postgisftw.FWA_IndexPoint
     + postgisftw.FWA_LocateAlong (#25)
