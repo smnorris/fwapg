@@ -453,7 +453,7 @@ begin
           0 as watershed_feature_id,
           ex.geom
          FROM outlet s,
-         fwa_watershedexbc(v_blkey, v_measure) ex
+         fwa_watershedexbc(s.blue_line_key, s.downstream_route_measure) ex
         )
         -- aggregate the result
         SELECT

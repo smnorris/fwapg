@@ -3,6 +3,12 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.1.1 (2020-10-21)
+------------------
+- fix duplicate id in bcbasins table creation
+- FWA_WatershedAtMeasure - fix variable reference bug
+- FWA_WatershedAtMeasure - for points in lake/reservoir, select exbc above outlet of lake not source pt
+
 0.1.0 (2020-10-21)
 ------------------
 - allow scripts to run correctly by fixing order and adding schema name to new fwa_bcboundary table
