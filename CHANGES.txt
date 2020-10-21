@@ -3,7 +3,7 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.0.3 (2020-10-21)
+0.1.0 (2020-10-21)
 ------------------
 - allow scripts to run correctly by fixing order and adding schema name to new fwa_bcboundary table
 
