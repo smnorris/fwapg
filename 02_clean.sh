@@ -10,6 +10,9 @@ psql -f sql/functions/CDB_MakeHexagon.sql
 # add m / ltree / gradient / upstream route measuer values to streams
 psql -f sql/data_load/create_fwa_stream_networks_sp.sql
 
+# add watershed codes to watershed groups table
+psql -f sql/data_load/add_watershed_codes_wsg.sql
+
 # create additional convenience tables
 psql -f sql/data_load/create_fwa_named_streams.sql
 psql -f sql/data_load/create_fwa_waterbodies.sql
@@ -21,8 +24,7 @@ psql -f sql/data_load/create_fwa_bcboundary.sql
 # index for speed, this takes some time
 psql -f sql/data_load/create_indexes.sql
 
-# add watershed codes to watershed groups table
-psql -f sql/data_load/add_watershed_codes_wsg.sql
+
 
 # load FWA functions
 # As some of these live in postgisftw schema (for access via pg_featureserv),

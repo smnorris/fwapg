@@ -198,7 +198,7 @@ WHERE wscode_ltree <@ '300.625474'::ltree AND
 localcode_ltree <@ '300.625474'::ltree;
 
 -- beatton
-UPDATE fwa_watershed_groups_poly
+UPDATE whse_basemapping.fwa_watershed_groups_poly
 SET basin_id = 9
 WHERE wscode_ltree <@ '200.948755.796981'::ltree AND
 localcode_ltree <@ '200.948755.796981'::ltree;
