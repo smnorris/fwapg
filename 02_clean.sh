@@ -29,6 +29,7 @@ psql -f sql/data_load/create_indexes.sql
 # load FWA functions
 # As some of these live in postgisftw schema (for access via pg_featureserv),
 # we add this schema to default search path for this database.
+psql -c "CREATE SCHEMA IF NOT EXISTS postgisftw"
 psql -c "ALTER database "$PGDATABASE" SET search_path TO "$PGUSER", public, topology, sde, postgisftw;"
 psql -f sql/functions/FWA_IndexPoint.sql
 psql -f sql/functions/FWA_Upstream.sql
