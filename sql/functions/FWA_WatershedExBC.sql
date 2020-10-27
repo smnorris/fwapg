@@ -1,7 +1,7 @@
 -- fwa_watershedexbc.sql
 
 -- Given a point as (blue_line_key, downstream_route_measure),
--- return upstream watershed boundary for portion of watershed outside of BC.
+-- return upstream watershed boundary including HUC12 / hydrosheds data outside of BC.
 
 CREATE OR REPLACE FUNCTION FWA_WatershedExBC(blkey integer, meas float)
 
@@ -20,14 +20,18 @@ FROM FWA_UpstreamBorderCrossings(blkey, meas)
 LIMIT 1 into borderval;
 
 -- For streams along the 49th parallel, we can generate all streams that
--- cross the border and find HUC12s upstream
+-- cross the border and find HUC12s upstream.
+-- Note - could we just use the same approach as for hydrosheds,
+-- find the huc12 that the point is in and return everything upstream?
+-- This would be far simpler, I'm not sure if there is a specific reason for generating these upstream border points
 IF borderval = 'USA_49' THEN return query
 
     WITH RECURSIVE walkup (huc12, geom) AS
     (
         SELECT huc12, wsd.geom
         FROM usgs.wbdhu12 wsd
-        INNER JOIN (select * FROM FWA_UpstreamBorderCrossings(blkey, meas)) as pt
+        --INNER JOIN (select * FROM FWA_UpstreamBorderCrossings(blkey, meas)) as pt
+        INNER JOIN (select * FROM FWA_LocateAlong(blkey, meas)) as pt
         ON ST_Intersects(wsd.geom, pt.geom)
 
         UNION ALL
