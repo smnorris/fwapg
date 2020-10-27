@@ -19,6 +19,8 @@ SELECT border
 FROM FWA_UpstreamBorderCrossings(blkey, meas)
 LIMIT 1 into borderval;
 
+-- For streams along the 49th parallel, we can generate all streams that
+-- cross the border and find HUC12s upstream
 IF borderval = 'USA_49' THEN return query
 
     WITH RECURSIVE walkup (huc12, geom) AS
@@ -42,11 +44,13 @@ IF borderval = 'USA_49' THEN return query
 
 ELSE return query
 
+-- For streams in other areas we use hydrosheds, which has far less detail
+-- Find the hydroshed at the point of interest and work upstream from there
     WITH RECURSIVE walkup (hybas_id, geom) AS
         (
             SELECT hybas_id, wsd.geom
             FROM hydrosheds.hybas_lev12_v1c wsd
-            INNER JOIN (select * FROM FWA_UpstreamBorderCrossings(blkey, meas)) as pt
+            INNER JOIN (select * FROM FWA_LocateAlong(blkey, meas)) as pt
             ON ST_Intersects(wsd.geom, pt.geom)
 
             UNION ALL
