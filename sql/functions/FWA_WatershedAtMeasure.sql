@@ -446,15 +446,20 @@ begin
           AND g.basin_id NOT IN (SELECT basin_id FROM wsdbasins)
         ),
 
+        -- for watersheds that exten outside of BC, add portion outside of BC
         exbc AS
-        (SELECT
-          s.wscode_ltree,
-          s.localcode_ltree,
-          0 as watershed_feature_id,
-          ex.geom
-         FROM outlet s,
-         fwa_watershedexbc(s.blue_line_key, s.downstream_route_measure) ex
+        (
+          SELECT
+            s.wscode_ltree,
+            s.localcode_ltree,
+            0 as watershed_feature_id,
+            ST_Safe_Difference(exbc.geom, bc.geom) as geom
+          FROM outlet s,
+          fwa_watershedexbc(s.blue_line_key, s.downstream_route_measure) exbc
+          INNER JOIN whse_basemapping.fwa_bc_boundary bc
+          ON ST_Intersects(exbc.geom, bc.geom)
         )
+
         -- aggregate the result
         SELECT
             o.wscode_ltree::text,
