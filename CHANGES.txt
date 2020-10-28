@@ -3,8 +3,10 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.1.1 (2020-10-21)
+0.1.1 (2020-10-28)
 ------------------
+- FWA_WatershedExBC - simplify transborder queries (#34)
+- FWA_WatershedAtMeasure - for points in lake/reservoir, clip exbc result by bc boundary (#35)
 - fix duplicate id in bcbasins table creation
 - FWA_WatershedAtMeasure - fix variable reference bug
 - FWA_WatershedAtMeasure - for points in lake/reservoir, select exbc above outlet of lake not source pt
