@@ -85,6 +85,33 @@ SELECT FWA_Upstream(
     '930.079351.500724'::ltree
 ) is false as result;
 
+-- try comparing a line to a point, the point is upstream of the line
+-- if its measure is > than the lines upstream measure
+SELECT FWA_Upstream(
+    354133645,
+    100,
+    150,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    354133645,
+    155,
+    '930.079351'::ltree,
+    '930.079351'::ltree
+) as result;
+
+-- a point on a line is not upstream of that line
+SELECT FWA_Upstream(
+    354133645,
+    100,
+    110,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    354133645,
+    105,
+    '930.079351'::ltree,
+    '930.079351'::ltree
+) is false as result;
+
 -- tolerance is less than distance between measures, result is true
 SELECT FWA_Upstream(
     354133645,
