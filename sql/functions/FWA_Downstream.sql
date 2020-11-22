@@ -27,6 +27,7 @@ eg
 2. FWA_Downstream(
      integer blue_line_key_a,
      double precision downstream_route_measure_a,
+     double precision upstream_route_measure_a,
      ltree wscode_ltree_a,
      ltree localcode_ltree_a,
      integer blue_line_key_b,
@@ -41,6 +42,19 @@ Provided two sets of blue_line_key, downtream_route_measure and watershed codes,
 (a and b), compare the values and return TRUE when the values for b are downstream
 of the values for a. The tolerance specifies how much to nudge measure a downstream
 in order to avoid returning records in b with equivalent bluelinekey/measure.
+
+3. FWA_Downstream(
+     integer blue_line_key_a,
+     double precision downstream_route_measure_a,
+     ltree wscode_ltree_a,
+     ltree localcode_ltree_a,
+     integer blue_line_key_b,
+     double precision downstream_route_measure_b,
+     ltree wscode_ltree_b,
+     ltree localcode_ltree_b,
+     double precision tolerance
+   )
+Same as 2, but for comparing points only.
 */
 
 CREATE OR REPLACE FUNCTION FWA_Downstream(
@@ -79,6 +93,7 @@ language 'sql' immutable parallel safe;
 CREATE OR REPLACE FUNCTION fwa_downstream(
     blue_line_key_a integer,
     downstream_route_measure_a double precision,
+    upstream_route_measure_a double precision,
     wscode_ltree_a ltree,
     localcode_ltree_a ltree,
     blue_line_key_b integer,
@@ -94,7 +109,7 @@ SELECT
 -- criteria 1 - on the same stream and lower down (minus tolerance/fudge factor)
     (
         blue_line_key_a = blue_line_key_b AND
-        downstream_route_measure_a - tolerance > downstream_route_measure_b
+        downstream_route_measure_b < upstream_route_measure_a - tolerance
     )
 OR
 -- criteria 2 - watershed code a is a descendant of watershed code b
@@ -121,6 +136,37 @@ OR
               AND localcode_ltree_a > localcode_ltree_b)
             )
     )
+
+$$
+language 'sql' immutable parallel safe;
+
+CREATE OR REPLACE FUNCTION FWA_Downstream(
+    blue_line_key_a integer,
+    downstream_route_measure_a double precision,
+    wscode_ltree_a ltree,
+    localcode_ltree_a ltree,
+    blue_line_key_b integer,
+    downstream_route_measure_b double precision,
+    wscode_ltree_b ltree,
+    localcode_ltree_b ltree,
+    tolerance double precision default .001
+)
+
+RETURNS boolean AS $$
+
+SELECT
+  FWA_Downstream(
+    blue_line_key_a,
+    downstream_route_measure_a,
+    downstream_route_measure_a,
+    wscode_ltree_a,
+    localcode_ltree_a,
+    blue_line_key_b,
+    downstream_route_measure_b,
+    wscode_ltree_b,
+    localcode_ltree_b,
+    tolerance
+  )
 
 $$
 language 'sql' immutable parallel safe;
