@@ -122,6 +122,7 @@ SELECT FWA_Upstream(
     101,
     '930.079351'::ltree,
     '930.079351'::ltree,
+    False,
     .1
 ) as result;
 
@@ -135,6 +136,7 @@ SELECT FWA_Upstream(
     101,
     '930.079351'::ltree,
     '930.079351'::ltree,
+    False,
     2
 ) is false as result;
 
@@ -161,3 +163,64 @@ GROUP BY wscode_ltree, localcode_ltree
 ORDER BY wscode_ltree, localcode_ltree)
 as f WHERE n > 1;
 */
+
+-- test point b at midpoint of line a
+SELECT FWA_Upstream(
+    354133645,
+    10,
+    20,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    354133645,
+    15,
+    '930.079351'::ltree,
+    '930.079351'::ltree
+) is false as result;
+
+-- test point b at midpoint of line a, where returning equivalents
+-- note that while these features are in the same spot, we don't consider them
+-- equivalent
+SELECT FWA_Upstream(
+    354133645,
+    10,
+    20,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    354133645,
+    15,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    True,
+    .01
+) is false as result;
+
+-- up the equivalence tolerance, this returns true
+-- for the same features
+SELECT FWA_Upstream(
+    354133645,
+    10,
+    20,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    354133645,
+    15,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    True,
+    5
+) as result;
+
+-- a more typical equivalency
+SELECT FWA_Upstream(
+    354133645,
+    10,
+    20,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    354133645,
+    20.05,
+    '930.079351'::ltree,
+    '930.079351'::ltree,
+    True,
+    .1
+) as result;
