@@ -224,3 +224,10 @@ SELECT FWA_Upstream(
     True,
     .1
 ) as result;
+
+-- finally, not a true false test, but make sure that indexes are being used
+-- This should be extremely fast (~14ms with indexes, 54s without)
+SELECT
+  ROUND((SUM(ST_Length(geom)) / 1000)::numeric, 2) as sooke_basin
+FROM whse_basemapping.fwa_stream_networks_sp a
+WHERE FWA_Upstream(354153927, 10, '930.023810'::ltree, '930.023810'::ltree, a.blue_line_key, a.downstream_route_measure, a.wscode_ltree, a.localcode_ltree);

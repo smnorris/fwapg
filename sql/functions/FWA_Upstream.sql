@@ -120,13 +120,7 @@ CREATE OR REPLACE FUNCTION FWA_Upstream(
 
 RETURNS boolean AS $$
 
-DECLARE v_result boolean;
-
-BEGIN
-
-  IF include_equivalents IS FALSE
-
-  THEN SELECT
+SELECT
   -- b is a child of a, always
   wscode_ltree_b <@ wscode_ltree_a AND
 
@@ -134,7 +128,7 @@ BEGIN
   (
     CASE
        -- first, consider simple case - streams where wscode and localcode are equivalent
-       WHEN
+       WHEN include_equivalents IS False AND
           wscode_ltree_a = localcode_ltree_a AND
           (
               -- upstream tribs
@@ -145,15 +139,22 @@ BEGIN
                downstream_route_measure_b >= upstream_route_measure_a + tolerance)
           )
           -- exclude distributaries with equivalent codes and different blkeys
-          AND NOT (wscode_ltree_a = wscode_ltree_b AND localcode_ltree_a = localcode_ltree_b AND blue_line_key_a != blue_line_key_b)
+          AND NOT (
+            wscode_ltree_a = wscode_ltree_b AND
+            localcode_ltree_a = localcode_ltree_b AND
+            blue_line_key_a != blue_line_key_b
+          )
        THEN TRUE
 
        -- next, the more complicated case - where wscode and localcode are not equal
-       WHEN wscode_ltree_a != localcode_ltree_a AND
+       WHEN include_equivalents IS False AND
+         wscode_ltree_a != localcode_ltree_a AND
           (
               -- on same blueline
               (blue_line_key_b = blue_line_key_a AND
-               downstream_route_measure_b >= upstream_route_measure_a + tolerance)
+               (downstream_route_measure_b > upstream_route_measure_a OR
+                abs(upstream_route_measure_a - downstream_route_measure_b) <= tolerance)
+              )
               OR
               -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
               (wscode_ltree_b > localcode_ltree_a AND
@@ -164,22 +165,10 @@ BEGIN
                AND localcode_ltree_b > localcode_ltree_a)
           )
         THEN TRUE
-        ELSE FALSE
-    END
-  ) INTO v_result;
-  RETURN v_result;
 
-  ELSE
-
-  SELECT
-  -- b is a child of a, always
-  wscode_ltree_b <@ wscode_ltree_a AND
-
-    -- conditional upstream join logic, based on whether watershed codes are equivalent
-  (
-    CASE
-       -- first, consider simple case - streams where wscode and localcode are equivalent
-       WHEN
+      -- run the same process, but return true for locations at the same measure
+      -- (within tolerance)
+       WHEN include_equivalents IS True AND
           wscode_ltree_a = localcode_ltree_a AND
           (
               -- upstream tribs
@@ -192,15 +181,20 @@ BEGIN
               )
           )
           -- exclude distributaries with equivalent codes and different blkeys
-          AND NOT (wscode_ltree_a = wscode_ltree_b AND localcode_ltree_a = localcode_ltree_b AND blue_line_key_a != blue_line_key_b)
+          AND NOT (
+            wscode_ltree_a = wscode_ltree_b AND
+            localcode_ltree_a = localcode_ltree_b AND
+            blue_line_key_a != blue_line_key_b
+          )
        THEN TRUE
 
        -- next, the more complicated case - where wscode and localcode are not equal
-       WHEN wscode_ltree_a != localcode_ltree_a AND
+       WHEN include_equivalents IS True AND
+         wscode_ltree_a != localcode_ltree_a AND
           (
               -- on same blueline
               (blue_line_key_b = blue_line_key_a AND
-               downstream_route_measure_b > upstream_route_measure_a + tolerance)
+               downstream_route_measure_b >= upstream_route_measure_a + tolerance)
               OR
               -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
               (wscode_ltree_b > localcode_ltree_a AND
@@ -211,15 +205,12 @@ BEGIN
                AND localcode_ltree_b > localcode_ltree_a)
           )
         THEN TRUE
+
         ELSE FALSE
     END
-  ) INTO v_result;
-  RETURN v_result;
-
-  END IF;
-END
+  )
 $$
-language 'plpgsql' immutable parallel safe;
+language 'sql' immutable parallel safe;
 
 
 -- shortcut for points, dnstr measure a and upstr measure are equivalent
