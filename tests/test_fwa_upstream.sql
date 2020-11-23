@@ -225,6 +225,21 @@ SELECT FWA_Upstream(
     .1
 ) as result;
 
+-- make sure we get the same result where wscode!=localcode
+SELECT
+FWA_Upstream(
+    356533255,
+    803.1354507440105,
+    '300.602565.854327.993941.902282.132363.875881.788793'::ltree,
+    '300.602565.854327.993941.902282.132363.875881.788793.103982'::ltree,
+    356533255,
+    803.136,
+    '300.602565.854327.993941.902282.132363.875881.788793'::ltree,
+    '300.602565.854327.993941.902282.132363.875881.788793.103982'::ltree,
+    True,
+    .1
+) as result;
+
 -- finally, not a true false test, but make sure that indexes are being used
 -- This should be extremely fast (~14ms with indexes, 54s without)
 SELECT

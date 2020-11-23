@@ -150,11 +150,9 @@ SELECT
        WHEN include_equivalents IS False AND
          wscode_ltree_a != localcode_ltree_a AND
           (
-              -- on same blueline
+                -- on same blue line
               (blue_line_key_b = blue_line_key_a AND
-               (downstream_route_measure_b > upstream_route_measure_a OR
-                abs(upstream_route_measure_a - downstream_route_measure_b) <= tolerance)
-              )
+               downstream_route_measure_b >= upstream_route_measure_a + tolerance)
               OR
               -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
               (wscode_ltree_b > localcode_ltree_a AND
@@ -192,9 +190,11 @@ SELECT
        WHEN include_equivalents IS True AND
          wscode_ltree_a != localcode_ltree_a AND
           (
-              -- on same blueline
+              -- on same blue line
               (blue_line_key_b = blue_line_key_a AND
-               downstream_route_measure_b >= upstream_route_measure_a + tolerance)
+               (downstream_route_measure_b > upstream_route_measure_a OR
+                abs(upstream_route_measure_a - downstream_route_measure_b) <= tolerance)
+              )
               OR
               -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
               (wscode_ltree_b > localcode_ltree_a AND
