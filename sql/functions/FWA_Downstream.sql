@@ -90,7 +90,7 @@ language 'sql' immutable parallel safe;
 
 
 
-CREATE OR REPLACE FUNCTION fwa_downstream(
+CREATE OR REPLACE FUNCTION FWA_Downstream(
     blue_line_key_a integer,
     downstream_route_measure_a double precision,
     upstream_route_measure_a double precision,
@@ -100,45 +100,99 @@ CREATE OR REPLACE FUNCTION fwa_downstream(
     downstream_route_measure_b double precision,
     wscode_ltree_b ltree,
     localcode_ltree_b ltree,
+    include_equivalents boolean default False,
     tolerance double precision default .001
 )
 
 RETURNS boolean AS $$
 
-SELECT
--- criteria 1 - on the same stream and lower down (minus tolerance/fudge factor)
-    (
-        blue_line_key_a = blue_line_key_b AND
-        downstream_route_measure_b < upstream_route_measure_a - tolerance
-    )
-OR
--- criteria 2 - watershed code a is a descendant of watershed code b
-    (
-        wscode_ltree_a <@ wscode_ltree_b AND
+DECLARE v_result boolean;
+
+BEGIN
+  IF include_equivalents IS FALSE
+
+  THEN SELECT
+
+    -- criteria 1 - on the same stream and lower down (minus tolerance/fudge factor)
+    -- the tolerance value nudges record a down slightly so that equivalent/near equivalent features are not returned
         (
-            -- AND localcode of a is bigger than localcode of b at given level
-            subltree(
-                localcode_ltree_a,
-                0,
-                nlevel(localcode_ltree_b)
-            ) > localcode_ltree_b
-            -- OR, where b's wscode and localcode are equivalent
-            -- (ie, at bottom segment of a given watershed code)
-            -- but excluding records in a and b on same stream
-            OR (
-                wscode_ltree_b = localcode_ltree_b AND
-                wscode_ltree_a != wscode_ltree_b
-            )
-            -- OR any missed side channels on the same watershed code
-            OR (
-                wscode_ltree_a = wscode_ltree_b AND
-                blue_line_key_a != blue_line_key_b
-              AND localcode_ltree_a > localcode_ltree_b)
-            )
+            blue_line_key_a = blue_line_key_b AND
+            downstream_route_measure_b <= downstream_route_measure_a - tolerance
+
+        )
+    OR
+    -- criteria 2 - watershed code a is a descendant of watershed code b
+        (
+            wscode_ltree_a <@ wscode_ltree_b AND
+            (
+                -- AND localcode of a is bigger than localcode of b at given level
+                subltree(
+                    localcode_ltree_a,
+                    0,
+                    nlevel(localcode_ltree_b)
+                ) > localcode_ltree_b
+                -- OR, where b's wscode and localcode are equivalent
+                -- (ie, at bottom segment of a given watershed code)
+                -- but excluding records in a and b on same stream
+                OR (
+                    wscode_ltree_b = localcode_ltree_b AND
+                    wscode_ltree_a != wscode_ltree_b
+                )
+                -- OR any missed side channels on the same watershed code
+                OR (
+                    wscode_ltree_a = wscode_ltree_b AND
+                    blue_line_key_a != blue_line_key_b
+                  AND localcode_ltree_a > localcode_ltree_b)
+                )
+        ) INTO v_result;
+  RETURN v_result;
+
+  ELSE
+
+  SELECT
+
+
+    -- criteria 1 - on the same stream and lower down or in the same position
+    -- the tolerance value is how far the features can be apart to be considered at the same spot
+    (
+      blue_line_key_a = blue_line_key_b AND
+      (
+        downstream_route_measure_b < downstream_route_measure_a  OR
+        abs(downstream_route_measure_a - downstream_route_measure_b) <= tolerance
+      )
     )
 
+    OR
+    -- criteria 2 - watershed code a is a descendant of watershed code b
+        (
+            wscode_ltree_a <@ wscode_ltree_b AND
+            (
+                -- AND localcode of a is bigger than localcode of b at given level
+                subltree(
+                    localcode_ltree_a,
+                    0,
+                    nlevel(localcode_ltree_b)
+                ) > localcode_ltree_b
+                -- OR, where b's wscode and localcode are equivalent
+                -- (ie, at bottom segment of a given watershed code)
+                -- but excluding records in a and b on same stream
+                OR (
+                    wscode_ltree_b = localcode_ltree_b AND
+                    wscode_ltree_a != wscode_ltree_b
+                )
+                -- OR any missed side channels on the same watershed code
+                OR (
+                    wscode_ltree_a = wscode_ltree_b AND
+                    blue_line_key_a != blue_line_key_b
+                  AND localcode_ltree_a > localcode_ltree_b)
+                )
+        ) INTO v_result;
+  RETURN v_result;
+  END IF;
+END
+
 $$
-language 'sql' immutable parallel safe;
+language 'plpgsql' immutable parallel safe;
 
 CREATE OR REPLACE FUNCTION FWA_Downstream(
     blue_line_key_a integer,
@@ -149,6 +203,7 @@ CREATE OR REPLACE FUNCTION FWA_Downstream(
     downstream_route_measure_b double precision,
     wscode_ltree_b ltree,
     localcode_ltree_b ltree,
+    include_equivalents boolean default False,
     tolerance double precision default .001
 )
 
@@ -165,6 +220,7 @@ SELECT
     downstream_route_measure_b,
     wscode_ltree_b,
     localcode_ltree_b,
+    include_equivalents,
     tolerance
   )
 
