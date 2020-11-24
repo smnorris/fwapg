@@ -106,13 +106,11 @@ CREATE OR REPLACE FUNCTION FWA_Downstream(
 
 RETURNS boolean AS $$
 
-DECLARE v_result boolean;
 
-BEGIN
-  IF include_equivalents IS FALSE
 
-  THEN SELECT
+  SELECT
 
+    CASE WHEN include_equivalents IS False THEN
     -- criteria 1 - on the same stream and lower down (minus tolerance/fudge factor)
     -- the tolerance value nudges record a down slightly so that equivalent/near equivalent features are not returned
         (
@@ -144,13 +142,9 @@ BEGIN
                     blue_line_key_a != blue_line_key_b
                   AND localcode_ltree_a > localcode_ltree_b)
                 )
-        ) INTO v_result;
-  RETURN v_result;
+        )
 
   ELSE
-
-  SELECT
-
 
     -- criteria 1 - on the same stream and lower down or in the same position
     -- the tolerance value is how far the features can be apart to be considered at the same spot
@@ -186,13 +180,12 @@ BEGIN
                     blue_line_key_a != blue_line_key_b
                   AND localcode_ltree_a > localcode_ltree_b)
                 )
-        ) INTO v_result;
-  RETURN v_result;
-  END IF;
+        )
+
 END
 
 $$
-language 'plpgsql' immutable parallel safe;
+language 'sql' immutable parallel safe;
 
 CREATE OR REPLACE FUNCTION FWA_Downstream(
     blue_line_key_a integer,
