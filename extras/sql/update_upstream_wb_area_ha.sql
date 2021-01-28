@@ -6,4 +6,4 @@ SET
   upstream_wetland_ha = t.upstream_wetland_ha
 FROM whse_basemapping.temp_upstream_wb_area_ha t
 WHERE s.linear_feature_id = t.linear_feature_id
-AND s.watershed_group_code = 'BULK'
+AND s.watershed_group_code = %s
