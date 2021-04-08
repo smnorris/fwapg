@@ -2,7 +2,11 @@
 
 CREATE OR REPLACE FUNCTION postgisftw.hydroshed(x float, y float, srid integer)
 
-RETURNS geometry
+RETURNS table
+
+    (
+        geom geometry
+    )
 
 AS
 
