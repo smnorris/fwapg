@@ -46,5 +46,8 @@ psql -f sql/functions/FWA_WatershedStream.sql
 psql -f sql/functions/FWA_LocateAlong.sql
 psql -f sql/functions/FWA_LocateAlongInterval.sql
 
+# extra function for working with watersheds outside of BC
+psql -f sql/functions/hydroshed.sql
+
 # apply some data fixes that have not yet made it into the warehouse
 psql -f sql/data_fixes/fixes.sql
