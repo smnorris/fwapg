@@ -10,29 +10,34 @@ RETURNS TABLE(src text, geom geometry) AS
 $$
 
 DECLARE
-  borderval varchar;
+  v_borderval varchar;
+  v_geom geometry;
 
 BEGIN
 
 -- find points at which stream flows into BC
 SELECT border
 FROM FWA_UpstreamBorderCrossings(blkey, meas)
-LIMIT 1 into borderval;
+LIMIT 1 into v_borderval;
+
+-- get the point (nesting the FWA_LocateAlong call as subquery in the below recursive query
+-- gets materialized - on pg13 it is *extremely* slow, so just extract the point here)
+SELECT *
+FROM FWA_LocateAlong(blkey, meas)
+LIMIT 1 into v_geom;
 
 -- For streams along the 49th parallel, we can generate all streams that
 -- cross the border and find HUC12s upstream.
 -- Note - could we just use the same approach as for hydrosheds,
 -- find the huc12 that the point is in and return everything upstream?
 -- This would be far simpler, I'm not sure if there is a specific reason for generating these upstream border points
-IF borderval = 'USA_49' THEN return query
+IF v_borderval = 'USA_49' THEN return query
 
     WITH RECURSIVE walkup (huc12, geom) AS
     (
         SELECT huc12, wsd.geom
         FROM usgs.wbdhu12 wsd
-        --INNER JOIN (select * FROM FWA_UpstreamBorderCrossings(blkey, meas)) as pt
-        INNER JOIN (select * FROM FWA_LocateAlong(blkey, meas)) as pt
-        ON ST_Intersects(wsd.geom, pt.geom)
+        WHERE ST_Intersects(wsd.geom, v_geom)
 
         UNION ALL
 
@@ -54,8 +59,7 @@ ELSE return query
         (
             SELECT hybas_id, wsd.geom
             FROM hydrosheds.hybas_lev12_v1c wsd
-            INNER JOIN (select * FROM FWA_LocateAlong(blkey, meas)) as pt
-            ON ST_Intersects(wsd.geom, pt.geom)
+            WHERE ST_Intersects(wsd.geom, v_geom)
 
             UNION ALL
 
