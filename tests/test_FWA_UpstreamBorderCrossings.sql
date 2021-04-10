@@ -2,16 +2,16 @@
 SELECT COUNT(*) = 0 as result FROM FWA_UpstreamBorderCrossings(354153927, 100);
 
 -- tamihi (chilliwack)
-SELECT DISTINCT border = 'USA_49' as result FROM FWA_UpstreamBorderCrossings(356346812, 10800);
+SELECT FWA_UpstreamBorderCrossings(356346812, 10800) = 'USA_49' as result;
 
 -- similkameen
-SELECT DISTINCT border = 'USA_49' as result FROM FWA_UpstreamBorderCrossings(356570170, 116410);
+SELECT FWA_UpstreamBorderCrossings(356570170, 116410) = 'USA_49' as result;
 
 -- kettle
-SELECT DISTINCT border = 'USA_49' as result FROM FWA_UpstreamBorderCrossings(356570045, 141000);
+SELECT FWA_UpstreamBorderCrossings(356570045, 141000) = 'USA_49' as result;
 
 -- pouce coupe
-SELECT DISTINCT border = 'AB_120' as result FROM FWA_UpstreamBorderCrossings(359566563, 99248);
+SELECT FWA_UpstreamBorderCrossings(359566563, 99248) = 'AB_120' as result;
 
 -- liard
-SELECT DISTINCT border = 'YTNWT_60' as result FROM FWA_UpstreamBorderCrossings(359573055, 519779);
+SELECT FWA_UpstreamBorderCrossings(359573055, 519779) = 'YTNWT_60' as result;

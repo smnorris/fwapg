@@ -1,6 +1,8 @@
 CREATE OR REPLACE FUNCTION FWA_UpstreamBorderCrossings(blkey integer, meas float)
 
-RETURNS TABLE(border text, linear_feature_id bigint, geom geometry)  AS $$
+RETURNS text -- TABLE(border text, linear_feature_id bigint, geom geometry)
+
+AS $$
 
 WITH local_segment AS
 (
@@ -39,7 +41,11 @@ upstream AS
                   b.blue_line_key, b.downstream_route_measure, b.wscode_ltree, b.localcode_ltree)
 )
 
-SELECT
+-- Return only one value - we don't currently do any thing different for ab vs yt/nwt so
+-- there is no need to differentiate in event that a point has both borders upstream
+SELECT border FROM
+(
+ SELECT
   b.border,
   s.linear_feature_id,
   CASE
@@ -62,7 +68,7 @@ SELECT
 FROM upstream s
 INNER JOIN whse_basemapping.fwa_approx_borders b
 ON ST_Intersects(s.geom, b.geom)
-
+LIMIT 1) as f;
 
 
 $$
