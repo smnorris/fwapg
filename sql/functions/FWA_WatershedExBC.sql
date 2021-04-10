@@ -12,6 +12,7 @@ $$
 DECLARE
   v_borderval varchar;
   v_geom geometry;
+  v_hybas_id bigint;
 
 BEGIN
 
@@ -25,6 +26,24 @@ LIMIT 1 into v_borderval;
 SELECT *
 FROM FWA_LocateAlong(blkey, meas)
 LIMIT 1 into v_geom;
+
+-- Only run the hydrosheds query if we are in major, non 49th parallel
+-- drainages - Mackenzie/Peace, Taku, Yukon. Plus the Tat.
+-- This will capture most areas of interest (some may still be missed
+-- along the Alaska panhandle)
+SELECT h.hybas_id
+FROM whse_basemapping.fwa_stream_networks_sp s
+INNER JOIN hydrosheds.hybas_lev12_v1c h
+ON ST_Intersects(s.geom, h.geom)
+WHERE s.blue_line_key = blkey
+AND s.downstream_route_measure <= meas
+AND s.upstream_route_measure > meas
+AND (wscode_ltree <@ '200'::ltree OR
+     wscode_ltree <@ '700'::ltree OR
+     wscode_ltree <@ '800'::ltree OR
+     wscode_ltree <@ '960'::ltree OR
+     wscode_ltree <@ '990'::ltree) into v_hybas_id;
+
 
 -- For streams along the 49th parallel, we can generate all streams that
 -- cross the border and find HUC12s upstream.
@@ -51,7 +70,7 @@ IF v_borderval = 'USA_49' THEN return query
       ST_Union(w.geom) as geom
     FROM walkup w;
 
-ELSE return query
+ELSIF v_hybas_id IS NOT NULL THEN return query
 
 -- For streams in other areas we use hydrosheds, which has far less detail
 -- Find the hydroshed at the point of interest and work upstream from there
@@ -72,6 +91,11 @@ ELSE return query
       'hybas_na_lev12_v1c' AS source,
       ST_Union(w.geom) as geom
     FROM walkup w;
+
+ELSE return query
+SELECT
+  NULL::text AS source,
+  NULL::geometry as geom;
 
 END IF;
 
