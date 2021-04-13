@@ -1,5 +1,8 @@
 -- sooke
-SELECT COUNT(*) = 0 as result FROM FWA_UpstreamBorderCrossings(354153927, 100);
+SELECT FWA_UpstreamBorderCrossings(354153927, 100) IS NULL as result;
+
+-- sooke lake - lake outlet precision issues
+SELECT FWA_UpstreamBorderCrossings(354153927, 19912) IS NULL as result;
 
 -- tamihi (chilliwack)
 SELECT FWA_UpstreamBorderCrossings(356346812, 10800) = 'USA_49' as result;

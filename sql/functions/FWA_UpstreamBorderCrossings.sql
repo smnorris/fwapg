@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION FWA_UpstreamBorderCrossings(blkey integer, meas float)
 
-RETURNS text -- TABLE(border text, linear_feature_id bigint, geom geometry)
+RETURNS text
 
 AS $$
 
