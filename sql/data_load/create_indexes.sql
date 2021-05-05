@@ -153,6 +153,7 @@ CREATE INDEX ON whse_basemapping.fwa_linear_boundaries_sp USING GIST (geom);
 
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (edge_type);
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (blue_line_key);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (blue_line_key, downstream_route_measure);
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (watershed_key);
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (waterbody_key);
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (watershed_group_code);
