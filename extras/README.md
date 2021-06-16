@@ -8,6 +8,14 @@ Some workflows require relating `fwa_assessment_watersheds_poly` to stream segme
 
     ./assessment_watersheds_lookups.sh
 
-Rather than calculate upstream area as needed, this draft script will add and populate an `upstream_area_ha` column in the streams table (currently requires [`pgdata`](https://github.com/smnorris/pgdata) and is extremely slow)
+Rather than calculate upstream area as needed, this **DRAFT** script will add and populate an `upstream_area_ha` column in the streams table (currently requires [`pgdata`](https://github.com/smnorris/pgdata) and is extremely slow).
+**NOTE** - output includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
 
     python add_upstream_area_ha.py
+
+
+Calculate upstream area for each fundamental watershed. As with above, this script is not optimized and takes many hours to process (but only has to be run once).
+**NOTE** - output includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
+
+    ./fwa_watersheds_upstream_area.sh
+
