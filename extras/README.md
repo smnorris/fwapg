@@ -1,21 +1,28 @@
 ### Extras
 
+#### Neighbouring jurisdictions
 For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), non-FWA data from neighbouring jurisdictions is required. Download and add to the database with this script:
 
     ./neighbours.sh
 
-Some workflows require relating `fwa_assessment_watersheds_poly` to stream segments and fundamental watersheds. There are no existing links in the attribues so this relation requires a resource intensive spatial query.  Rather than running a spatial query every time, we can create lookups. The lookups are provided at `https://hillcrestgeo.ca/outgoing/public/fwapg/` and loaded by `01_load.sh`, but they can be created from scratch with this script:
+#### Upstream watershed area
 
-    ./assessment_watersheds_lookups.sh
+It is often useful to know how much area is upstream of a given location, and often this needs to be calculated for many locations. Rather than run the calculation each time it is required, we can run the calculation for all fundamental watersheds and cache the result in a lookup table.
 
-Rather than calculate upstream area as needed, this **DRAFT** script will add and populate an `upstream_area_ha` column in the streams table (currently requires [`pgdata`](https://github.com/smnorris/pgdata) and is extremely slow).
-**NOTE** - output includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
-
-    python add_upstream_area_ha.py
-
-
-Calculate upstream area for each fundamental watershed. As with above, this script is not optimized and takes many hours to process (but only has to be run once).
-**NOTE** - output includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
+**NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
 
     ./fwa_watersheds_upstream_area.sh
 
+#### Upstream waterbody area
+
+As with upstream watershed area, it is often useful to know how much lake/reservoir/wetland is upstream of a given location, and often this needs to be calculated for many locations. Rather than run the calculation each time it is required, we can run the calculation for all streams and cache the result in a lookup table. Note that this is different than upstream watershed area above - we use streams as the lookup base rather than watersheds because waterbodies can be nested within fundamental watersheds.
+
+**NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
+
+    ./fwa_waterbodies_upstream_area.sh
+
+#### Assessment watersheds lookup
+
+Some workflows require relating `fwa_assessment_watersheds_poly` to stream segments and fundamental watersheds. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, we can create lookups. The lookups are provided at `https://hillcrestgeo.ca/outgoing/public/fwapg/` and loaded by `01_load.sh`, but they can be created from scratch with this script:
+
+    ./assessment_watersheds_lookups.sh

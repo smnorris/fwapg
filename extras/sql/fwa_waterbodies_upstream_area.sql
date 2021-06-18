@@ -1,4 +1,4 @@
--- insert upstream waterbody areas into temp table
+-- find area of lakes/reservoirs/wetlands upstream of every stream line
 
 WITH upstr_wb AS
 (SELECT DISTINCT
@@ -27,7 +27,7 @@ ON b.waterbody_key = manmade.waterbody_key
 LEFT OUTER JOIN whse_basemapping.fwa_wetlands_poly wetland
 ON b.waterbody_key = wetland.waterbody_key
 WHERE b.waterbody_key IS NOT NULL
-AND a.watershed_group_code = %s
+AND a.watershed_group_code = :'wsg'
 ORDER BY a.linear_feature_id
 )
 
@@ -39,4 +39,3 @@ SELECT
   ROUND((SUM(COALESCE(uwb.area_wetland, 0)) / 10000)::numeric, 2) AS upstream_wetland_ha
 FROM upstr_wb uwb
 GROUP BY linear_feature_id;
-
