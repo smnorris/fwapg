@@ -3,7 +3,8 @@ set -euxo pipefail
 
 # create load table
 psql -c "drop table if exists whse_basemapping.fwa_watersheds_upstream_area"
-psql -c "create table whse_basemapping.fwa_watersheds_upstream_area (watershed_feature_id integer, upstream_area double precision);"
+psql -c "create table whse_basemapping.fwa_watersheds_upstream_area
+        (watershed_feature_id integer, upstream_area double precision);"
 
 # load watershed groups individually
 # (calling this in parallel seems to grind things to a halt)

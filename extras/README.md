@@ -7,7 +7,7 @@ For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), non-FWA 
 
 #### Upstream watershed area
 
-It is often useful to know how much area is upstream of a given location, and often this needs to be calculated for many locations. Rather than run the calculation each time it is required, we can run the calculation for all fundamental watersheds and cache the result in a lookup table.
+It is often useful to know how much area is upstream of a given location, and often this needs to be calculated for many locations. Rather than run the calculation each time it is required, we can run the calculation for all fundamental watersheds and cache the result in a lookup table. This calculates the upstream area for all watersheds, starting at the outlet of each watershed (ie, the area total includes the area of the fundamental watershed that is the starting point).
 
 **NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
 
@@ -26,7 +26,6 @@ join is a bit more complex because there is no easy way to relate streams to wat
     ON w.watershed_feature_id = ua.watershed_feature_id
     WHERE NOT s.wscode_ltree  <@ '999'
     ORDER BY s.linear_feature_id, s.stream_order
-
 
 #### Upstream waterbody area
 
