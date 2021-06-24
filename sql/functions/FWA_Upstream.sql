@@ -76,26 +76,35 @@ SELECT
   -- Simple case, where watershed code and local code of (a) are equivalent.
   -- Return TRUE for all records in (b) that are children of (a)
     (wscode_ltree_a = localcode_ltree_a AND
-    wscode_ltree_b <@ wscode_ltree_a)
+    wscode_ltree_b <@ wscode_ltree_a AND
+    localcode_ltree_b <@ localcode_ltree_a) -- checking local codes is redundant but this ensures invalid local codes are not matched
 
-  -- Where watershed code and local code of (a) are not equivalent, more
-  -- comparison is required - the local codes must be compared:
+  -- Where watershed code and local code of (a) are not equivalent and wsc of b is child of wsc a,
+  -- more comparison is required - the local codes must be compared.
   OR
     (
-      wscode_ltree_a != localcode_ltree_a
-      AND
-      wscode_ltree_b <@ wscode_ltree_a
-      AND
+      wscode_ltree_a != localcode_ltree_a AND
+      wscode_ltree_b <@ wscode_ltree_a AND
       (
-       -- tributaries: watershed code of b > local code of a, and watershed code
-       -- of b is not a child of local code a
+       -- tributaries:
+       --   - wsc of b is bigger than local code of a - the trib is upstream
+       --   - wsc of b is not a child of local code a - exclude trib at the same position
+       --   - local code b is child of wsc a (this should be true anyway but a check handles invalid codes)
           (wscode_ltree_b > localcode_ltree_a AND NOT
-           wscode_ltree_b <@ localcode_ltree_a)
+           wscode_ltree_b <@ localcode_ltree_a AND
+           localcode_ltree_b <@ wscode_ltree_a AND
+           localcode_ltree_b > localcode_ltree_a
+      )
           OR
-       -- side channels, higher up on the same stream:
-       -- b is the same watershed code as a, but with larger local code
-          (wscode_ltree_b = wscode_ltree_a AND
-          localcode_ltree_b >= localcode_ltree_a)
+       -- side channels (higher up on the same stream)
+       --
+       --   - wsc of b is the same as wsc of a
+       --   - local code b is larger than local code of a
+          (
+            wscode_ltree_b = wscode_ltree_a AND
+            localcode_ltree_b >= localcode_ltree_a
+          )
+
       )
   )
 

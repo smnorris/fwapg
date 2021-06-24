@@ -240,6 +240,35 @@ FWA_Upstream(
     .1
 ) as result;
 
+-- Invalid waterdshed codes  (these codes are from LNIC)
+SELECT FWA_Upstream(
+    '100.190442.244975.463869.056312'::ltree,
+    '100.190442.244975.463869.056312.016810'::ltree,
+    '100.190442.244975.463869.056312.082916'::ltree,
+    '100.190442.244975.419137.555036.348507'::ltree
+) is false as result;
+
+SELECT FWA_Upstream(
+    '100.190442.244975.463869'::ltree,
+    '100.190442.244975.463869'::ltree,
+    '100.190442.244975.463869.056312.082916'::ltree,
+    '100.190442.244975.419137.555036.348507'::ltree
+) is false as result;
+
+SELECT FWA_Upstream(
+    '100.190442.244975'::ltree,
+    '100.190442.244975.459452'::ltree,
+    '100.190442.244975.463869.056312.082916'::ltree,
+    '100.190442.244975.419137.555036.348507'::ltree
+) is false as result;
+
+SELECT FWA_Upstream(
+'100.458399.638146.206074.317075'::ltree,
+'100.458399.638146.206074.317075.162004'::ltree,
+'100.458399.638146.206074.317075.272794'::ltree,
+'100.458399.638146.206074.317075.272794'::ltree
+) as result;
+
 -- finally, not a true false test, but make sure that indexes are being used
 -- This should be extremely fast (~14ms with indexes, 54s without)
 SELECT
