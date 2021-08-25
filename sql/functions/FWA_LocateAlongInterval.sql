@@ -93,4 +93,4 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.fwa_IndexPoint IS 'Return a table (index, measure, geom), representing points along a stream between specified locatins at specified interval'
+COMMENT ON FUNCTION postgisftw.FWA_LocateAlongInterval IS 'Return a table (index, measure, geom), representing points along a stream between specified locatins at specified interval'

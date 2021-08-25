@@ -31,4 +31,4 @@ END
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.fwa_IndexPoint IS 'Return a point on the stream network based on the location provided by blue_line_key and downstream_route_measure'
+COMMENT ON FUNCTION postgisftw.FWA_LocateAlong IS 'Return a point on the stream network based on the location provided by blue_line_key and downstream_route_measure'
