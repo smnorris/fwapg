@@ -75,3 +75,5 @@ psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ALTER COLUMN hybas_id TYPE bigin
 psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 psql -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
 
+# create function for working with watersheds outside of BC
+psql -f sql/functions/hydroshed.sql
