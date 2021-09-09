@@ -5,9 +5,11 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
 0.2.0 (2021-09-08)
 ------------------
-- move source file
-- data load via make to better ensure sequence of processing
--
+- do not use watershed groups as pre-aggregations for upstream/downstream queries (#52)
+- add basic documentation of functions and custom tables (#57)
+- use make for processing instead of shell scripts / fix bug in sequence of data load (#54)
+- remove unused/obsolete functions (#48)
+
 
 0.1.1 (2020-10-28)
 ------------------
