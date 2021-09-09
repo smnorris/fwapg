@@ -177,6 +177,9 @@ $(TABLES_VALUEADDED): $(TABLES_SOURCE)
 	psql -c "CREATE SCHEMA IF NOT EXISTS postgisftw"
 	psql -c "ALTER database "$PGDATABASE" SET search_path TO "$PGUSER", public, topology, sde, postgisftw;"
 	psql -f sql/functions/CDB_MakeHexagon.sql
+	psql -f sql/functions/ST_Safe_Repair.sql
+	psql -f sql/functions/ST_Safe_Difference.sql
+	psql -f sql/functions/ST_Safe_Intersection.sql
 	psql -f sql/functions/FWA_IndexPoint.sql
 	psql -f sql/functions/FWA_Upstream.sql
 	psql -f sql/functions/FWA_Downstream.sql
