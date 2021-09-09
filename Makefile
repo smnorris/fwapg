@@ -31,7 +31,7 @@ TABLES_VALUEADDED = fwa_approx_borders \
 TABLES_TEST = fwa_lakes_poly fwa_rivers_poly
 
 # Make all targets
-all: .db $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly .fix_data #.fix_types wdbhu12 hydrosheds .functions
+all: .db $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly #.fix_data .fix_types wdbhu12 hydrosheds .functions
 
 clean_targets:
 	rm -Rf $(TABLES_TEST)

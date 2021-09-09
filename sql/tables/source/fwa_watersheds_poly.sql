@@ -1,10 +1,10 @@
-# add the ltree types
+-- add the ltree types
 ALTER TABLE whse_basemapping.fwa_watersheds_poly ADD COLUMN wscode_ltree ltree
   GENERATED ALWAYS AS (REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.')::ltree) STORED;
 ALTER TABLE whse_basemapping.fwa_watersheds_poly ADD COLUMN localcode_ltree ltree
   GENERATED ALWAYS AS (REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.')::ltree) STORED;
 
-# index
+-- index
 CREATE INDEX ON whse_basemapping.fwa_watersheds_poly (gnis_name_1);
 CREATE INDEX ON whse_basemapping.fwa_watersheds_poly (waterbody_id);
 CREATE INDEX ON whse_basemapping.fwa_watersheds_poly (waterbody_key);
