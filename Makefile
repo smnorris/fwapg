@@ -113,6 +113,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=LINEAR_FEATURE_ID \
 		-lco FID64=TRUE \
+		-preserve_fid \
 		data/FWA.gpkg \
 		FWA_STREAM_NETWORKS_SP
 	$(PSQL_CMD) -f sql/tables/source/fwa_stream_networks_sp.sql
@@ -132,6 +133,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=WATERSHED_FEATURE_ID \
+		-preserve_fid \
 		data/FWA.gpkg \
 		FWA_WATERSHEDS_POLY
 	$(PSQL_CMD) -f sql/tables/source/fwa_watersheds_poly.sql
@@ -151,6 +153,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=LINEAR_FEATURE_ID \
+		-preserve_fid \
 		data/FWA.gpkg \
 		FWA_LINEAR_BOUNDARIES_SP
 	$(PSQL_CMD) -f sql/tables/source/fwa_linear_boundaries_sp.sql
@@ -276,7 +279,7 @@ $(TABLES_VALUEADDED): $(TABLES_SOURCE_TARGETS) \
 
 
 # rather than generating them (slow), download pre-generated lookup tables
-.fwa_assessment_watersheds_lut: db
+.fwa_assessment_watersheds_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip -P data
 	unzip data/fwa_assessment_watersheds_lut.csv.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut
@@ -289,7 +292,7 @@ $(TABLES_VALUEADDED): $(TABLES_SOURCE_TARGETS) \
 	touch $@
 
 
-.fwa_assessment_watersheds_streams_lut: db
+.fwa_assessment_watersheds_streams_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip -P data
 	unzip data/fwa_assessment_watersheds_streams_lut.csv.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut
