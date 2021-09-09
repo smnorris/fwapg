@@ -16,16 +16,17 @@ UPDATE whse_basemapping.fwa_lakes_poly SET geom = ST_Multi(geom);
 ALTER TABLE whse_basemapping.fwa_lakes_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTIPOLYGON, 3005);
 
 UPDATE whse_basemapping.fwa_manmade_waterbodies_poly SET geom = ST_Multi(geom);
-ALTER TABLE whse_basemapping.fwa_manmade_waterbodies_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTILINESTRING, 3005);
+ALTER TABLE whse_basemapping.fwa_manmade_waterbodies_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTIPOLYGON, 3005);
 
 UPDATE whse_basemapping.fwa_named_watersheds_poly SET geom = ST_Multi(geom);
-ALTER TABLE whse_basemapping.fwa_named_watersheds_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTILINESTRING, 3005);
-
-UPDATE whse_basemapping.fwa_watershed_groups_poly SET geom = ST_Multi(geom);
-ALTER TABLE whse_basemapping.fwa_watershed_groups_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTILINESTRING, 3005);
-
-UPDATE whse_basemapping.fwa_wetlands_poly SET geom = ST_Multi(geom);
-ALTER TABLE whse_basemapping.fwa_wetlands_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTILINESTRING, 3005);
+ALTER TABLE whse_basemapping.fwa_named_watersheds_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTIPOLYGON, 3005);
 
 UPDATE whse_basemapping.fwa_rivers_poly SET geom = ST_Multi(geom);
 ALTER TABLE whse_basemapping.fwa_rivers_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTIPOLYGON, 3005);
+
+UPDATE whse_basemapping.fwa_watershed_groups_poly SET geom = ST_Multi(geom);
+ALTER TABLE whse_basemapping.fwa_watershed_groups_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTIPOLYGON, 3005);
+
+UPDATE whse_basemapping.fwa_wetlands_poly SET geom = ST_Multi(geom);
+ALTER TABLE whse_basemapping.fwa_wetlands_poly ALTER COLUMN geom SET DATA TYPE geometry(MULTIPOLYGON, 3005);
+

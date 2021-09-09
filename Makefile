@@ -31,7 +31,7 @@ TABLES_VALUEADDED = fwa_approx_borders \
 TABLES_TEST = fwa_lakes_poly fwa_rivers_poly
 
 # Make all targets
-all: .db $(TABLES_SOURCE) # fwa_stream_networks_sp fwa_watersheds_poly
+all: .db $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly .fix_data .fix_types
 
 clean_targets:
 	rm -Rf $(TABLES_TEST)
@@ -50,14 +50,12 @@ clean_db:
 	psql -c "CREATE SCHEMA IF NOT EXISTS whse_basemapping"
 	touch .db
 
-
 FWA.gpkg:
 	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip
 	unzip FWA.zip
 
-
 $(TABLES_SOURCE): .db FWA.gpkg
-	psql -f sql/tables_source/$@.sql
+	psql -f sql/tables/source/$@.sql
 	ogr2ogr \
 		-f PostgreSQL \
 		-update \
@@ -73,7 +71,7 @@ $(TABLES_SOURCE): .db FWA.gpkg
 # - loaded to temp table
 # - measure added to geom on load to output table
 # - index after load for some speed gains
-fwa_stream_networks_sp: db FWA.gpkg
+fwa_stream_networks_sp: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
@@ -85,15 +83,14 @@ fwa_stream_networks_sp: db FWA.gpkg
 		-lco FID=LINEAR_FEATURE_ID \
 		-lco FID64=TRUE \
 		FWA.gpkg \
-		$@.sql
-	psql -f sql/tables_source/$@.sql
+		$@
+	psql -f sql/tables/source/$@.sql
 	psql -c "DROP TABLE whse_basemapping.fwa_stream_networks_sp_load"
 	touch $@
 
-
 # watersheds
 # - create the spatial index after load for some speed gains
-fwa_watersheds_poly: db FWA.gpkg
+fwa_watersheds_poly: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
@@ -105,7 +102,7 @@ fwa_watersheds_poly: db FWA.gpkg
 		-lco FID=WATERSHED_FEATURE_ID \
 		FWA.gpkg \
 		$@
-	psql -f sql/tables_source/$@.sql
+	psql -f sql/tables/source/$@.sql
 	touch $@
 
 # linear boundaries
@@ -122,15 +119,17 @@ fwa_linear_boundaries_sp: db FWA.gpkg
 		-lco FID=LINEAR_FEATURE_ID \
 		FWA.gpkg \
 		$@
-	psql -f sql/tables_source/$@.sql
+	psql -f sql/tables/source/$@.sql
 	touch $@
 
 # apply fixes
-.fixes: $(TABLES_SOURCE)
+.fix_data: fwa_stream_networks_sp
 	psql -f sql/fixes/data.sql  # known errors that may not yet be fixed in source
-	psql -f sql/fixes/types.sql # QGIS likes the geometry types to be uniform (sources are mixed singlepart/multipart)
 	touch $@
 
+.fix_types: $(TABLES_SOURCE)
+	psql -f sql/fixes/types.sql # QGIS likes the geometry types to be uniform (sources are mixed singlepart/multipart)
+	touch $@
 
 # rather than generating them (slow), download pre-generated lookup tables
 fwa_assessment_watersheds_lut: db
@@ -249,7 +248,6 @@ hydrosheds: .db
 
 	psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	psql -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
-
 
 # load FWA functions
 .functions: $(TABLES_SOURCE) $(TABLES_VALUEADDED) hydrosheds wdbhu12
