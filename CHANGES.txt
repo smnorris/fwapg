@@ -3,6 +3,12 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.2.0 (2021-09-08)
+------------------
+- move source file
+- data load via make to better ensure sequence of processing
+-
+
 0.1.1 (2020-10-28)
 ------------------
 - FWA_WatershedExBC - simplify transborder queries (#34)

@@ -170,12 +170,77 @@ $(TABLES_VALUEADDED): $(TABLES_SOURCE)
 #	touch $@
 #
 
+# USA watershed - USGS HU12 polygons
+wdbhu12: .db
+	wget https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip
+	unzip WBD_National_GDB.zip
+	psql -c 'CREATE SCHEMA IF NOT EXISTS usgs'
+	# ignore the various errors on load....
+	ogr2ogr \
+	  -f PostgreSQL \
+	  "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
+	  -t_srs EPSG:3005 \
+	  -lco SCHEMA=usgs \
+	  -lco GEOMETRY_NAME=geom \
+	  -nln wbdhu12 \
+	  -nlt MULTIPOLYGON \
+	  -dialect SQLITE \
+	  -sql "SELECT * FROM WBDHU12 WHERE states LIKE '%%CN%%' OR states LIKE '%%WA%%' OR states LIKE '%%AK%%' OR states LIKE '%%ID%%' OR states LIKE '%%MT%%'" \
+	  WBD_National_GDB.gdb
+	# index the columns of interest
+	psql -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
+	psql -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
+
+
+# For Yukon, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
+# source shapefiles must be manually downloaded from source, so I've cached them here:
+hydrosheds: .db
+	wget https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip
+	unzip hydrosheds.zip
+
+	psql -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'
+
+	# Write to two tables and combine
+	ogr2ogr \
+	  -f PostgreSQL \
+	  "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
+	  -lco OVERWRITE=YES \
+	  -t_srs EPSG:3005 \
+	  -lco SCHEMA=hydrosheds \
+	  -lco GEOMETRY_NAME=geom \
+	  -nlt PROMOTE_TO_MULTI \
+	  hybas_ar_lev12_v1c/hybas_ar_lev12_v1c.shp
+	ogr2ogr \
+	  -f PostgreSQL \
+	  "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
+	  -t_srs EPSG:3005 \
+	  -lco OVERWRITE=YES \
+	  -lco SCHEMA=hydrosheds \
+	  -lco GEOMETRY_NAME=geom \
+	  -nlt PROMOTE_TO_MULTI \
+	  hybas_na_lev12_v1c/hybas_na_lev12_v1c.shp
+
+	psql -c "ALTER TABLE hydrosheds.hybas_na_lev12_v1c DROP COLUMN ogc_fid"
+	psql -c "ALTER TABLE hydrosheds.hybas_ar_lev12_v1c DROP COLUMN ogc_fid"
+
+	psql -c "ALTER TABLE hydrosheds.hybas_na_lev12_v1c RENAME TO hybas_lev12_v1c"
+	psql -c "INSERT INTO hydrosheds.hybas_lev12_v1c SELECT * FROM hydrosheds.hybas_ar_lev12_v1c"
+	psql -c "DROP TABLE hydrosheds.hybas_ar_lev12_v1c"
+
+	# ogr loads the pk as a numeric, switch to integer
+	psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ALTER COLUMN hybas_id TYPE bigint;"
+
+	psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
+	psql -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
+
+
 # load FWA functions
-.functions: .db
+.functions: $(TABLES_SOURCE) $(TABLES_VALUEADDED) hydrosheds wdbhu12
 	# As some of these live in postgisftw schema (for access via pg_featureserv),
 	# we add this schema to default search path for this database.
 	psql -c "CREATE SCHEMA IF NOT EXISTS postgisftw"
 	psql -c "ALTER database "$PGDATABASE" SET search_path TO "$PGUSER", public, topology, sde, postgisftw;"
+	psql -f sql/functions/hydroshed.sql
 	psql -f sql/functions/CDB_MakeHexagon.sql
 	psql -f sql/functions/ST_Safe_Repair.sql
 	psql -f sql/functions/ST_Safe_Difference.sql

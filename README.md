@@ -32,10 +32,10 @@ As a zipped geopackage, the FWA is under 7G - by downloading this and loading to
 
 ## Requirements
 
-- PostgreSQL (requires >= v12)
-- PostGIS (tested with >=v3.0.1)
+- PostgreSQL (requires >= v12, best with >=13)
+- PostGIS (tested with >= v3.0.1, best with >=3.1)
 - GDAL (tested with >= v2.4.4)
-
+- GNU make
 
 ## Installation
 
@@ -72,27 +72,12 @@ Create the target database if it does not already exist, with a command somethin
 
     psql -c "CREATE DATABASE $PGDATABASE" postgres
 
-Create the required extensions and schema:
 
-    psql -c "CREATE EXTENSION IF NOT EXISTS postgis"
-    psql -c "CREATE EXTENSION IF NOT EXISTS ltree"
-    psql -c "CREATE SCHEMA IF NOT EXISTS whse_basemapping"
-
-### Load
+### Load, optimize, index
 
 Note that all data are licensed under the [Open Government Licence – British Columbia](https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc)
 
-Download the zipped FWA data file - an extract that includes most FWA tables in a single file - then unzip and run the load script. For example:
-
-    wget https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip
-    unzip FWA.zip
-    ./01_load.sh
-
-### Clean / optimize
-
-    ./02_clean.sh
-
-It takes time to build all the indexes but once done you have a Provincial FWA database ready for speedy queries.
+    make
 
 ## Testing
 
