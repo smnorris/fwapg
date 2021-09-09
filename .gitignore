@@ -1,6 +1,13 @@
-# dotfiles (make artifacts)
+# make artifacts (saved as dotfiles)
 .*
+
+# do not ignore this file
 !.gitignore
-# data file
+
+# data files
 *.zip
 *.gpkg
+
+# Sphinx documentation
+doc/_build/
+.buildinfo
