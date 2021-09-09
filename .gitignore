@@ -1,8 +1,6 @@
-# ignore make artifacts
+# dotfiles (make artifacts)
 .*
-fwa_*
 !.gitignore
-# ignore data files
+# data file
 *.zip
 *.gpkg
-

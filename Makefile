@@ -28,18 +28,34 @@ TABLES_VALUEADDED = fwa_approx_borders \
 	fwa_waterbodies \
 	fwa_watershed_groups_subdivided
 
-TABLES_TEST = fwa_lakes_poly fwa_rivers_poly
+TABLES_SOURCE_TARGETS := $(addprefix .,$(TABLES_SOURCE))
+TABLES_VALUEADDED_TARGETS := $(addprefix .,$(TABLES_VALUEADDED))
+ALL_TARGETS = $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS) \
+	.db \
+	.fwa_stream_networks_sp \
+	.fwa_watersheds_poly \
+	.fwa_linear_boundaries_sp \
+	.fix_data \
+	.fix_types \
+	.wdbhu12 \
+	.hydrosheds \
+	.functions
 
-# Make all targets
-all: .db $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly fwa_linear_boundaries_sp #.fix_data .fix_types wdbhu12 hydrosheds .functions
+# shortcuts for ogr2ogr
+PGOGR_SCHEMA = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping"
+PGOGR = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT)"
 
+all: $(ALL_TARGETS)
+
+# clean make targets only
 clean_targets:
-	rm -Rf $(TABLES_TEST)
+	rm -Rf $(ALL_TARGETS)
 
+
+# clean out (drop) all loaded and derived tables and functions
 clean_db:
-	 for table in $(TABLES_TEST); do \
-          psql -c "DROP TABLE whse_basemapping.$$table"; \
-        done
+	psql -f sql/misc/drop_all.sql
+
 
 # Add required extensions and functions to db
 # * the database must already exist *
@@ -50,15 +66,16 @@ clean_db:
 	psql -c "CREATE SCHEMA IF NOT EXISTS whse_basemapping"
 	touch .db
 
+
+# get the latest FWA archive from hillcrestgeo.ca
 FWA.gpkg:
 	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip
 	unzip FWA.zip
 
-PGOGR_SCHEMA = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping"
-PGOGR = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT)"
 
-$(TABLES_SOURCE): .db FWA.gpkg
-	psql -f sql/tables/source/$@.sql
+# load all required tables from FWA.gpkg to whse_basemapping schema
+$(TABLES_SOURCE_TARGETS): .db FWA.gpkg
+	psql -f sql/tables/source/$(subst .,,$@).sql
 	ogr2ogr \
 		-f PostgreSQL \
 		-update \
@@ -67,76 +84,82 @@ $(TABLES_SOURCE): .db FWA.gpkg
 		$(PGOGR_SCHEMA) \
 		-preserve_fid \
 		FWA.gpkg \
-		$@
+		$(subst .,,$@)
 	touch $@
+
 
 # streams
 # - loaded to temp table
 # - measure added to geom on load to output table
 # - index after load for some speed gains
-fwa_stream_networks_sp: .db FWA.gpkg
+.fwa_stream_networks_sp: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR_SCHEMA) \
 		-nlt LINESTRING \
-		-nln $@_load \
+		-nln fwa_stream_networks_sp \
 		-lco GEOMETRY_NAME=geom \
 		-dim XYZ \
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=LINEAR_FEATURE_ID \
 		-lco FID64=TRUE \
 		FWA.gpkg \
-		$@
-	psql -f sql/tables/source/$@.sql
+		FWA_STREAM_NETWORKS_SP
+	psql -f sql/tables/source/fwa_stream_networks_sp.sql
 	touch $@
+
 
 # watersheds - for faster load of large table:
 # - promote to multi on load
 # - create indexes after load
-fwa_watersheds_poly: .db FWA.gpkg
+.fwa_watersheds_poly: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR_SCHEMA) \
 		-nlt MULTIPOLYGON \
-		-nln $@ \
+		-nln fwa_watersheds_poly \
 		-lco GEOMETRY_NAME=geom \
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=WATERSHED_FEATURE_ID \
 		FWA.gpkg \
-		$@
-	psql -f sql/tables/source/$@.sql
+		FWA_WATERSHEDS_POLY
+	psql -f sql/tables/source/fwa_watersheds_poly.sql
 	touch $@
+
 
 # linear boundaries - for faster load of large table:
 # - promote to multi on load
 # - create indexes after load
-fwa_linear_boundaries_sp: .db FWA.gpkg
+.fwa_linear_boundaries_sp: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR_SCHEMA) \
 		-nlt MULTILINESTRING \
-		-nln $@ \
+		-nln fwa_linear_boundaries_sp \
 		-lco GEOMETRY_NAME=geom \
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=LINEAR_FEATURE_ID \
 		FWA.gpkg \
-		$@
-	psql -f sql/tables/source/$@.sql
+		FWA_LINEAR_BOUNDARIES_SP
+	psql -f sql/tables/source/fwa_linear_boundaries_sp.sql
 	touch $@
 
+
 # apply fixes
-.fix_data: fwa_stream_networks_sp
+.fix_data: .fwa_stream_networks_sp
 	psql -f sql/fixes/data.sql  # known errors that may not yet be fixed in source
 	touch $@
 
-.fix_types: $(TABLES_SOURCE)
+
+.fix_types: $(TABLES_SOURCE_TARGETS)
 	psql -f sql/fixes/types.sql # QGIS likes the geometry types to be uniform (sources are mixed singlepart/multipart)
 	touch $@
 
+
 # rather than generating them (slow), download pre-generated lookup tables
-fwa_assessment_watersheds_lut: db
+.fwa_assessment_watersheds_lut: db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip
 	unzip fwa_assessment_watersheds_lut.csv.zip
 	psql -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut
@@ -150,7 +173,7 @@ fwa_assessment_watersheds_lut: db
 	rm fwa_assessment_watersheds_lut.csv
 	touch fwa_assessment_watersheds_lut
 
-fwa_assessment_watersheds_streams_lut: db
+.fwa_assessment_watersheds_streams_lut: db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip
 	unzip fwa_assessment_watersheds_streams_lut.csv.zip
 	psql -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut
@@ -165,33 +188,18 @@ fwa_assessment_watersheds_streams_lut: db
 
 
 # create additional value added tables
-$(TABLES_VALUEADDED): $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly fwa_linear_boundaries_sp .fix_types .fix_data
+$(TABLES_VALUEADDED): $(TABLES_SOURCE_TARGETS) \
+	.fwa_stream_networks_sp \
+	.fwa_watersheds_poly \
+	.fwa_linear_boundaries_sp \
+	.fix_types \
+	.fix_data
 	psql -f sql/tables_valueadded/$@.sql
 	touch $@
 
-#fwa_basins_poly: fwa_watershed_groups_poly
-#	psql -f sql/tables_valueadded/fwa_basins_poly.sql
-#	touch $@
-#
-#fwa_bcboundary: fwa_watershed_groups_poly
-#	psql -f sql/tables_valueadded/fwa_bcboundary.sql
-#	touch $@
-#
-#fwa_named_streams: fwa_stream_networks_sp
-#	psql -f sql/tables_valueadded/fwa_named_streams.sql
-#	touch $@
-#
-#fwa_waterbodies: fwa_lakes_poly fwa_glaciers_poly fwa_rivers_poly fwa_wetlands_poly fwa_manmade_waterbodies_poly
-#	psql -f sql/tables_valueadded/fwa_waterbodies.sql
-#	touch $@
-#
-#fwa_watershed_groups_subdivided: fwa_watershed_groups_poly
-#	psql -f sql/tables_valueadded/fwa_watershed_groups_subdivided.sql
-#	touch $@
-#
 
 # USA (lower 48) watersheds - USGS HU12 polygons
-wdbhu12: .db
+.wdbhu12: .db
 	wget https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip
 	unzip WBD_National_GDB.zip
 	psql -c 'CREATE SCHEMA IF NOT EXISTS usgs'
@@ -218,7 +226,7 @@ wdbhu12: .db
 
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
 # Source shapefiles must be manually downloaded, so I've cached them here:
-hydrosheds: .db
+.hydrosheds: .db
 	wget https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip
 	unzip hydrosheds.zip
 	psql -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'
@@ -251,8 +259,16 @@ hydrosheds: .db
 	psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	psql -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
 
+
 # load FWA functions
-.functions: $(TABLES_SOURCE) $(TABLES_VALUEADDED) hydrosheds wdbhu12
+.functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS) \
+	.fwa_stream_networks_sp \
+	.fwa_watersheds_poly \
+	.fwa_linear_boundaries_sp \
+	.fix_types \
+	.fix_data \
+	.hydrosheds \
+	.wdbhu12
 	# As some of these live in postgisftw schema (for access via pg_featureserv),
 	# we add this schema to default search path for this database.
 	psql -c "CREATE SCHEMA IF NOT EXISTS postgisftw"
@@ -277,4 +293,3 @@ hydrosheds: .db
 	psql -f sql/functions/FWA_LocateAlong.sql
 	psql -f sql/functions/FWA_LocateAlongInterval.sql
 	touch $@
-

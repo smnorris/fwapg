@@ -5,7 +5,7 @@ CREATE TABLE whse_basemapping.fwa_bays_and_channels_poly (
     gnis_name character varying(80),
     area_ha double precision,
     feature_code character varying(10),
-    geom geometry;
+    geom geometry
 );
 
 CREATE INDEX ON whse_basemapping.fwa_bays_and_channels_poly (gnis_name);
