@@ -10,7 +10,6 @@ CREATE INDEX ON whse_basemapping.fwa_watersheds_poly (waterbody_id);
 CREATE INDEX ON whse_basemapping.fwa_watersheds_poly (waterbody_key);
 CREATE INDEX ON whse_basemapping.fwa_watersheds_poly (watershed_key);
 CREATE INDEX ON whse_basemapping.fwa_watersheds_poly (watershed_group_code);
-DROP INDEX IF EXISTS fwa_watersheds_poly_wscode_ltree_gist_idx;
 CREATE INDEX fwa_watersheds_poly_wscode_ltree_gist_idx ON whse_basemapping.fwa_watersheds_poly USING GIST (wscode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_watersheds_poly USING BTREE (wscode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_watersheds_poly USING GIST (localcode_ltree);
