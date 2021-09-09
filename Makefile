@@ -31,7 +31,7 @@ TABLES_VALUEADDED = fwa_approx_borders \
 TABLES_SOURCE_TARGETS := $(addprefix .,$(TABLES_SOURCE))
 TABLES_VALUEADDED_TARGETS := $(addprefix .,$(TABLES_VALUEADDED))
 ALL_TARGETS = .db \
-	FWA.gpkg \
+	data/FWA.gpkg \
 	$(TABLES_SOURCE_TARGETS) \
 	.fwa_stream_networks_sp \
 	.fwa_watersheds_poly \
@@ -69,19 +69,22 @@ clean_db:
 	$(PSQL_CMD) -c "CREATE EXTENSION IF NOT EXISTS ltree"
 	$(PSQL_CMD) -c "CREATE EXTENSION IF NOT EXISTS intarray"
 	$(PSQL_CMD) -c "CREATE SCHEMA IF NOT EXISTS whse_basemapping"
+	$(PSQL_CMD) -c 'CREATE SCHEMA IF NOT EXISTS usgs'
+	$(PSQL_CMD) -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'
 	$(PSQL_CMD) -c "CREATE SCHEMA IF NOT EXISTS postgisftw"       # for fwapg featureserv functions
 	#$(PSQL_CMD) -c "ALTER database "$(PGDATABASE)" SET search_path TO "$(PGUSER)", public, postgisftw;"
 	touch .db
 
 
 # get the latest FWA archive from hillcrestgeo.ca
-FWA.gpkg:
-	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip
-	unzip FWA.zip
+data/FWA.gpkg:
+	mkdir -p data
+	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip -P _data
+	unzip data/FWA.zip -d data
 
 
 # load basic/smaller tables from FWA.gpkg to whse_basemapping schema
-$(TABLES_SOURCE_TARGETS): .db FWA.gpkg
+$(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 	$(PSQL_CMD) -f sql/tables/source/$(subst .,,$@).sql
 	ogr2ogr \
 		-f PostgreSQL \
@@ -90,7 +93,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 		--config PG_USE_COPY YES \
 		$(PGOGR_SCHEMA) \
 		-preserve_fid \
-		FWA.gpkg \
+		data/FWA.gpkg \
 		$(subst .,,$@)
 	touch $@
 
@@ -99,7 +102,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 # - load to temp table
 # - add measure to geom when copying data to output table
 # - create indexes after load
-.fwa_stream_networks_sp: .db FWA.gpkg
+.fwa_stream_networks_sp: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR_SCHEMA) \
@@ -110,7 +113,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=LINEAR_FEATURE_ID \
 		-lco FID64=TRUE \
-		FWA.gpkg \
+		data/FWA.gpkg \
 		FWA_STREAM_NETWORKS_SP
 	$(PSQL_CMD) -f sql/tables/source/fwa_stream_networks_sp.sql
 	touch $@
@@ -119,7 +122,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 # watersheds - for faster load of large table:
 # - promote to multi on load
 # - create indexes after load
-.fwa_watersheds_poly: .db FWA.gpkg
+.fwa_watersheds_poly: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR_SCHEMA) \
@@ -129,7 +132,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=WATERSHED_FEATURE_ID \
-		FWA.gpkg \
+		data/FWA.gpkg \
 		FWA_WATERSHEDS_POLY
 	$(PSQL_CMD) -f sql/tables/source/fwa_watersheds_poly.sql
 	touch $@
@@ -138,7 +141,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 # linear boundaries - for faster load of large table:
 # - promote to multi on load
 # - create indexes after load
-.fwa_linear_boundaries_sp: .db FWA.gpkg
+.fwa_linear_boundaries_sp: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR_SCHEMA) \
@@ -148,7 +151,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=LINEAR_FEATURE_ID \
-		FWA.gpkg \
+		data/FWA.gpkg \
 		FWA_LINEAR_BOUNDARIES_SP
 	$(PSQL_CMD) -f sql/tables/source/fwa_linear_boundaries_sp.sql
 	touch $@
@@ -166,10 +169,12 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 
 
 # USA (lower 48) watersheds - USGS HU12 polygons
-.wdbhu12: .db
-	wget https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip
-	unzip WBD_National_GDB.zip
-	$(PSQL_CMD) -c 'CREATE SCHEMA IF NOT EXISTS usgs'
+data/WBD_National_GDB.gdb:
+	mkdir -p data
+	wget --trust-server-names -qN https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip -P data
+	unzip data/WBD_National_GDB.zip -d data
+
+.wdbhu12: .db data/WBD_National_GDB.gdb
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR) \
@@ -179,13 +184,13 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 		-nln wbdhu12 \
 		-nlt MULTIPOLYGON \
 		-dialect SQLITE \
-		-sql "SELECT * FROM WBDHU12
-		WHERE states LIKE '%%CN%%'
-		OR states LIKE '%%WA%%'
-		OR states LIKE '%%AK%%'
-		OR states LIKE '%%ID%%'
+		-sql "SELECT * FROM WBDHU12 \
+		WHERE states LIKE '%%CN%%' \
+		OR states LIKE '%%WA%%' \
+		OR states LIKE '%%AK%%' \
+		OR states LIKE '%%ID%%' \
 		OR states LIKE '%%MT%%'" \
-		WBD_National_GDB.gdb 2> /dev/null # we can safely ignore the various errors/warnings on load
+		data/WBD_National_GDB.gdb 2> /dev/null # we can safely ignore the various errors/warnings on load
 	# index the columns of interest
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
@@ -193,10 +198,11 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
 # Source shapefiles must be manually downloaded, so I've cached them here:
-.hydrosheds: .db
-	wget https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip
-	unzip hydrosheds.zip
-	$(PSQL_CMD) -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'
+data/hybas_ar_lev12_v1c:
+	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip -P data
+	unzip data/hydrosheds.zip -d data
+
+.hydrosheds: data/hybas_ar_lev12_v1c data/hybas_na_lev12_v1c
 	# Load _ar_ and _na_ shapefiles
 	ogr2ogr \
 		-f PostgreSQL \
@@ -206,7 +212,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 		-lco SCHEMA=hydrosheds \
 		-lco GEOMETRY_NAME=geom \
 		-nlt PROMOTE_TO_MULTI \
-		hybas_ar_lev12_v1c/hybas_ar_lev12_v1c.shp
+		data/hybas_ar_lev12_v1c/hybas_ar_lev12_v1c.shp
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR) \
@@ -215,7 +221,7 @@ $(TABLES_SOURCE_TARGETS): .db FWA.gpkg
 		-lco SCHEMA=hydrosheds \
 		-lco GEOMETRY_NAME=geom \
 		-nlt PROMOTE_TO_MULTI \
-		hybas_na_lev12_v1c/hybas_na_lev12_v1c.shp
+		data/hybas_na_lev12_v1c/hybas_na_lev12_v1c.shp
 	# combine _ar_ and _na_ into output table hybas_lev12_v1c
 	$(PSQL_CMD) -c "ALTER TABLE hydrosheds.hybas_na_lev12_v1c DROP COLUMN ogc_fid"
 	$(PSQL_CMD) -c "ALTER TABLE hydrosheds.hybas_ar_lev12_v1c DROP COLUMN ogc_fid"
@@ -271,30 +277,26 @@ $(TABLES_VALUEADDED): $(TABLES_SOURCE_TARGETS) \
 
 # rather than generating them (slow), download pre-generated lookup tables
 .fwa_assessment_watersheds_lut: db
-	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip
-	unzip fwa_assessment_watersheds_lut.csv.zip
+	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip -P data
+	unzip data/fwa_assessment_watersheds_lut.csv.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut
 	(watershed_feature_id integer PRIMARY KEY,
 	assmnt_watershed_id integer,
 	watershed_group_code text,
 	watershed_group_id integer)"
-	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_assessment_watersheds_lut FROM 'fwa_assessment_watersheds_lut.csv' delimiter ',' csv header"
+	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_assessment_watersheds_lut FROM 'data/fwa_assessment_watersheds_lut.csv' delimiter ',' csv header"
 	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
-	rm fwa_assessment_watersheds_lut.csv.zip
-	rm fwa_assessment_watersheds_lut.csv
 	touch $@
 
 
 .fwa_assessment_watersheds_streams_lut: db
-	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip
-	unzip fwa_assessment_watersheds_streams_lut.csv.zip
+	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip -P data
+	unzip data/fwa_assessment_watersheds_streams_lut.csv.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut
 	(watershed_feature_id integer PRIMARY KEY,
 	assmnt_watershed_id integer,
 	watershed_group_code text,
 	watershed_group_id integer)"
-	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut FROM 'fwa_assessment_watersheds_streams_lut.csv' delimiter ',' csv header"
+	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut FROM 'data/fwa_assessment_watersheds_streams_lut.csv' delimiter ',' csv header"
 	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_streams_lut (watershed_feature_id)"
-	rm fwa_assessment_watersheds_streams_lut.csv.zip
-	rm fwa_assessment_watersheds_streams_lut.csv
 	touch $@

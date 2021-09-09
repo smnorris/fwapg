@@ -5,8 +5,7 @@
 !.gitignore
 
 # data files
-*.zip
-*.gpkg
+data/
 
 # Sphinx documentation
 doc/_build/
