@@ -1,4 +1,4 @@
-# add the ltree types
+-- add the ltree types
 ALTER TABLE whse_basemapping.fwa_linear_boundaries_sp ADD COLUMN wscode_ltree ltree
   GENERATED ALWAYS AS (REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.')::ltree) STORED;
 ALTER TABLE whse_basemapping.fwa_linear_boundaries_sp ADD COLUMN localcode_ltree ltree

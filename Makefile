@@ -31,7 +31,7 @@ TABLES_VALUEADDED = fwa_approx_borders \
 TABLES_TEST = fwa_lakes_poly fwa_rivers_poly
 
 # Make all targets
-all: .db $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly #.fix_data .fix_types wdbhu12 hydrosheds .functions
+all: .db $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly fwa_linear_boundaries_sp #.fix_data .fix_types wdbhu12 hydrosheds .functions
 
 clean_targets:
 	rm -Rf $(TABLES_TEST)
@@ -111,7 +111,7 @@ fwa_watersheds_poly: .db FWA.gpkg
 # linear boundaries - for faster load of large table:
 # - promote to multi on load
 # - create indexes after load
-fwa_linear_boundaries_sp: db FWA.gpkg
+fwa_linear_boundaries_sp: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR_SCHEMA) \
@@ -165,7 +165,7 @@ fwa_assessment_watersheds_streams_lut: db
 
 
 # create additional value added tables
-$(TABLES_VALUEADDED): $(TABLES_SOURCE)
+$(TABLES_VALUEADDED): $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly fwa_linear_boundaries_sp .fix_types .fix_data
 	psql -f sql/tables_valueadded/$@.sql
 	touch $@
 

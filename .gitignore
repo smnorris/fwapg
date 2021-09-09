@@ -1,0 +1,8 @@
+# ignore make artifacts
+.*
+fwa_*
+!.gitignore
+# ignore data files
+*.zip
+*.gpkg
+
