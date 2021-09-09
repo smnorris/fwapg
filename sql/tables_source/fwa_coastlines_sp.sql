@@ -11,7 +11,7 @@ CREATE TABLE whse_basemapping.fwa_coastlines_sp (
     length_metre double precision,
     feature_source character varying(15),
     feature_code character varying(10),
-    geom public.geometry(MultiLineString,3005),
+    geom public.geometry(LineString,3005),
     wscode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED,
     localcode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED
 );

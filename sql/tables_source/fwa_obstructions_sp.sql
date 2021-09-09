@@ -13,7 +13,7 @@ CREATE TABLE whse_basemapping.fwa_obstructions_sp (
     route_measure double precision,
     feature_source character varying(15),
     feature_code character varying(10),
-    geom public.geometry(MultiPoint,3005),
+    geom public.geometry(Point,3005),
     wscode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED,
     localcode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED
 );

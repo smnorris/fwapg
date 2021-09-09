@@ -1,6 +1,6 @@
 .PHONY: all clean_targets clean_db
 
-# Note that watersheds and streams are not included in this list,
+# Note that watersheds, streams, linear boundaries are not included in this list,
 # they get special treatment
 TABLES_SOURCE = fwa_assessment_watersheds_poly \
 	fwa_bays_and_channels_poly \
@@ -9,7 +9,6 @@ TABLES_SOURCE = fwa_assessment_watersheds_poly \
 	fwa_glaciers_poly \
 	fwa_islands_poly \
 	fwa_lakes_poly \
-	fwa_linear_boundaries_sp \
 	fwa_manmade_waterbodies_poly \
 	fwa_named_point_features_sp \
 	fwa_named_watersheds_poly \
@@ -32,14 +31,14 @@ TABLES_VALUEADDED = fwa_approx_borders \
 TABLES_TEST = fwa_lakes_poly fwa_rivers_poly
 
 # Make all targets
-all: .db $(TABLES_TEST) #db $(SOURCE_TABLES) fwa_stream_networks_sp fwa_watersheds_poly
+all: .db $(TABLES_SOURCE) # fwa_stream_networks_sp fwa_watersheds_poly
 
 clean_targets:
 	rm -Rf $(TABLES_TEST)
 
 clean_db:
 	 for table in $(TABLES_TEST); do \
-          psql -c "DROP TABLE temp.$$table"; \
+          psql -c "DROP TABLE whse_basemapping.$$table"; \
         done
 
 # Add required extensions and functions to db
@@ -57,19 +56,18 @@ FWA.gpkg:
 	unzip FWA.zip
 
 
-$(TABLES_TEST): .db FWA.gpkg
+$(TABLES_SOURCE): .db FWA.gpkg
 	psql -f sql/tables_source/$@.sql
 	ogr2ogr \
 		-f PostgreSQL \
 		-update \
 		-append \
 		--config PG_USE_COPY YES \
-		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
+		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping" \
 		-preserve_fid \
-		test.gpkg \
+		FWA.gpkg \
 		$@
 	touch $@
-
 
 # streams
 # - loaded to temp table
@@ -81,8 +79,6 @@ fwa_stream_networks_sp: db FWA.gpkg
 		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
 		-nlt LINESTRING \
 		-nln $@_load \
-		-s_srs EPSG:3005 \
-		-t_srs EPSG:3005 \
 		-lco GEOMETRY_NAME=geom \
 		-dim XYZ \
 		-lco SPATIAL_INDEX=NONE \
@@ -103,8 +99,6 @@ fwa_watersheds_poly: db FWA.gpkg
 		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
 		-nlt MULTIPOLYGON \
 		-nln $@ \
-		-s_srs EPSG:3005 \
-		-t_srs EPSG:3005 \
 		-lco GEOMETRY_NAME=geom \
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
@@ -112,6 +106,29 @@ fwa_watersheds_poly: db FWA.gpkg
 		FWA.gpkg \
 		$@
 	psql -f sql/tables_source/$@.sql
+	touch $@
+
+# linear boundaries
+# - create the spatial index after load and promote to multi on load
+fwa_linear_boundaries_sp: db FWA.gpkg
+	ogr2ogr \
+		-f PostgreSQL \
+		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
+		-nlt MULTILINESTRING \
+		-nln $@ \
+		-lco GEOMETRY_NAME=geom \
+		-dim XY \
+		-lco SPATIAL_INDEX=NONE \
+		-lco FID=LINEAR_FEATURE_ID \
+		FWA.gpkg \
+		$@
+	psql -f sql/tables_source/$@.sql
+	touch $@
+
+# apply fixes
+.fixes: $(TABLES_SOURCE)
+	psql -f sql/fixes/data.sql  # known errors that may not yet be fixed in source
+	psql -f sql/fixes/types.sql # QGIS likes the geometry types to be uniform (sources are mixed singlepart/multipart)
 	touch $@
 
 
@@ -261,7 +278,3 @@ hydrosheds: .db
 	psql -f sql/functions/FWA_LocateAlongInterval.sql
 	touch $@
 
-# apply some data fixes that have not yet made it into the warehouse
-.fixes: $(TABLES_SOURCE)
-	psql -f sql/fixes/fixes.sql
-	touch $@

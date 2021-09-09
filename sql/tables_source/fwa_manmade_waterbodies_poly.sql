@@ -21,7 +21,7 @@ CREATE TABLE whse_basemapping.fwa_manmade_waterbodies_poly (
     waterbody_key_group_code_50k character varying(55),
     watershed_code_50k character varying(45),
     feature_code character varying(10),
-    geom public.geometry(MultiPolygon,3005),
+    geom public.geometry,
     wscode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED,
     localcode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED
 );

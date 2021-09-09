@@ -9,7 +9,7 @@ CREATE TABLE whse_basemapping.fwa_named_watersheds_poly (
     stream_magnitude integer,
     area_ha double precision,
     feature_code character varying(10),
-    geom public.geometry(MultiPolygon,3005),
+    geom public.geometry,
     wscode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED
 );
 
