@@ -74,7 +74,7 @@ $(TABLES_SOURCE): .db FWA.gpkg
 fwa_stream_networks_sp: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
+		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping" \
 		-nlt LINESTRING \
 		-nln $@_load \
 		-lco GEOMETRY_NAME=geom \
@@ -93,7 +93,7 @@ fwa_stream_networks_sp: .db FWA.gpkg
 fwa_watersheds_poly: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
+		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping" \
 		-nlt MULTIPOLYGON \
 		-nln $@ \
 		-lco GEOMETRY_NAME=geom \
@@ -110,7 +110,7 @@ fwa_watersheds_poly: .db FWA.gpkg
 fwa_linear_boundaries_sp: db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=temp" \
+		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping" \
 		-nlt MULTILINESTRING \
 		-nln $@ \
 		-lco GEOMETRY_NAME=geom \
