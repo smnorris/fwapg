@@ -205,3 +205,7 @@ localcode_ltree <@ '200.948755.796981'::ltree;
 
 
 CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (geom);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (wscode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING BTREE (wscode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (localcode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING BTREE (localcode_ltree);

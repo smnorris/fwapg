@@ -45,6 +45,7 @@ psql -f sql/functions/FWA_WatershedHex.sql
 psql -f sql/functions/FWA_WatershedStream.sql
 psql -f sql/functions/FWA_LocateAlong.sql
 psql -f sql/functions/FWA_LocateAlongInterval.sql
+psql -f sql/functions/record_count.sql # to make paging possible via pg_fs
 
 # apply some data fixes that have not yet made it into the warehouse
 psql -f sql/data_fixes/fixes.sql

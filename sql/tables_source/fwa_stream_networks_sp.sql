@@ -1,7 +1,4 @@
 -- load all the stream data, populating ltree codes etc
-
-DROP TABLE IF EXISTS whse_basemapping.fwa_stream_networks_sp;
-
 CREATE TABLE whse_basemapping.fwa_stream_networks_sp (
     linear_feature_id bigint PRIMARY KEY,
   watershed_group_id integer NOT NULL,
@@ -69,5 +66,20 @@ SELECT
 FROM
   whse_basemapping.fwa_stream_networks_sp_load;
 
--- drop the initial load table
-DROP TABLE whse_basemapping.fwa_stream_networks_sp_load;
+-- create the necessary indices
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (edge_type);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (blue_line_key);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (blue_line_key, downstream_route_measure);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (watershed_key);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (waterbody_key);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (watershed_group_code);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (gnis_name);
+DROP INDEX IF EXISTS fwa_stream_networks_sp_wscode_ltree_gist_idx;
+CREATE INDEX fwa_stream_networks_sp_wscode_ltree_gist_idx ON whse_basemapping.fwa_stream_networks_sp USING GIST (wscode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING BTREE (wscode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING GIST (localcode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING BTREE (localcode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING GIST (geom);
+
+-- clustering on disk by wscode may speed us/ds queries slightly
+CLUSTER whse_basemapping.fwa_stream_networks_sp USING fwa_stream_networks_sp_wscode_ltree_gist_idx
