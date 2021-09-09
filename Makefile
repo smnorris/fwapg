@@ -31,7 +31,7 @@ TABLES_VALUEADDED = fwa_approx_borders \
 TABLES_TEST = fwa_lakes_poly fwa_rivers_poly
 
 # Make all targets
-all: .db $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly .fix_data .fix_types
+all: .db $(TABLES_SOURCE) fwa_stream_networks_sp fwa_watersheds_poly .fix_data #.fix_types wdbhu12 hydrosheds .functions
 
 clean_targets:
 	rm -Rf $(TABLES_TEST)
@@ -54,6 +54,9 @@ FWA.gpkg:
 	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip
 	unzip FWA.zip
 
+PGOGR_SCHEMA = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping"
+PGOGR = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT)"
+
 $(TABLES_SOURCE): .db FWA.gpkg
 	psql -f sql/tables/source/$@.sql
 	ogr2ogr \
@@ -61,7 +64,7 @@ $(TABLES_SOURCE): .db FWA.gpkg
 		-update \
 		-append \
 		--config PG_USE_COPY YES \
-		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping" \
+		$(PGOGR_SCHEMA) \
 		-preserve_fid \
 		FWA.gpkg \
 		$@
@@ -74,7 +77,7 @@ $(TABLES_SOURCE): .db FWA.gpkg
 fwa_stream_networks_sp: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping" \
+		$(PGOGR_SCHEMA) \
 		-nlt LINESTRING \
 		-nln $@_load \
 		-lco GEOMETRY_NAME=geom \
@@ -85,15 +88,15 @@ fwa_stream_networks_sp: .db FWA.gpkg
 		FWA.gpkg \
 		$@
 	psql -f sql/tables/source/$@.sql
-	psql -c "DROP TABLE whse_basemapping.fwa_stream_networks_sp_load"
 	touch $@
 
-# watersheds
-# - create the spatial index after load for some speed gains
+# watersheds - for faster load of large table:
+# - promote to multi on load
+# - create indexes after load
 fwa_watersheds_poly: .db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping" \
+		$(PGOGR_SCHEMA) \
 		-nlt MULTIPOLYGON \
 		-nln $@ \
 		-lco GEOMETRY_NAME=geom \
@@ -105,12 +108,13 @@ fwa_watersheds_poly: .db FWA.gpkg
 	psql -f sql/tables/source/$@.sql
 	touch $@
 
-# linear boundaries
-# - create the spatial index after load and promote to multi on load
+# linear boundaries - for faster load of large table:
+# - promote to multi on load
+# - create indexes after load
 fwa_linear_boundaries_sp: db FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping" \
+		$(PGOGR_SCHEMA) \
 		-nlt MULTILINESTRING \
 		-nln $@ \
 		-lco GEOMETRY_NAME=geom \
@@ -186,66 +190,64 @@ $(TABLES_VALUEADDED): $(TABLES_SOURCE)
 #	touch $@
 #
 
-# USA watershed - USGS HU12 polygons
+# USA (lower 48) watersheds - USGS HU12 polygons
 wdbhu12: .db
 	wget https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip
 	unzip WBD_National_GDB.zip
 	psql -c 'CREATE SCHEMA IF NOT EXISTS usgs'
-	# ignore the various errors on load....
 	ogr2ogr \
-	  -f PostgreSQL \
-	  "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
-	  -t_srs EPSG:3005 \
-	  -lco SCHEMA=usgs \
-	  -lco GEOMETRY_NAME=geom \
-	  -nln wbdhu12 \
-	  -nlt MULTIPOLYGON \
-	  -dialect SQLITE \
-	  -sql "SELECT * FROM WBDHU12 WHERE states LIKE '%%CN%%' OR states LIKE '%%WA%%' OR states LIKE '%%AK%%' OR states LIKE '%%ID%%' OR states LIKE '%%MT%%'" \
-	  WBD_National_GDB.gdb
+		-f PostgreSQL \
+		$(PGOGR) \
+		-t_srs EPSG:3005 \
+		-lco SCHEMA=usgs \
+		-lco GEOMETRY_NAME=geom \
+		-nln wbdhu12 \
+		-nlt MULTIPOLYGON \
+		-dialect SQLITE \
+		-sql "SELECT * FROM WBDHU12
+		WHERE states LIKE '%%CN%%'
+		OR states LIKE '%%WA%%'
+		OR states LIKE '%%AK%%'
+		OR states LIKE '%%ID%%'
+		OR states LIKE '%%MT%%'" \
+		WBD_National_GDB.gdb 2> /dev/null # we can safely ignore the various errors/warnings on load
 	# index the columns of interest
 	psql -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	psql -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
 
 
-# For Yukon, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
-# source shapefiles must be manually downloaded from source, so I've cached them here:
+# For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
+# Source shapefiles must be manually downloaded, so I've cached them here:
 hydrosheds: .db
 	wget https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip
 	unzip hydrosheds.zip
-
 	psql -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'
-
-	# Write to two tables and combine
+	# Load _ar_ and _na_ shapefiles
 	ogr2ogr \
-	  -f PostgreSQL \
-	  "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
-	  -lco OVERWRITE=YES \
-	  -t_srs EPSG:3005 \
-	  -lco SCHEMA=hydrosheds \
-	  -lco GEOMETRY_NAME=geom \
-	  -nlt PROMOTE_TO_MULTI \
-	  hybas_ar_lev12_v1c/hybas_ar_lev12_v1c.shp
+		-f PostgreSQL \
+		$(PGOGR) \
+		-lco OVERWRITE=YES \
+		-t_srs EPSG:3005 \
+		-lco SCHEMA=hydrosheds \
+		-lco GEOMETRY_NAME=geom \
+		-nlt PROMOTE_TO_MULTI \
+		hybas_ar_lev12_v1c/hybas_ar_lev12_v1c.shp
 	ogr2ogr \
-	  -f PostgreSQL \
-	  "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE port=$PGPORT" \
-	  -t_srs EPSG:3005 \
-	  -lco OVERWRITE=YES \
-	  -lco SCHEMA=hydrosheds \
-	  -lco GEOMETRY_NAME=geom \
-	  -nlt PROMOTE_TO_MULTI \
-	  hybas_na_lev12_v1c/hybas_na_lev12_v1c.shp
-
+		-f PostgreSQL \
+		$(PGOGR) \
+		-t_srs EPSG:3005 \
+		-lco OVERWRITE=YES \
+		-lco SCHEMA=hydrosheds \
+		-lco GEOMETRY_NAME=geom \
+		-nlt PROMOTE_TO_MULTI \
+		hybas_na_lev12_v1c/hybas_na_lev12_v1c.shp
+	# combine _ar_ and _na_ into output table hybas_lev12_v1c
 	psql -c "ALTER TABLE hydrosheds.hybas_na_lev12_v1c DROP COLUMN ogc_fid"
 	psql -c "ALTER TABLE hydrosheds.hybas_ar_lev12_v1c DROP COLUMN ogc_fid"
-
 	psql -c "ALTER TABLE hydrosheds.hybas_na_lev12_v1c RENAME TO hybas_lev12_v1c"
 	psql -c "INSERT INTO hydrosheds.hybas_lev12_v1c SELECT * FROM hydrosheds.hybas_ar_lev12_v1c"
 	psql -c "DROP TABLE hydrosheds.hybas_ar_lev12_v1c"
-
-	# ogr loads the pk as a numeric, switch to integer
-	psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ALTER COLUMN hybas_id TYPE bigint;"
-
+	psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ALTER COLUMN hybas_id TYPE bigint;" # pk should be integer (ogr loads as numeric)
 	psql -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	psql -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
 
