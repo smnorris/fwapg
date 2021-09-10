@@ -15,8 +15,6 @@
 --   province rather than approximating in this way. We could also presumably
 --   query to find streams that end where measure != 0
 
-
-DROP TABLE IF EXISTS whse_basemapping.fwa_approx_borders;
 CREATE TABLE whse_basemapping.fwa_approx_borders
 (approx_border_id SERIAL PRIMARY KEY,
 border text,

@@ -1,8 +1,6 @@
 -- Create a subdivided watershed group table for *much* faster point in poly
 -- queries and other spatial join operations.
 
-DROP TABLE IF EXISTS whse_basemapping.fwa_watershed_groups_subdivided;
-
 CREATE TABLE whse_basemapping.fwa_watershed_groups_subdivided
 (
   fwa_watershed_groups_subdivided_id SERIAL PRIMARY KEY,

@@ -2,8 +2,6 @@
 -- We could combine them on demand using UNION, but for faster lookups
 -- (and shorter queries), we can just create a simple waterbody table
 
-DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies;
-
 CREATE TABLE whse_basemapping.fwa_waterbodies AS
   SELECT DISTINCT waterbody_key, waterbody_type
   FROM whse_basemapping.fwa_lakes_poly

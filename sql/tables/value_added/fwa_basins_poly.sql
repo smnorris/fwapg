@@ -49,8 +49,6 @@ ALTER TABLE whse_basemapping.fwa_watershed_groups_poly
 
 
 -- now create the basins table from above
-DROP TABLE IF EXISTS whse_basemapping.fwa_basins_poly;
-
 CREATE TABLE whse_basemapping.fwa_basins_poly
 (basin_id integer primary key,
  basin_name text,
