@@ -254,11 +254,12 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	.fix_data \
 	.hydrosheds \
 	.wdbhu12
-	$(PSQL_CMD) -f sql/functions/hydroshed.sql
+	# todo - these 3 funcs can be removed
 	$(PSQL_CMD) -f sql/functions/CDB_MakeHexagon.sql
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Repair.sql
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Difference.sql
-	$(PSQL_CMD) -f sql/functions/ST_Safe_Intersection.sql
+
+	$(PSQL_CMD) -f sql/functions/hydroshed.sql
 	$(PSQL_CMD) -f sql/functions/FWA_IndexPoint.sql
 	$(PSQL_CMD) -f sql/functions/FWA_Upstream.sql
 	$(PSQL_CMD) -f sql/functions/FWA_Downstream.sql

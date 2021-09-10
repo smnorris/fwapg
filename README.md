@@ -18,7 +18,7 @@ Tools to create a PostgreSQL database for working with British Columbia's [Fresh
     + [MVT service](https://www.hillcrestgeo.ca/pg_tileserv)
 - enable serving FWA data features and spatial functions via API provided by [`pg_featureserv`](https://github.com/CrunchyData/pg_featureserv):
     + [API](https://www.hillcrestgeo.ca/fwapg)
-    + [R client](https://github.com/poissonconsulting/fwapgr/))
+    + [R client](https://github.com/poissonconsulting/fwapgr/)
 
 
 ## Requirements
@@ -79,6 +79,6 @@ All results should be true.
 - BC Freshwater Atlas [License](https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc)
 and [Documentation](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater)
 
-- USGS Watershed Boundary Dataset (WDB) [Metadata](https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml)
+- USGS Watershed Boundary Dataset (WBD) [Metadata](https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml)
 
 - Hydrosheds [License and citations](https://www.hydrosheds.org/page/license)
