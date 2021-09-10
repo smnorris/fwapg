@@ -6,6 +6,49 @@
 -- Fraser, Columbia, Peace, Liard, Nass, Skeena, Stikine,
 -- plus any other grouping of >2-3 watershed groups that is a complete (within BC) watershed
 
+-- To speed up basin creation we can use watershed groups as building blocks.
+-- Note that watershed groups are arbitrary groupings (historically created as
+-- work units), the features do not necessarily drain to a single point. This is obvious
+-- on the coast, but is also possible for interior groups. Therefore, it makes
+-- sense that there are no watershed codes provided in the watershed group table,
+-- they are not particularly meaningful.
+
+-- add columns
+ALTER TABLE whse_basemapping.fwa_watershed_groups_poly
+  ADD COLUMN IF NOT EXISTS fwa_watershed_code character varying(143);
+ALTER TABLE whse_basemapping.fwa_watershed_groups_poly
+  ADD COLUMN IF NOT EXISTS local_watershed_code character varying(143);
+
+-- find the minimum watershed codes per group
+-- based on assessment watersheds
+UPDATE whse_basemapping.fwa_watershed_groups_poly a
+SET
+  fwa_watershed_code = b.fwa_watershed_code,
+  local_watershed_code = b.local_watershed_code
+FROM
+(
+    SELECT DISTINCT ON (watershed_group_id)
+      watershed_group_id,
+      fwa_watershed_code,
+      local_watershed_code
+    FROM whse_basemapping.fwa_assessment_watersheds_poly
+    ORDER BY
+      watershed_group_id,
+      fwa_watershed_code,
+      local_watershed_code asc
+) b
+WHERE a.watershed_group_id = b.watershed_group_id;
+
+-- add the ltree watershed code columns for fast searches
+ALTER TABLE whse_basemapping.fwa_watershed_groups_poly
+  ADD COLUMN IF NOT EXISTS wscode_ltree ltree
+  GENERATED ALWAYS AS (REPLACE(REPLACE(fwa_watershed_code, '-000000', ''), '-', '.')::ltree) STORED;
+ALTER TABLE whse_basemapping.fwa_watershed_groups_poly
+  ADD COLUMN IF NOT EXISTS localcode_ltree ltree
+  GENERATED ALWAYS AS (REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.')::ltree) STORED;
+
+
+-- now create the basins table from above
 DROP TABLE IF EXISTS whse_basemapping.fwa_basins_poly;
 
 CREATE TABLE whse_basemapping.fwa_basins_poly
@@ -143,10 +186,9 @@ GROUP BY basin_name, '200.948755.796981'::ltree, '200.948755.796981'::ltree;
 
 
 
+-- To be able to quickly relate basins to watershed groups, add
+-- basin id as fk in watershed groups
 
-
-
--- we want to be able to quickly relate these back to watershed groups
 ALTER TABLE whse_basemapping.fwa_watershed_groups_poly ADD COLUMN IF NOT EXISTS basin_id integer;
 
 -- thompson
