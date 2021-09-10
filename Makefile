@@ -246,7 +246,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 
 
 # load FWA functions
-.functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS)
+.functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS) \
 	.fwa_stream_networks_sp \
 	.fwa_watersheds_poly \
 	.fwa_linear_boundaries_sp \
