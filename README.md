@@ -5,16 +5,18 @@ Tools to create a PostgreSQL database for working with British Columbia's [Fresh
 
 ## Key features
 
-- provides functions for indexed (speedy) upstream/downstream queries like:
+- find the closest stream to any given point in BC
+- extract the watershed boundary upstream of an arbitrary point on a stream
+- indexed (speedy) upstream/downstream queries like:
     + [*how many salmon observations are there upstream of a point?*](https://github.com/smnorris/bcfishobs)
     + [*what is the area of a watershed above a stream guage?*](https://github.com/smnorris/bcbasins)
     + [*how many km of potential fish habitat are upstream of a failed culvert?*](https://github.com/smnorris/bcfishpass)
-- provides convenience tables (eg `fwa_named_streams`, `fwa_basins_poly`)
-- populates the empty `gradient`  column in `fwa_stream_networks_sp`
-- combines FWA data with similar data from adjacent jurisdictions (eg, derive a watershed with area in both BC and USA)
-- enables serving FWA data direct from the db as MVT (vector tiles) via [`pg_tileserv`](https://github.com/CrunchyData/pg_tileserv):
+- convenience tables for mapping, watershed aggregation, etc (`fwa_named_streams`, `fwa_basins_poly` and more)
+- `gradient`  for every FWA stream
+- combines FWA data with similar data from adjacent jurisdictions for cross-boundary queries
+- enable serving FWA data direct from the db as MVT (vector tiles) via [`pg_tileserv`](https://github.com/CrunchyData/pg_tileserv):
     + [MVT service](https://www.hillcrestgeo.ca/pg_tileserv)
-- enables serving FWA data features and spatial functions via API provided by [`pg_featureserv`](https://github.com/CrunchyData/pg_featureserv):
+- enable serving FWA data features and spatial functions via API provided by [`pg_featureserv`](https://github.com/CrunchyData/pg_featureserv):
     + [API](https://www.hillcrestgeo.ca/fwapg)
     + [R client](https://github.com/poissonconsulting/fwapgr/))
 
