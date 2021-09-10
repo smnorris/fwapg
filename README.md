@@ -29,14 +29,6 @@ Tools to create a PostgreSQL database for working with British Columbia's [Fresh
 - GNU make
 
 
-## Getting started
-
-Download and unzip the [latest release](https://github.com/smnorris/fwapg/releases).
-Or get the latest:
-
-    git clone https://github.com/smnorris/fwapg.git
-
-
 ## Configuration
 
 The data load script requires that the [postgres environment variables](https://www.postgresql.org/docs/current/libpq-envars.html) `$PGHOST`, `$PGUSER`,`$PGDATABASE`,`$PGPORT` are set to point at the database you wish to use. For example:
@@ -54,16 +46,29 @@ This document does not cover PostgreSQL configuration - this is a detailed topic
 - [sample setup script for GIS processing on MacOS](https://github.com/bcgov/designatedlands/blob/master/scripts/postgres_mac_setup.sh)
 
 
-### Create and load database
+## Create and load database
 
 If you are not loading to an existing database, create a new one with a command like this:
 
     psql -c "CREATE DATABASE $PGDATABASE" postgres
 
-To download source files, load to the db, optimize the data structures and create functions:
+Get the `fwapg` scripts by either:
+
+- manually downloading and unzipping the [latest fwapg release](https://github.com/smnorris/fwapg/releases)
+- downloading the development version:
+
+        git clone https://github.com/smnorris/fwapg.git
+
+To run the database load scripts:
 
     cd fwapg
     make all
+
+Once scripts are complete you have a FWA database ready for speedy queries.
+
+## Usage
+
+
 
 ## Testing
 
