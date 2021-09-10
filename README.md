@@ -76,16 +76,9 @@ All results should be true.
 
 ## Source data
 
-### FWA
+- BC Freshwater Atlas [License](https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc)
+and [Documentation](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater)
 
-- [Open Government Licence – British Columbia](https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc)
-- [DataBC Catalogue](https://catalogue.data.gov.bc.ca/dataset/freshwater-atlas-coastlines/resource/61db9a06-96d1-4358-88ac-6f5490d4af79)
-- [Detailed documentation](ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/Documents)
+- USGS Watershed Boundary Dataset (WDB) [Metadata](https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml)
 
-### USGS Watershed Boundary Dataset (WDB)
-
-- [Metadata](https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml)
-
-### Hydrosheds
-
-- [License and citations](https://www.hydrosheds.org/page/license)
+- Hydrosheds [License and citations](https://www.hydrosheds.org/page/license)
