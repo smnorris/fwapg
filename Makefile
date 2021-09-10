@@ -177,7 +177,8 @@ data/WBD_National_GDB.gdb:
 	wget --trust-server-names -qN https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip -P data
 	unzip data/WBD_National_GDB.zip -d data
 
-.wdbhu12: .db data/WBD_National_GDB.gdb
+# load washington, idaho, montana and alaska
+.wbdhu12: .db data/WBD_National_GDB.gdb
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR) \
@@ -193,10 +194,11 @@ data/WBD_National_GDB.gdb:
 		OR states LIKE '%%AK%%' \
 		OR states LIKE '%%ID%%' \
 		OR states LIKE '%%MT%%'" \
-		data/WBD_National_GDB.gdb 2> /dev/null # we can safely ignore the various errors/warnings on load
+		data/WBD_National_GDB.gdb
 	# index the columns of interest
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
+	touch $@
 
 
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
@@ -234,21 +236,16 @@ data/hybas_ar_lev12_v1c:
 	$(PSQL_CMD) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ALTER COLUMN hybas_id TYPE bigint;" # pk should be integer (ogr loads as numeric)
 	$(PSQL_CMD) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	$(PSQL_CMD) -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
-
+	touch $@
 
 # create additional value added tables
-$(TABLES_VALUEADDED): $(TABLES_SOURCE_TARGETS) \
-	.fwa_stream_networks_sp \
-	.fwa_watersheds_poly \
-	.fwa_linear_boundaries_sp \
-	.fix_types \
-	.fix_data
-	$(PSQL_CMD) -f sql/tables_valueadded/$@.sql
+$(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
+	$(PSQL_CMD) -f sql/tables/value_added/$(subst .,,$@).sql
 	touch $@
 
 
 # load FWA functions
-.functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS) \
+.functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS)
 	.fwa_stream_networks_sp \
 	.fwa_watersheds_poly \
 	.fwa_linear_boundaries_sp \
