@@ -1,10 +1,5 @@
 ### Extras
 
-#### Neighbouring jurisdictions
-For generating trans-boundary watersheds (`sql/fwa_watershedexbc.sql`), non-FWA data from neighbouring jurisdictions is required. Download and add to the database with this script:
-
-    ./neighbours.sh
-
 #### Upstream watershed area
 
 It is often useful to know how much area is upstream of a given location, and often this needs to be calculated for many locations. Rather than run the calculation each time it is required, we can run the calculation for all fundamental watersheds and cache the result in a lookup table. This calculates the upstream area for all watersheds, starting at the outlet of each watershed (ie, the area total includes the area of the fundamental watershed that is the starting point).
