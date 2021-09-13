@@ -112,4 +112,4 @@ LIMIT num_features
 $$
 language 'sql' immutable parallel safe;
 
-COMMENT ON FUNCTION postgisftw.fwa_IndexPoint IS 'Provided a point (as x,y coordinates and EPSG code), return the point indexed (snapped) to nearest stream(s) within specified tolerance (m)';
+COMMENT ON FUNCTION postgisftw.FWA_IndexPoint IS 'Provided a point (as x,y coordinates and EPSG code), return the point indexed (snapped) to nearest stream(s) within specified tolerance (m)';

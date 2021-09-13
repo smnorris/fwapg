@@ -212,3 +212,5 @@ ON st_intersects(cut.geom, stream.geom);
 
 $$
 language 'sql' immutable strict parallel safe;
+
+COMMENT ON FUNCTION FWA_SliceWatershedAtPoint IS 'Aggregate and slice watershed polygons on/adjacent to polygonal rivers/canals at given blue_line_key/measure. Returns the cut portion of watersheds upstream of the provided point';

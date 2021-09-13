@@ -73,3 +73,5 @@ LIMIT 1) as f;
 
 $$
 language 'sql' immutable strict parallel safe;
+
+COMMENT ON FUNCTION FWA_UpstreamBorderCrossings IS 'Provided a location as blue_line_key and downstream_route_measure, return border name if any streams upstream of the location intersect parallels 49/60 or longitude -120 ';

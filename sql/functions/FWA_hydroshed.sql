@@ -23,3 +23,5 @@ FROM walkup w;
 
 $$
 language 'sql' immutable strict parallel safe;
+
+COMMENT ON FUNCTION FWA_hydroshed IS 'Return geometry of aggregated watershed boundary for watershed upstream of provided hydroshed id';
