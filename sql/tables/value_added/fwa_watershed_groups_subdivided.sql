@@ -20,12 +20,4 @@ FROM whse_basemapping.fwa_watershed_groups_poly;
 CREATE INDEX ON whse_basemapping.fwa_watershed_groups_subdivided (watershed_group_id);
 CREATE INDEX ON whse_basemapping.fwa_watershed_groups_subdivided USING gist (geom);
 
--- Keep the above table for ultimate speed, but it turns out that we can get
--- most of the performance benefit of subdiving by just de-toasting
--- http://blog.cleverelephant.ca/2018/09/postgis-external-storage.html
-ALTER TABLE whse_basemapping.fwa_watershed_groups_poly
-ALTER COLUMN geom SET STORAGE EXTERNAL;
-
--- Force the column to rewrite
-UPDATE whse_basemapping.fwa_watershed_groups_poly
-SET geom = ST_SetSRID(geom, 3005);
+COMMENT ON TABLE whse_basemapping.fwa_watershed_groups_subdivided IS 'Subdivided watershed groups polygons, use for faster point in poly queries';

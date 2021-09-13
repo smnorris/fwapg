@@ -62,4 +62,4 @@ FROM (SELECT
         -120.0005 AS x,
         generate_series(60, 53.79914, -.01) AS y) AS segments;
 
--- with only 3 records, is there any point in an index?
+COMMENT ON TABLE whse_basemapping.fwa_approx_borders IS 'Lines for 49N, 60N, -120W - used by fwapg for finding cross-border streams';

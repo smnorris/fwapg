@@ -249,3 +249,10 @@ CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (wscode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_basins_poly USING BTREE (wscode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (localcode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_basins_poly USING BTREE (localcode_ltree);
+
+COMMENT ON TABLE whse_basemapping.fwa_basins_poly IS 'Large BC waterhseds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.basin_id IS 'Basin unique identifier';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.basin_name IS 'Basin name, eg Thompson River';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.wscode_ltree IS 'The watershed code associated with the stream at the outlet of the basin';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.localcode_ltree IS 'The local watershed code associated with the stream at the outlet of the basin';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.geom IS 'Geometry of the basin';

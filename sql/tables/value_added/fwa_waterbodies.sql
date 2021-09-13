@@ -24,3 +24,6 @@ UNION ALL
   WHERE waterbody_key IS NOT NULL;
 
 CREATE INDEX ON whse_basemapping.fwa_waterbodies (waterbody_key);
+
+COMMENT ON TABLE whse_basemapping.fwa_waterbodies IS 'All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions';
+

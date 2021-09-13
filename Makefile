@@ -198,6 +198,7 @@ data/WBD_National_GDB.gdb:
 	# index the columns of interest
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
+	$(PSQL_CMD) -c "COMMENT ON TABLE usgs.wbdhu12 IS 'USGS National Watershed Boundary Dataset, HUC12 level. See https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml';
 	touch $@
 
 
@@ -236,6 +237,7 @@ data/hybas_ar_lev12_v1c:
 	$(PSQL_CMD) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ALTER COLUMN hybas_id TYPE bigint;" # pk should be integer (ogr loads as numeric)
 	$(PSQL_CMD) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	$(PSQL_CMD) -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
+	$(PSQL_CMD) -c "COMMENT ON TABLE hydrosheds.hybas_lev12_v1c IS 'HydroBasins for North America from https://www.hydrosheds.org. See source for column documentation';
 	touch $@
 
 
@@ -254,12 +256,12 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	.fix_data \
 	.hydrosheds \
 	.wdbhu12
-	# todo - these 3 funcs can be removed
+	# todo - these 3 funcs can be removed with pg13/postgis3.1
 	$(PSQL_CMD) -f sql/functions/CDB_MakeHexagon.sql
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Repair.sql
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Difference.sql
 
-	$(PSQL_CMD) -f sql/functions/hydroshed.sql
+
 	$(PSQL_CMD) -f sql/functions/FWA_IndexPoint.sql
 	$(PSQL_CMD) -f sql/functions/FWA_Upstream.sql
 	$(PSQL_CMD) -f sql/functions/FWA_Downstream.sql
@@ -274,6 +276,8 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/functions/FWA_WatershedStream.sql
 	$(PSQL_CMD) -f sql/functions/FWA_LocateAlong.sql
 	$(PSQL_CMD) -f sql/functions/FWA_LocateAlongInterval.sql
+
+	$(PSQL_CMD) -f sql/functions/hydroshed.sql
 	touch $@
 
 

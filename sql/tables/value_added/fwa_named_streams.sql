@@ -3,7 +3,7 @@
 -- (edge type doesn't work because we want to retain rivers, wetlands)
 
 CREATE TABLE whse_basemapping.fwa_named_streams
-(fwa_stream_networks_label_id SERIAL PRIMARY KEY,
+(named_streams_id SERIAL PRIMARY KEY,
  gnis_name TEXT,
  blue_line_key BIGINT,
  stream_order INTEGER,
@@ -31,3 +31,12 @@ SELECT
 CREATE INDEX
 ON whse_basemapping.fwa_named_streams
 USING gist (geom);
+
+
+COMMENT ON TABLE whse_basemapping.fwa_named_streams IS 'Named streams of BC, aggregated per watershed group and simplified using a 25m tolerance (primarily for mapping use)';
+COMMENT ON COLUMN whse_basemapping.fwa_named_streams.named_streams_id IS 'Named stream unique identifier';
+COMMENT ON COLUMN whse_basemapping.fwa_named_streams.gnis_name IS 'The BCGNIS (BC Geographical Names Information System) name associated with the stream';
+COMMENT ON COLUMN whse_basemapping.fwa_named_streams.blue_line_key IS 'The blue line key of the named stream, see FWA documentation for blue_line_key description';
+COMMENT ON COLUMN whse_basemapping.fwa_named_streams.stream_order IS 'The maximum stream order associated with the stream name';
+COMMENT ON COLUMN whse_basemapping.fwa_named_streams.watershed_group_code IS 'The watershed group code associated with the named stream';
+COMMENT ON COLUMN whse_basemapping.fwa_named_streams.geom IS 'The geometry of the named stream, an aggregation of the source features and simpified by 25m';
