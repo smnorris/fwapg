@@ -23,9 +23,9 @@ Tools to create a PostgreSQL database for working with British Columbia's [Fresh
 
 ## Requirements
 
-- PostgreSQL (requires >= v12, best with >=13)
-- PostGIS (tested with >= v3.0.1, best with >=3.1)
-- GDAL (tested with >= v2.4.4)
+- PostgreSQL (tested with v13)
+- PostGIS (tested with v3.1.2/GEOS 3.9.1)
+- GDAL (tested with v3.3.0)
 - GNU make
 
 
