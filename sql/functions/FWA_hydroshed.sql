@@ -18,7 +18,7 @@ WITH RECURSIVE walkup (hybas_id, geom) AS
         WHERE b.next_down = w.hybas_id
     )
 SELECT
-  ST_Union(w.geom) as geom
+  ST_Union(w.geom, .5) as geom
 FROM walkup w;
 
 $$
