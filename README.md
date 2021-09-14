@@ -50,7 +50,7 @@ See [documentation](link) for setup and usage details, plus table and function r
 
          st_astext
         --------------
-        POLYGON((.....
+        POLYGON((...
 
 
     See [Usage](link) for more examples.
