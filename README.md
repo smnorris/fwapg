@@ -6,7 +6,7 @@
 - enable speedy upstream/downstream queries throughout BC
 - quickly and cleanly generate watershed boundaries upstream of arbitrary locations
 - enable cross-boundary queries by combining FWA data with data from neighbouring jurisdictions
-- enable querying of FWA and other features via spatial SQL
+- enable querying of FWA features via spatial SQL
 - provide `gradient` values for every FWA stream
 - enable quickly serving FWA features as vector tiles (MVT) via `pg_tileserv`
 - enabler quickly serving FWA features and custom fwapg functions via `pg_featureserv`
