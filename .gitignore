@@ -1,8 +1,9 @@
 # make artifacts (saved as dotfiles)
 .*
 
-# do not ignore this file
+# do not ignore these files
 !.gitignore
+!.github
 
 # data files
 data/
