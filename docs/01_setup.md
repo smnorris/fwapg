@@ -1,6 +1,5 @@
 # Setup and data load
 
-
 ## Requirements
 
 - PostgreSQL (>=13)
@@ -8,10 +7,12 @@
 - GDAL (tested with v3.3.0)
 - GNU make
 
+The instructions below presume postgres is set up and accepting connections.
 
-## Environment variables configuration
 
-The data load makefile requires these [postgres environment variables](https://www.postgresql.org/docs/current/libpq-envars.html) to be set in order to connect to the database:
+## Environment variables
+
+The data load script requires these [postgres environment variables](https://www.postgresql.org/docs/current/libpq-envars.html) to be set in order to connect to the database:
 
 - `$PGHOST`
 - `$PGUSER`
@@ -23,9 +24,9 @@ If a password is required for `$PGUSER`, either [create a password file](https:/
 
 ## Create the database
 
-If you are not loading to an existing database, create a new one with a command like this:
+If you are not loading to an existing database, create a new one:
 
-    psql -c "CREATE DATABASE $PGDATABASE" postgres
+    createdb $PGDATABASE
 
 
 ## Data load and optimization

@@ -5,13 +5,13 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
 0.2.0 ()
 ------------------
+- add documentation
 - require PostGIS 3.1/GEOS 3.9
 - update FWA.gpkg: latest data (2021-09-08), assign primary keys, move to hillcrestgeo.ca
-- use makefile for db load
 - fix bug in sequence of data load (#54)
+- use makefile for db load
 - tidy hydrosheds polygon aggregation
 - removed unused and obsolete functions (#48)
-[ ] add basic documentation of functions and custom tables (#57)
 [ ] do not use watershed groups as pre-aggregations for FWA_WatershedAtMeasure (#52)
 
 0.1.1 (2020-10-28)
