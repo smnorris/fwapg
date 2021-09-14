@@ -8,5 +8,5 @@
 data/
 
 # Sphinx documentation
-doc/_build/
+docs/_build/
 .buildinfo

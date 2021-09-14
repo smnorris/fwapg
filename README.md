@@ -8,59 +8,64 @@
 - enable cross-boundary queries by combining FWA data with data from neighbouring jurisdictions
 - enable querying of FWA and other features via spatial SQL
 - provide `gradient` values for every FWA stream
-- quickly serve FWA features as vector tiles (MVT)
-- support serving features and custom functions via web API
+- enable quickly serving FWA features as vector tiles (MVT) via `pg_tileserv`
+- enabler quickly serving FWA features and custom fwapg functions via `pg_featureserv`
 
-## Requirements
-
-- PostgreSQL (tested with v13)
-- PostGIS (tested with v3.1.2/GEOS 3.9.1)
-- GDAL (tested with v3.3.0)
-- GNU make
+See the documentation for details on setup and usage, plus tables and function references.
 
 
-## Configuration
+## Quickstart
 
-The data load script requires that the [postgres environment variables](https://www.postgresql.org/docs/current/libpq-envars.html) `$PGHOST`, `$PGUSER`,`$PGDATABASE`,`$PGPORT` are set to point at the database you wish to use. For example:
-
-    export PGHOST=localhost
-    export PGUSER=postgres
-    export PGPORT=5432
-    export PGDATABASE=postgis
-
-To provide the script with a password to the database, either [create a password file]( https://www.postgresql.org/docs/current/libpq-pgpass.html) or modify the connection strings in the script.
-
-This document does not cover PostgreSQL configuration - this is a detailed topic which depends on hardware and workload:
-
-- [general guide](https://wiki.postgresql.org/wiki/Performance_Optimization)
-- [sample setup script for GIS processing on MacOS](https://github.com/bcgov/designatedlands/blob/master/scripts/postgres_mac_setup.sh)
+1. Ensure you have access to a PostgreSQL 13 (>=13) database with the PostGIS extension (>=3.1) and GDAL (>=3.3) is available on your system.
 
 
-## Create and load database
+2. Create or update the required environment variables to point to your database. If a password is required for `$PGUSER`, either [create a password file](https://www.postgresql.org/docs/current/libpq-pgpass.html) or modify the connection strings directly in the `Makefile` as required.
 
-If you are not loading to an existing database, create a new one with a command like this:
+    - `$PGHOST`
+    - `$PGUSER`
+    - `$PGDATABASE`
+    - `$PGPORT`
 
-    psql -c "CREATE DATABASE $PGDATABASE" postgres
+3. Download and extract [latest fwapg release](https://github.com/smnorris/fwapg/releases)
 
-Get the `fwapg` scripts by either:
+4. Load and optimize the data (this takes some time):
 
-- manually downloading and unzipping the [latest fwapg release](https://github.com/smnorris/fwapg/releases)
-- downloading the development version:
+        cd fwapg
+        make all
 
-        git clone https://github.com/smnorris/fwapg.git
+5. Run `fwapg` enabled queries with your favorite sql client. For example:
 
-To run the database load scripts:
+    *Locate the nearest point on the FWA stream network to a X,Y location on Highway 14:*
 
-    cd fwapg
-    make all
+        SELECT gnis_name, blue_line_key, downstream_route_measure
+        FROM FWA_IndexPoint(-123.7028, 48.3858, 4326);
 
-Once scripts are complete you have a FWA database ready for speedy queries.
+          gnis_name  | blue_line_key | downstream_route_measure
+        -------------+---------------+--------------------------
+         Sooke River |     354153927 |        350.2530543284006
 
-## Usage
+    *Generate the watershed upstream of above location:*
+
+        SELECT ST_ASText(geom) FROM FWA_WatershedAtMeasure(354153927, 350);
+
+         st_astext
+        --------------
+        POLYGON((.....
 
 
+    See documentation for more examples of typical usage.
 
-## Testing
+
+## Source data
+
+- BC Freshwater Atlas [documentation](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater) and [license](https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc)
+
+- USGS Watershed Boundary Dataset (WBD) [Metadata](https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml)
+
+- Hydrosheds [License and citation](https://www.hydrosheds.org/page/license)
+
+
+## Development and testing
 
 Extremely basic tests are included for selected functions.
 If changing a covered function, run the individual test. For example:
@@ -69,11 +74,3 @@ If changing a covered function, run the individual test. For example:
 
 All results should be true.
 
-## Source data
-
-- BC Freshwater Atlas [License](https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc)
-and [Documentation](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater)
-
-- USGS Watershed Boundary Dataset (WBD) [Metadata](https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml)
-
-- Hydrosheds [License and citations](https://www.hydrosheds.org/page/license)
