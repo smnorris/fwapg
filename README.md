@@ -11,7 +11,7 @@
 - enable quickly serving FWA features as vector tiles (MVT) via [`pg_tileserv`](https://www.hillcrestgeo.ca/pg_tileserv)
 - enable quickly serving FWA features and custom fwapg functions via [`pg_featureserv`](https://www.hillcrestgeo.ca/fwapg)
 
-See [documentation](link) for setup and usage details, plus table and function references.
+See [documentation](https://smnorris.github.io/fwapg/) for setup and usage details, plus table and function references.
 
 
 ## Quickstart
@@ -53,7 +53,7 @@ See [documentation](link) for setup and usage details, plus table and function r
         POLYGON((...
 
 
-    See [Usage](link) for more examples.
+    See [Usage](https://smnorris.github.io/fwapg/02_usage.html) for more examples.
 
 
 ## Source data
