@@ -8,10 +8,10 @@
 - enable cross-boundary queries by combining FWA data with data from neighbouring jurisdictions
 - enable querying of FWA features via spatial SQL
 - provide `gradient` values for every FWA stream
-- enable quickly serving FWA features as vector tiles (MVT) via `pg_tileserv`
-- enable quickly serving FWA features and custom fwapg functions via `pg_featureserv`
+- enable quickly serving FWA features as vector tiles (MVT) via [`pg_tileserv`](https://www.hillcrestgeo.ca/pg_tileserv)
+- enable quickly serving FWA features and custom fwapg functions via [`pg_featureserv`](https://www.hillcrestgeo.ca/fwapg)
 
-See the documentation for details on setup and usage, plus tables and function references.
+See [documentation](link) for setup and usage details, plus table and function references.
 
 
 ## Quickstart
@@ -53,7 +53,7 @@ See the documentation for details on setup and usage, plus tables and function r
         POLYGON((.....
 
 
-    See documentation for more examples of typical usage.
+    See [Usage](link) for more examples.
 
 
 ## Source data
