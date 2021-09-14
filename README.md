@@ -9,7 +9,7 @@
 - enable querying of FWA features via spatial SQL
 - provide `gradient` values for every FWA stream
 - enable quickly serving FWA features as vector tiles (MVT) via `pg_tileserv`
-- enabler quickly serving FWA features and custom fwapg functions via `pg_featureserv`
+- enable quickly serving FWA features and custom fwapg functions via `pg_featureserv`
 
 See the documentation for details on setup and usage, plus tables and function references.
 
