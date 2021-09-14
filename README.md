@@ -1,25 +1,15 @@
 # fwapg
 
-Tools to create a PostgreSQL database for working with British Columbia's [Freshwater Atlas](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater).
+`fwapg` extends British Columbia's [Freshwater Atlas](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater) (FWA) with PostgreSQL/PostGIS. `fwapg` provides additional tables, indexes and functions to:
 
-
-## Key features
-
-- find the closest stream to any given point in BC
-- extract the watershed boundary upstream of an arbitrary point on a stream
-- indexed (speedy) upstream/downstream queries like:
-    + [*how many salmon observations are there upstream of a point?*](https://github.com/smnorris/bcfishobs)
-    + [*what is the area of a watershed above a stream guage?*](https://github.com/smnorris/bcbasins)
-    + [*how many km of potential fish habitat are upstream of a failed culvert?*](https://github.com/smnorris/bcfishpass)
-- convenience tables for mapping, watershed aggregation, etc (`fwa_named_streams`, `fwa_basins_poly` and more)
-- `gradient`  for every FWA stream
-- combines FWA data with similar data from adjacent jurisdictions for cross-boundary queries
-- enable serving FWA data direct from the db as MVT (vector tiles) via [`pg_tileserv`](https://github.com/CrunchyData/pg_tileserv):
-    + [MVT service](https://www.hillcrestgeo.ca/pg_tileserv)
-- enable serving FWA data features and spatial functions via API provided by [`pg_featureserv`](https://github.com/CrunchyData/pg_featureserv):
-    + [API](https://www.hillcrestgeo.ca/fwapg)
-    + [R client](https://github.com/poissonconsulting/fwapgr/)
-
+- quickly translate arbitrary point locations (`X,Y`) to a linear reference positions (`blue_line_key, measure`) on the stream network
+- enable speedy upstream/downstream queries throughout BC
+- quickly and cleanly generate watershed boundaries upstream of arbitrary locations
+- enable cross-boundary queries by combining FWA data with data from neighbouring jurisdictions
+- enable querying of FWA and other features via spatial SQL
+- provide `gradient` values for every FWA stream
+- quickly serve FWA features as vector tiles (MVT)
+- support serving features and custom functions via web API
 
 ## Requirements
 
