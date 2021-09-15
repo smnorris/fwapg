@@ -81,7 +81,7 @@ clean_db:
 # get the latest FWA archive from hillcrestgeo.ca
 data/FWA.gpkg:
 	mkdir -p data
-	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip -P _data
+	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip -P data
 	unzip data/FWA.zip -d data
 
 
@@ -200,7 +200,7 @@ data/WBD_National_GDB.gdb:
 	# index the columns of interest
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
-	$(PSQL_CMD) -c "COMMENT ON TABLE usgs.wbdhu12 IS 'USGS National Watershed Boundary Dataset, HUC12 level. See https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml';
+	$(PSQL_CMD) -c "COMMENT ON TABLE usgs.wbdhu12 IS 'USGS National Watershed Boundary Dataset, HUC12 level. See https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml';"
 	touch $@
 
 
@@ -239,7 +239,7 @@ data/hybas_ar_lev12_v1c:
 	$(PSQL_CMD) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ALTER COLUMN hybas_id TYPE bigint;" # pk should be integer (ogr loads as numeric)
 	$(PSQL_CMD) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	$(PSQL_CMD) -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
-	$(PSQL_CMD) -c "COMMENT ON TABLE hydrosheds.hybas_lev12_v1c IS 'HydroBasins for North America from https://www.hydrosheds.org. See source for column documentation';
+	$(PSQL_CMD) -c "COMMENT ON TABLE hydrosheds.hybas_lev12_v1c IS 'HydroBasins for North America from https://www.hydrosheds.org. See source for column documentation';"
 	touch $@
 
 

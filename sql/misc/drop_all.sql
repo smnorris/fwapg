@@ -40,8 +40,15 @@ DROP FUNCTION IF EXISTS ST_Safe_Difference.sql
 DROP FUNCTION IF EXISTS FWA_huc12.sql;
 DROP FUNCTION IF EXISTS FWA_hydroshed.sql;
 DROP FUNCTION IF EXISTS FWA_IndexPoint.sql;
-DROP FUNCTION IF EXISTS FWA_Upstream.sql;
-DROP FUNCTION IF EXISTS FWA_Downstream.sql;
+
+DROP FUNCTION FWA_Upstream(ltree,ltree,ltree,ltree);
+DROP FUNCTION FWA_Upstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+DROP FUNCTION FWA_Upstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+
+DROP FUNCTION FWA_Downstream(ltree,ltree,ltree,ltree);
+DROP FUNCTION FWA_Downstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+DROP FUNCTION FWA_Downstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+
 DROP FUNCTION IF EXISTS FWA_UpstreamBorderCrossings.sql;
 DROP FUNCTION IF EXISTS FWA_SliceWatershedAtPoint.sql;
 DROP FUNCTION IF EXISTS FWA_WatershedExBC.sql;

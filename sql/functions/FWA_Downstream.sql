@@ -220,4 +220,4 @@ SELECT
 $$
 language 'sql' immutable parallel safe;
 
-COMMENT ON FUNCTION FWA_Upstream IS 'Compare input watershed codes and/or linear positions A and B, return TRUE if codes/positions A are downstream of codes/positions B';
+--COMMENT ON FUNCTION FWA_Downstream IS 'Compare input watershed codes and/or linear positions A and B, return TRUE if codes/positions A are downstream of codes/positions B';

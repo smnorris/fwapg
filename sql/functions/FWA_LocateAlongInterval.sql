@@ -1,6 +1,4 @@
 -- Return a point on the stream network based on the location provided by input blue_line_key and downstream_route_measure
-
-DROP FUNCTION postgisftw.FWA_LocateAlongInterval;
 CREATE OR REPLACE FUNCTION postgisftw.FWA_LocateAlongInterval(blue_line_key integer, start_measure integer DEFAULT 0, interval_length integer DEFAULT 1000, end_measure integer DEFAULT NULL)
 
 RETURNS TABLE

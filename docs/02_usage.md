@@ -30,6 +30,65 @@ This function is available via the `fwapg` [feature service](https://www.hillcre
 
 Referencing a single point is handy but generally it is necessary to join/snap an entire table of point geometries to FWA streams.
 
+```
+-- extract subset for testing
+WITH src_pts AS
+(
+  SELECT *
+  FROM whse_fish.pscis_assessment_svw
+  LIMIT 10
+),
+
+-- find nearest neighbouring streams within given distance of input features
+candidates AS
+(
+  SELECT
+    pt.stream_crossing_id,
+    nn.linear_feature_id,
+    nn.distance_to_stream,
+    nn.blue_line_key,
+  CEIL(
+    GREATEST(nn.downstream_route_measure,
+      FLOOR(
+        LEAST(nn.upstream_route_measure,
+          (ST_LineLocatePoint(nn.geom, ST_ClosestPoint(pt.geom, pt.geom)) * nn.length_metre) + nn.downstream_route_measure
+  )))) as downstream_route_measure
+  FROM src_pts as pt
+  CROSS JOIN LATERAL
+  (SELECT
+     str.linear_feature_id,
+     ST_Distance(str.geom, pt.geom) as distance_to_stream,
+     str.blue_line_key,
+     str.downstream_route_measure,
+     str.upstream_route_measure,
+     str.length_metre,
+     str.geom
+    FROM whse_basemapping.fwa_stream_networks_sp AS str
+    -- use lines that have valid local code, are in the network, and within BC
+    WHERE str.localcode_ltree IS NOT NULL
+      AND NOT str.wscode_ltree <@ '999'
+      AND edge_type != 6010
+    ORDER BY str.geom <-> pt.geom
+    LIMIT 10) as nn                 -- retain up to 10 potential matches
+  WHERE nn.distance_to_stream < 50  -- within 50m
+)
+
+-- get only the nearest distinct result per blue line key
+-- (more than one geometry from the same stream could be near the point)
+SELECT DISTINCT ON (stream_crossing_id, blue_line_key)
+  c.stream_crossing_id,
+  c.linear_feature_id,
+  c.distance_to_stream,
+  str.blue_line_key,
+  c.downstream_route_measure,
+  FWA_LocateAlong(c.blue_line_key::integer, c.downstream_route_measure::float) as geom
+FROM candidates c
+INNER JOIN whse_basemapping.fwa_stream_networks_sp str
+ON c.linear_feature_id = str.linear_feature_id
+INNER JOIN src_pts
+ON c.stream_crossing_id = src_pts.stream_crossing_id
+ORDER BY c.stream_crossing_id, str.blue_line_key, c.distance_to_stream;
+```
 
 ### Check results
 
