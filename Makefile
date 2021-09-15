@@ -41,6 +41,8 @@ ALL_TARGETS = .db \
 	.wdbhu12 \
 	.hydrosheds \
 	$(TABLES_VALUEADDED_TARGETS) \
+	.fwa_assessment_watersheds_lut \
+	.fwa_assessment_watersheds_streams_lut \
 	.functions
 
 # shortcuts for ogr2ogr
@@ -261,7 +263,8 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Repair.sql
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Difference.sql
 
-
+	$(PSQL_CMD) -f sql/functions/FWA_huc12.sql
+	$(PSQL_CMD) -f sql/functions/FWA_hydroshed.sql
 	$(PSQL_CMD) -f sql/functions/FWA_IndexPoint.sql
 	$(PSQL_CMD) -f sql/functions/FWA_Upstream.sql
 	$(PSQL_CMD) -f sql/functions/FWA_Downstream.sql
@@ -277,7 +280,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/functions/FWA_LocateAlong.sql
 	$(PSQL_CMD) -f sql/functions/FWA_LocateAlongInterval.sql
 
-	$(PSQL_CMD) -f sql/functions/hydroshed.sql
+
 	touch $@
 
 
@@ -285,10 +288,10 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 .fwa_assessment_watersheds_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip -P data
 	unzip data/fwa_assessment_watersheds_lut.csv.zip -d data
-	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut
-	(watershed_feature_id integer PRIMARY KEY,
-	assmnt_watershed_id integer,
-	watershed_group_code text,
+	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut \
+	(watershed_feature_id integer PRIMARY KEY, \
+	assmnt_watershed_id integer, \
+	watershed_group_code text, \
 	watershed_group_id integer)"
 	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_assessment_watersheds_lut FROM 'data/fwa_assessment_watersheds_lut.csv' delimiter ',' csv header"
 	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
@@ -298,10 +301,10 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 .fwa_assessment_watersheds_streams_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip -P data
 	unzip data/fwa_assessment_watersheds_streams_lut.csv.zip -d data
-	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut
-	(watershed_feature_id integer PRIMARY KEY,
-	assmnt_watershed_id integer,
-	watershed_group_code text,
+	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut \
+	(watershed_feature_id integer PRIMARY KEY, \
+	assmnt_watershed_id integer, \
+	watershed_group_code text, \
 	watershed_group_id integer)"
 	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut FROM 'data/fwa_assessment_watersheds_streams_lut.csv' delimiter ',' csv header"
 	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_streams_lut (watershed_feature_id)"
