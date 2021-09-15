@@ -36,14 +36,14 @@ ALL_TARGETS = .db \
 	.fwa_stream_networks_sp \
 	.fwa_watersheds_poly \
 	.fwa_linear_boundaries_sp \
-	.fix_data \
-	.fix_types \
-	.wdbhu12 \
-	.hydrosheds \
+	.fwa_fixdata \
+	.fwa_fixtypes \
+	.fwa_wbdhu12 \
+	.fwa_hydrosheds \
 	$(TABLES_VALUEADDED_TARGETS) \
 	.fwa_assessment_watersheds_lut \
 	.fwa_assessment_watersheds_streams_lut \
-	.functions
+	.fwa_functions
 
 # shortcuts for ogr2ogr
 PGOGR_SCHEMA = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping"
@@ -163,12 +163,12 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 
 
 # apply fixes
-.fix_data: .fwa_stream_networks_sp
+.fwa_fixdata: .fwa_stream_networks_sp
 	$(PSQL_CMD) -f sql/fixes/data.sql  # known errors that may not yet be fixed in source
 	touch $@
 
 
-.fix_types: $(TABLES_SOURCE_TARGETS)
+.fwa_fixtypes: $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/fixes/types.sql # QGIS likes the geometry types to be uniform (sources are mixed singlepart/multipart)
 	touch $@
 
@@ -180,7 +180,7 @@ data/WBD_National_GDB.gdb:
 	unzip data/WBD_National_GDB.zip -d data
 
 # load washington, idaho, montana and alaska
-.wbdhu12: .db data/WBD_National_GDB.gdb
+.fwa_wbdhu12: .db data/WBD_National_GDB.gdb
 	ogr2ogr \
 		-f PostgreSQL \
 		$(PGOGR) \
@@ -210,7 +210,7 @@ data/hybas_ar_lev12_v1c:
 	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip -P data
 	unzip data/hydrosheds.zip -d data
 
-.hydrosheds: data/hybas_ar_lev12_v1c data/hybas_na_lev12_v1c
+.fwa_hydrosheds: data/hybas_ar_lev12_v1c data/hybas_na_lev12_v1c
 	# Load _ar_ and _na_ shapefiles
 	ogr2ogr \
 		-f PostgreSQL \
@@ -250,14 +250,14 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 
 
 # load FWA functions
-.functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS) \
+.fwa_functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS) \
 	.fwa_stream_networks_sp \
 	.fwa_watersheds_poly \
 	.fwa_linear_boundaries_sp \
-	.fix_types \
-	.fix_data \
-	.hydrosheds \
-	.wdbhu12
+	.fwa_fixtypes \
+	.fwa_fixdata \
+	.fwa_hydrosheds \
+	.fwa_wbdhu12
 	# todo - these 3 funcs can be removed with pg13/postgis3.1
 	$(PSQL_CMD) -f sql/functions/CDB_MakeHexagon.sql
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Repair.sql
