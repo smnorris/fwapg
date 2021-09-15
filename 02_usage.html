@@ -42,10 +42,13 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#upstream-downstream">Upstream / Downstream</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reference-a-single-point-to-stream-network">Reference a single point to stream network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reference-many-points-to-the-stream-network">Reference many points to the stream network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-many-points-to-stream-network">Reference many points to stream network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#check-results">Check results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#query-downstream">Query downstream</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#query-upstream">Query upstream</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-watershed">Generate watershed</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id1">Upstream/Downstream</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="03_tables.html">Table reference</a></li>
@@ -81,16 +84,16 @@
 <p>This document presumes a working familiarity with FWA data and PostgreSQL/PostGIS.</p>
 <div class="section" id="upstream-downstream">
 <h2>Upstream / Downstream<a class="headerlink" href="#upstream-downstream" title="Permalink to this headline"></a></h2>
-<p>The most typical use of <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> is to answer the question - “what is upstream or downstream of these points”?</p>
+<p>The most typical use of <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> is to answer the question - “what is upstream or downstream of these points of interest”?</p>
 <div class="section" id="reference-a-single-point-to-stream-network">
 <h3>Reference a single point to stream network<a class="headerlink" href="#reference-a-single-point-to-stream-network" title="Permalink to this headline"></a></h3>
-<p>If you simply have a single point location as <code class="docutils literal notranslate"><span class="pre">X,Y</span></code> (plus coordinate system identifier), use the function <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code></p>
+<p>If you simply have a single point location as <code class="docutils literal notranslate"><span class="pre">X,Y</span></code> (plus coordinate system identifier), use the function <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code>.</p>
 <p>For example, to find the nearest point on the FWA stream network to location <code class="docutils literal notranslate"><span class="pre">-123.7028,</span> <span class="pre">48.3858</span></code>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SELECT *
 FROM FWA_IndexPoint(-123.7028, 48.3858, 4326);
 </pre></div>
 </div>
-<p>This snaps the input point to the closest stream - it returns information about the closest stream, minimum distance from input point to the stream, and the geometry of the closest point on the stream to the point.</p>
+<p>This snaps the input point to the closest stream - it returns information about the closest stream, minimum distance from input point to the stream, and the geometry of the closest point on the stream to the point:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>linear_feature_id |  gnis_name  | wscode_ltree | localcode_ltree | blue_line_key | downstream_route_measure | distance_to_stream | bc_ind | geom
 -------------------+-------------+--------------+-----------------+---------------+--------------------------+--------------------+--------+
          710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.2530543284006 | 24.228412194958068 | t      |
@@ -98,14 +101,81 @@ FROM FWA_IndexPoint(-123.7028, 48.3858, 4326);
 </div>
 <p>This function is available via the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> <a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint.html">feature service</a> - you can experiment with it <a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint/items.html?x=-123.7028&amp;y=48.3858&amp;srid=4326">directly</a> without having to install fwapg (zoom out to see the context in the default web map).</p>
 </div>
-<div class="section" id="reference-many-points-to-the-stream-network">
-<h3>Reference many points to the stream network<a class="headerlink" href="#reference-many-points-to-the-stream-network" title="Permalink to this headline"></a></h3>
+<div class="section" id="reference-many-points-to-stream-network">
+<h3>Reference many points to stream network<a class="headerlink" href="#reference-many-points-to-stream-network" title="Permalink to this headline"></a></h3>
 <p>Referencing a single point is handy but generally it is necessary to join/snap an entire table of point geometries to FWA streams.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span> <span class="n">extract</span> <span class="n">subset</span> <span class="k">for</span> <span class="n">testing</span>
+<span class="n">WITH</span> <span class="n">src_pts</span> <span class="n">AS</span>
+<span class="p">(</span>
+  <span class="n">SELECT</span> <span class="o">*</span>
+  <span class="n">FROM</span> <span class="n">whse_fish</span><span class="o">.</span><span class="n">pscis_assessment_svw</span>
+  <span class="n">LIMIT</span> <span class="mi">10</span>
+<span class="p">),</span>
+
+<span class="o">--</span> <span class="n">find</span> <span class="n">nearest</span> <span class="n">neighbouring</span> <span class="n">streams</span> <span class="n">within</span> <span class="n">given</span> <span class="n">distance</span> <span class="n">of</span> <span class="nb">input</span> <span class="n">features</span>
+<span class="n">candidates</span> <span class="n">AS</span>
+<span class="p">(</span>
+  <span class="n">SELECT</span>
+    <span class="n">pt</span><span class="o">.</span><span class="n">stream_crossing_id</span><span class="p">,</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">linear_feature_id</span><span class="p">,</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">distance_to_stream</span><span class="p">,</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+  <span class="n">CEIL</span><span class="p">(</span>
+    <span class="n">GREATEST</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+      <span class="n">FLOOR</span><span class="p">(</span>
+        <span class="n">LEAST</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">upstream_route_measure</span><span class="p">,</span>
+          <span class="p">(</span><span class="n">ST_LineLocatePoint</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">ST_ClosestPoint</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">pt</span><span class="o">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">*</span> <span class="n">nn</span><span class="o">.</span><span class="n">length_metre</span><span class="p">)</span> <span class="o">+</span> <span class="n">nn</span><span class="o">.</span><span class="n">downstream_route_measure</span>
+  <span class="p">))))</span> <span class="k">as</span> <span class="n">downstream_route_measure</span>
+  <span class="n">FROM</span> <span class="n">src_pts</span> <span class="k">as</span> <span class="n">pt</span>
+  <span class="n">CROSS</span> <span class="n">JOIN</span> <span class="n">LATERAL</span>
+  <span class="p">(</span><span class="n">SELECT</span>
+     <span class="nb">str</span><span class="o">.</span><span class="n">linear_feature_id</span><span class="p">,</span>
+     <span class="n">ST_Distance</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">pt</span><span class="o">.</span><span class="n">geom</span><span class="p">)</span> <span class="k">as</span> <span class="n">distance_to_stream</span><span class="p">,</span>
+     <span class="nb">str</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+     <span class="nb">str</span><span class="o">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+     <span class="nb">str</span><span class="o">.</span><span class="n">upstream_route_measure</span><span class="p">,</span>
+     <span class="nb">str</span><span class="o">.</span><span class="n">length_metre</span><span class="p">,</span>
+     <span class="nb">str</span><span class="o">.</span><span class="n">geom</span>
+    <span class="n">FROM</span> <span class="n">whse_basemapping</span><span class="o">.</span><span class="n">fwa_stream_networks_sp</span> <span class="n">AS</span> <span class="nb">str</span>
+    <span class="o">--</span> <span class="n">use</span> <span class="n">lines</span> <span class="n">that</span> <span class="n">have</span> <span class="n">valid</span> <span class="n">local</span> <span class="n">code</span><span class="p">,</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">network</span><span class="p">,</span> <span class="ow">and</span> <span class="n">within</span> <span class="n">BC</span>
+    <span class="n">WHERE</span> <span class="nb">str</span><span class="o">.</span><span class="n">localcode_ltree</span> <span class="n">IS</span> <span class="n">NOT</span> <span class="n">NULL</span>
+      <span class="n">AND</span> <span class="n">NOT</span> <span class="nb">str</span><span class="o">.</span><span class="n">wscode_ltree</span> <span class="o">&lt;@</span> <span class="s1">&#39;999&#39;</span>
+      <span class="n">AND</span> <span class="n">edge_type</span> <span class="o">!=</span> <span class="mi">6010</span>
+    <span class="n">ORDER</span> <span class="n">BY</span> <span class="nb">str</span><span class="o">.</span><span class="n">geom</span> <span class="o">&lt;-&gt;</span> <span class="n">pt</span><span class="o">.</span><span class="n">geom</span>
+    <span class="n">LIMIT</span> <span class="mi">10</span><span class="p">)</span> <span class="k">as</span> <span class="n">nn</span>                 <span class="o">--</span> <span class="n">retain</span> <span class="n">up</span> <span class="n">to</span> <span class="mi">10</span> <span class="n">potential</span> <span class="n">matches</span>
+  <span class="n">WHERE</span> <span class="n">nn</span><span class="o">.</span><span class="n">distance_to_stream</span> <span class="o">&lt;</span> <span class="mi">50</span>  <span class="o">--</span> <span class="n">within</span> <span class="mi">50</span><span class="n">m</span>
+<span class="p">)</span>
+
+<span class="o">--</span> <span class="n">get</span> <span class="n">only</span> <span class="n">the</span> <span class="n">nearest</span> <span class="n">distinct</span> <span class="n">result</span> <span class="n">per</span> <span class="n">blue</span> <span class="n">line</span> <span class="n">key</span>
+<span class="o">--</span> <span class="p">(</span><span class="n">more</span> <span class="n">than</span> <span class="n">one</span> <span class="n">geometry</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">same</span> <span class="n">stream</span> <span class="n">could</span> <span class="n">be</span> <span class="n">near</span> <span class="n">the</span> <span class="n">point</span><span class="p">)</span>
+<span class="n">SELECT</span> <span class="n">DISTINCT</span> <span class="n">ON</span> <span class="p">(</span><span class="n">stream_crossing_id</span><span class="p">,</span> <span class="n">blue_line_key</span><span class="p">)</span>
+  <span class="n">c</span><span class="o">.</span><span class="n">stream_crossing_id</span><span class="p">,</span>
+  <span class="n">c</span><span class="o">.</span><span class="n">linear_feature_id</span><span class="p">,</span>
+  <span class="n">c</span><span class="o">.</span><span class="n">distance_to_stream</span><span class="p">,</span>
+  <span class="nb">str</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+  <span class="n">c</span><span class="o">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+  <span class="n">FWA_LocateAlong</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">::</span><span class="n">integer</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">downstream_route_measure</span><span class="p">::</span><span class="nb">float</span><span class="p">)</span> <span class="k">as</span> <span class="n">geom</span>
+<span class="n">FROM</span> <span class="n">candidates</span> <span class="n">c</span>
+<span class="n">INNER</span> <span class="n">JOIN</span> <span class="n">whse_basemapping</span><span class="o">.</span><span class="n">fwa_stream_networks_sp</span> <span class="nb">str</span>
+<span class="n">ON</span> <span class="n">c</span><span class="o">.</span><span class="n">linear_feature_id</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">linear_feature_id</span>
+<span class="n">INNER</span> <span class="n">JOIN</span> <span class="n">src_pts</span>
+<span class="n">ON</span> <span class="n">c</span><span class="o">.</span><span class="n">stream_crossing_id</span> <span class="o">=</span> <span class="n">src_pts</span><span class="o">.</span><span class="n">stream_crossing_id</span>
+<span class="n">ORDER</span> <span class="n">BY</span> <span class="n">c</span><span class="o">.</span><span class="n">stream_crossing_id</span><span class="p">,</span> <span class="nb">str</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">distance_to_stream</span><span class="p">;</span>
+</pre></div>
 </div>
 </div>
-<div class="section" id="id1">
-<h2>Upstream/Downstream<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
-<p>Use <code class="docutils literal notranslate"><span class="pre">FWA_Upstream()</span></code> and <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> functions to relate different tables based on a record’s position on the network.</p>
+<div class="section" id="check-results">
+<h3>Check results<a class="headerlink" href="#check-results" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="query-downstream">
+<h3>Query downstream<a class="headerlink" href="#query-downstream" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="query-upstream">
+<h3>Query upstream<a class="headerlink" href="#query-upstream" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="generate-watershed">
+<h3>Generate watershed<a class="headerlink" href="#generate-watershed" title="Permalink to this headline"></a></h3>
+</div>
 </div>
 </div>
 
