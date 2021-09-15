@@ -263,24 +263,18 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Repair.sql
 	$(PSQL_CMD) -f sql/functions/ST_Safe_Difference.sql
 
+	$(PSQL_CMD) -f sql/functions/FWA_Downstream.sql
 	$(PSQL_CMD) -f sql/functions/FWA_huc12.sql
 	$(PSQL_CMD) -f sql/functions/FWA_hydroshed.sql
 	$(PSQL_CMD) -f sql/functions/FWA_IndexPoint.sql
-	$(PSQL_CMD) -f sql/functions/FWA_Upstream.sql
-	$(PSQL_CMD) -f sql/functions/FWA_Downstream.sql
-	$(PSQL_CMD) -f sql/functions/FWA_LengthDownstream.sql
-	$(PSQL_CMD) -f sql/functions/FWA_LengthInstream.sql
-	$(PSQL_CMD) -f sql/functions/FWA_LengthUpstream.sql
-	$(PSQL_CMD) -f sql/functions/FWA_UpstreamBorderCrossings.sql
+	$(PSQL_CMD) -f sql/functions/FWA_LocateAlong.sql
+	$(PSQL_CMD) -f sql/functions/FWA_LocateAlongInterval.sql
 	$(PSQL_CMD) -f sql/functions/FWA_SliceWatershedAtPoint.sql
-	$(PSQL_CMD) -f sql/functions/FWA_WatershedExBC.sql
+	$(PSQL_CMD) -f sql/functions/FWA_Upstream.sql
+	$(PSQL_CMD) -f sql/functions/FWA_UpstreamBorderCrossings.sql
 	$(PSQL_CMD) -f sql/functions/FWA_WatershedAtMeasure.sql
 	$(PSQL_CMD) -f sql/functions/FWA_WatershedHex.sql
 	$(PSQL_CMD) -f sql/functions/FWA_WatershedStream.sql
-	$(PSQL_CMD) -f sql/functions/FWA_LocateAlong.sql
-	$(PSQL_CMD) -f sql/functions/FWA_LocateAlongInterval.sql
-
-
 	touch $@
 
 
