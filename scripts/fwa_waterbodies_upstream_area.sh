@@ -1,11 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
 
-# create output table
-psql -c "drop table if exists whse_basemapping.fwa_waterbodies_upstream_area"
-
 psql -c "CREATE TABLE whse_basemapping.fwa_waterbodies_upstream_area
-        (watershed_feature_id bigint,
+        (linear_feature_id bigint,
          upstream_area_lake double precision,
          upstream_area_manmade double precision,
          upstream_area_wetland double precision)"
@@ -19,10 +16,9 @@ for WSG in $(psql -AtX -P border=0,footer=no \
       ")
 do
   echo 'Processing '$WSG
-  psql -AX -v wsg=$WSG -f sql/fwa_waterbodies_upstream_area.sql
+  psql -AX -v wsg=$WSG -f sql/tables/value_added/fwa_waterbodies_upstream_area.sql
 done
 
-psql -c "ALTER TABLE whse_basemapping.fwa_waterbodies_upstream_area ADD PRIMARY KEY (watershed_feature_id)"
+psql -c "ALTER TABLE whse_basemapping.fwa_waterbodies_upstream_area ADD PRIMARY KEY (linear_feature_id)"
 
-echo 'All done, see whse_basemapping.fwa_waterbodies_upstream_area'
-
+echo 'fwa_waterbodies_upstream_area loaded successfully'

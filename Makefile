@@ -28,8 +28,13 @@ TABLES_VALUEADDED = fwa_approx_borders \
 	fwa_waterbodies \
 	fwa_watershed_groups_subdivided
 
+TABLES_VALUEADDEDSCRIPTED = fwa_waterbodies_upstream_area \
+	fwa_watersheds_upstream_area
+
 TABLES_SOURCE_TARGETS := $(addprefix .,$(TABLES_SOURCE))
 TABLES_VALUEADDED_TARGETS := $(addprefix .,$(TABLES_VALUEADDED))
+TABLES_VALUEADDEDSCRIPTED_TARGETS := $(addprefix .,$(TABLES_VALUEADDEDSCRIPTED))
+
 ALL_TARGETS = .db \
 	data/FWA.gpkg \
 	$(TABLES_SOURCE_TARGETS) \
@@ -41,6 +46,7 @@ ALL_TARGETS = .db \
 	.fwa_wbdhu12 \
 	.fwa_hydrosheds \
 	$(TABLES_VALUEADDED_TARGETS) \
+	$(TABLES_VALUEADDEDSCRIPTED_TARGETS) \
 	.fwa_assessment_watersheds_lut \
 	.fwa_assessment_watersheds_streams_lut \
 	.fwa_functions
@@ -246,6 +252,11 @@ data/hybas_ar_lev12_v1c:
 # create additional value added tables
 $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/tables/value_added/$(subst .,,$@).sql
+	touch $@
+
+# build value added tables that are created with shell scripts rather than direct sql calls
+$(TABLES_VALUEADDEDSCRIPTED_TARGETS): $(TABLES_SOURCE_TARGETS)
+	scripts/$(subst .,,$@).sh
 	touch $@
 
 
