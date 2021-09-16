@@ -3,9 +3,9 @@ set -euxo pipefail
 
 psql -c "CREATE TABLE whse_basemapping.fwa_waterbodies_upstream_area
         (linear_feature_id bigint,
-         upstream_area_lake double precision,
-         upstream_area_manmade double precision,
-         upstream_area_wetland double precision)"
+         upstream_lake_ha double precision,
+         upstream_reservoir_ha double precision,
+         upstream_wetland_ha double precision)"
 
 # load watershed groups individually
 # (calling this in parallel seems to grind things to a halt)
