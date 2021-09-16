@@ -8,8 +8,8 @@
 - enable cross-boundary queries by combining FWA data with data from neighbouring jurisdictions
 - enable querying of FWA features via spatial SQL
 - provide `gradient` values for every FWA stream
-- enable quickly serving FWA features as vector tiles (MVT) via [`pg_tileserv`](https://www.hillcrestgeo.ca/pg_tileserv)
-- enable quickly serving FWA features and custom fwapg functions via [`pg_featureserv`](https://www.hillcrestgeo.ca/fwapg)
+- enable quickly serving FWA features as vector tiles (MVT)
+- enable quickly serving FWA features and custom fwapg functions
 
 See [documentation](https://smnorris.github.io/fwapg/) for setup and usage details, plus table and function references.
 
@@ -54,6 +54,17 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
 
     See [Usage](https://smnorris.github.io/fwapg/02_usage.html) for more examples.
+
+
+
+## Tile and feature services
+
+If you prefer not to create your own database, `fwapg` features and functions are served from hillcrestgeo.ca as GeoJSON or vector tiles via these web services and wrappers:
+
+- [hillcrestgeo.ca/fwapg](https://www.hillcrestgeo.ca/fwapg): tables and functions served as GeoJSON
+- [fwapgr (R)](https://github.com/poissonconsulting/fwapgr): an R wrapper around the `fwapg` feature service
+- [fwatlasbc (R)](https://github.com/poissonconsulting/fwatlasbc): an R package for higher level queries
+- [hillcrestgeo.ca/pg_tileserv](https://www.hillcrestgeo.ca/pg_tileserv): `fwapg` features served as vector tiles (MVT)
 
 
 ## Source data
