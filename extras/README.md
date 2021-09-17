@@ -11,19 +11,16 @@ It is often useful to know how much area is upstream of a given location, and of
 
     ./fwa_watersheds_upstream_area.sh
 
-When working with watersheds, join to the lookup via `watershed_feature_id`. When working with streams, the
-join is a bit more complex because there is no easy way to relate streams to watershed polyons for 100% of features. This query will get area upstream of stream segments:
+When working with watersheds, join to the lookup via `watershed_feature_id`. When working with streams, relate the streams to watersheds via the lookup `fwawatersheds_streams_lut`:
 
-    SELECT DISTINCT ON (linear_feature_id)
+    SELECT
       s.linear_feature_id,
-      ua.upstream_area
+      ua.upstream_area_ha
     FROM whse_basemapping.fwa_stream_networks_sp s
-    INNER JOIN whse_basemapping.fwa_watersheds_poly w
-    ON ST_Intersects(ST_pointonsurface(s.geom), w.geom)
+    LEFT OUTER JOIN whse_basemapping.fwa_streams_watersheds_lut l
+    ON s.linear_feature_id = l.linear_feature_id
     INNER JOIN whse_basemapping.fwa_watersheds_upstream_area ua
-    ON w.watershed_feature_id = ua.watershed_feature_id
-    WHERE NOT s.wscode_ltree  <@ '999'
-    ORDER BY s.linear_feature_id, s.stream_order
+    ON l.watershed_feature_id = ua.watershed_feature_id
 
 ## fwa_waterbodies_upstream_area
 

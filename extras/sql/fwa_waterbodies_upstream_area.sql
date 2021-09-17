@@ -35,6 +35,6 @@ ON b.waterbody_key = w.waterbody_key
 LEFT OUTER JOIN whse_basemapping.fwa_manmade_waterbodies_poly r
 ON b.waterbody_key = r.waterbody_key
 WHERE a.watershed_group_code = :'wsg'
-AND a.fwa_watershed_code NOT LIKE '999-999999%'
+AND NOT a.wscode_ltree <@ '999'
 AND a.localcode_ltree IS NOT NULL
 GROUP BY a.linear_feature_id;

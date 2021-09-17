@@ -11,7 +11,7 @@ parallel psql -XA -v wsg={} -f sql/fwa_watersheds_upstream_area.sql
 
 # combine temp tables into output table
 psql -c "CREATE TABLE whse_basemapping.fwa_watersheds_upstream_area
-        (watershed_feature_id integer primary key, upstream_area double precision);"
+        (watershed_feature_id integer primary key, upstream_area_ha double precision);"
 
 for WSG in $(psql -AtX -P border=0,footer=no \
   -c "SELECT watershed_group_code

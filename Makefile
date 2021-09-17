@@ -42,7 +42,7 @@ ALL_TARGETS = .db \
 	.fwa_wbdhu12 \
 	.fwa_hydrosheds \
 	$(TABLES_VALUEADDED_TARGETS) \
-	$(TABLES_VALUEADDEDSCRIPTED_TARGETS) \
+	.fwa_streams_watersheds_lut \
 	.fwa_waterbodies_upstream_area \
 	.fwa_watersheds_upstream_area \
 	.fwa_assessment_watersheds_lut \
@@ -55,6 +55,10 @@ PGOGR = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT)"
 
 # Ensure psql stops on error so make script stops when there is a problem
 PSQL_CMD = psql -v ON_ERROR_STOP=1
+
+# get list of watershed groups
+GROUPS = $(shell psql -AtX -P border=0,footer=no -c "SELECT watershed_group_code FROM whse_basemapping.fwa_watershed_groups_poly ORDER BY watershed_group_code")
+
 
 all: $(ALL_TARGETS)
 
@@ -247,9 +251,23 @@ data/hybas_ar_lev12_v1c:
 	touch $@
 
 
-# create additional value added tables
+# create value added tables that require just single .sql script
 $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/tables/value_added/$(subst .,,$@).sql
+	touch $@
+
+# create streams - watersheds lookup (looping through groups should speed this up a bit)
+.fwa_streams_watersheds_lut: .fwa_stream_networks_sp .fwa_watersheds_poly .fwa_watershed_groups_poly
+	# create table
+	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_streams_watersheds_lut \
+					(linear_feature_id bigint, watershed_feature_id integer);"
+	# load data per group
+	for wsg in $(GROUPS) ; do \
+		psql -v wsg=$$wsg -f sql/tables/value_added/fwa_streams_watersheds_lut.sql ; \
+	done
+	# create indexes after load
+	$(PSQL_CMD) -c "ALTER TABLE whse_basemapping.fwa_streams_watersheds_lut ADD PRIMARY KEY (linear_feature_id);"
+	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_streams_watersheds_lut (watershed_feature_id);"
 	touch $@
 
 
