@@ -28,12 +28,8 @@ TABLES_VALUEADDED = fwa_approx_borders \
 	fwa_waterbodies \
 	fwa_watershed_groups_subdivided
 
-TABLES_VALUEADDEDSCRIPTED = fwa_waterbodies_upstream_area \
-	fwa_watersheds_upstream_area
-
 TABLES_SOURCE_TARGETS := $(addprefix .,$(TABLES_SOURCE))
 TABLES_VALUEADDED_TARGETS := $(addprefix .,$(TABLES_VALUEADDED))
-TABLES_VALUEADDEDSCRIPTED_TARGETS := $(addprefix .,$(TABLES_VALUEADDEDSCRIPTED))
 
 ALL_TARGETS = .db \
 	data/FWA.gpkg \
@@ -47,6 +43,8 @@ ALL_TARGETS = .db \
 	.fwa_hydrosheds \
 	$(TABLES_VALUEADDED_TARGETS) \
 	$(TABLES_VALUEADDEDSCRIPTED_TARGETS) \
+	.fwa_waterbodies_upstream_area \
+	.fwa_watersheds_upstream_area \
 	.fwa_assessment_watersheds_lut \
 	.fwa_assessment_watersheds_streams_lut \
 	.fwa_functions
@@ -254,11 +252,6 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/tables/value_added/$(subst .,,$@).sql
 	touch $@
 
-# build value added tables that are created with shell scripts rather than direct sql calls
-$(TABLES_VALUEADDEDSCRIPTED_TARGETS): $(TABLES_SOURCE_TARGETS)
-	scripts/$(subst .,,$@).sh
-	touch $@
-
 
 # load FWA functions
 .fwa_functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS) \
@@ -289,7 +282,25 @@ $(TABLES_VALUEADDEDSCRIPTED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	touch $@
 
 
-# rather than generating them (slow), download pre-generated lookup tables
+# rather than generating these lookups (slow), download pre-generated data
+.fwa_waterbodies_upstream_area: .db
+	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_waterbodies_upstream_area.zip -P data
+	unzip data/fwa_waterbodies_upstream_area.zip -d data
+	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_waterbodies_upstream_area \
+		(linear_feature_id bigint primary key, \
+		upstream_lake_ha double precision, \
+		upstream_reservoir_ha double precision, \
+		upstream_wetland_ha double precision)"
+	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_waterbodies_upstream_area FROM 'data/fwa_waterbodies_upstream_area.csv' delimiter ',' csv header"
+
+.fwa_watersheds_upstream_area: .db
+	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_watersheds_upstream_area.zip -P data
+	unzip data/fwa_watersheds_upstream_area.zip -d data
+	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_watersheds_upstream_area
+		(watershed_feature_id integer primary key, \
+		upstream_area double precision );"
+	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_watersheds_upstream_area FROM 'data/fwa_watersheds_upstream_area.csv' delimiter ',' csv header"
+
 .fwa_assessment_watersheds_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip -P data
 	unzip data/fwa_assessment_watersheds_lut.csv.zip -d data
@@ -301,7 +312,6 @@ $(TABLES_VALUEADDEDSCRIPTED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_assessment_watersheds_lut FROM 'data/fwa_assessment_watersheds_lut.csv' delimiter ',' csv header"
 	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
 	touch $@
-
 
 .fwa_assessment_watersheds_streams_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip -P data
