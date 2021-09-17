@@ -103,64 +103,44 @@ FROM FWA_IndexPoint(-123.7028, 48.3858, 4326);
 </div>
 <div class="section" id="reference-many-points-to-stream-network">
 <h3>Reference many points to stream network<a class="headerlink" href="#reference-many-points-to-stream-network" title="Permalink to this headline"></a></h3>
-<p>Referencing a single point is handy but generally it is necessary to join/snap an entire table of point geometries to FWA streams.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span> <span class="n">extract</span> <span class="n">subset</span> <span class="k">for</span> <span class="n">testing</span>
-<span class="n">WITH</span> <span class="n">src_pts</span> <span class="n">AS</span>
+<p>Referencing a single point is handy but generally it is necessary to join/snap an entire table of point geometries to FWA streams. Because <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code> is a table returning function this is not quite as intuitive as it might be, but by using a <code class="docutils literal notranslate"><span class="pre">LATERAL</span></code> join we can run the function on each of a set of points. Note that <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code> accepts point geometries directly, but only as BC Albers (EPSG:3005):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+<span class="n">SELECT</span>
+  <span class="n">pts</span><span class="o">.</span><span class="n">stream_crossing_id</span><span class="p">,</span>
+  <span class="n">blue_line_key</span><span class="p">,</span>
+  <span class="n">downstream_route_measure</span><span class="p">,</span>
+  <span class="n">distance_to_stream</span>
+<span class="n">FROM</span>
 <span class="p">(</span>
-  <span class="n">SELECT</span> <span class="o">*</span>
+  <span class="n">SELECT</span> <span class="n">stream_crossing_id</span><span class="p">,</span> <span class="n">geom</span>
   <span class="n">FROM</span> <span class="n">whse_fish</span><span class="o">.</span><span class="n">pscis_assessment_svw</span>
   <span class="n">LIMIT</span> <span class="mi">10</span>
-<span class="p">),</span>
-
-<span class="o">--</span> <span class="n">find</span> <span class="n">nearest</span> <span class="n">neighbouring</span> <span class="n">streams</span> <span class="n">within</span> <span class="n">given</span> <span class="n">distance</span> <span class="n">of</span> <span class="nb">input</span> <span class="n">features</span>
-<span class="n">candidates</span> <span class="n">AS</span>
+<span class="p">)</span> <span class="n">pts</span>
+<span class="n">CROSS</span> <span class="n">JOIN</span> <span class="n">LATERAL</span>
 <span class="p">(</span>
-  <span class="n">SELECT</span>
-    <span class="n">pt</span><span class="o">.</span><span class="n">stream_crossing_id</span><span class="p">,</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">linear_feature_id</span><span class="p">,</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">distance_to_stream</span><span class="p">,</span>
-    <span class="n">nn</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">,</span>
-  <span class="n">CEIL</span><span class="p">(</span>
-    <span class="n">GREATEST</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
-      <span class="n">FLOOR</span><span class="p">(</span>
-        <span class="n">LEAST</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">upstream_route_measure</span><span class="p">,</span>
-          <span class="p">(</span><span class="n">ST_LineLocatePoint</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">ST_ClosestPoint</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">pt</span><span class="o">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">*</span> <span class="n">nn</span><span class="o">.</span><span class="n">length_metre</span><span class="p">)</span> <span class="o">+</span> <span class="n">nn</span><span class="o">.</span><span class="n">downstream_route_measure</span>
-  <span class="p">))))</span> <span class="k">as</span> <span class="n">downstream_route_measure</span>
-  <span class="n">FROM</span> <span class="n">src_pts</span> <span class="k">as</span> <span class="n">pt</span>
-  <span class="n">CROSS</span> <span class="n">JOIN</span> <span class="n">LATERAL</span>
-  <span class="p">(</span><span class="n">SELECT</span>
-     <span class="nb">str</span><span class="o">.</span><span class="n">linear_feature_id</span><span class="p">,</span>
-     <span class="n">ST_Distance</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">geom</span><span class="p">,</span> <span class="n">pt</span><span class="o">.</span><span class="n">geom</span><span class="p">)</span> <span class="k">as</span> <span class="n">distance_to_stream</span><span class="p">,</span>
-     <span class="nb">str</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">,</span>
-     <span class="nb">str</span><span class="o">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
-     <span class="nb">str</span><span class="o">.</span><span class="n">upstream_route_measure</span><span class="p">,</span>
-     <span class="nb">str</span><span class="o">.</span><span class="n">length_metre</span><span class="p">,</span>
-     <span class="nb">str</span><span class="o">.</span><span class="n">geom</span>
-    <span class="n">FROM</span> <span class="n">whse_basemapping</span><span class="o">.</span><span class="n">fwa_stream_networks_sp</span> <span class="n">AS</span> <span class="nb">str</span>
-    <span class="o">--</span> <span class="n">use</span> <span class="n">lines</span> <span class="n">that</span> <span class="n">have</span> <span class="n">valid</span> <span class="n">local</span> <span class="n">code</span><span class="p">,</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">network</span><span class="p">,</span> <span class="ow">and</span> <span class="n">within</span> <span class="n">BC</span>
-    <span class="n">WHERE</span> <span class="nb">str</span><span class="o">.</span><span class="n">localcode_ltree</span> <span class="n">IS</span> <span class="n">NOT</span> <span class="n">NULL</span>
-      <span class="n">AND</span> <span class="n">NOT</span> <span class="nb">str</span><span class="o">.</span><span class="n">wscode_ltree</span> <span class="o">&lt;@</span> <span class="s1">&#39;999&#39;</span>
-      <span class="n">AND</span> <span class="n">edge_type</span> <span class="o">!=</span> <span class="mi">6010</span>
-    <span class="n">ORDER</span> <span class="n">BY</span> <span class="nb">str</span><span class="o">.</span><span class="n">geom</span> <span class="o">&lt;-&gt;</span> <span class="n">pt</span><span class="o">.</span><span class="n">geom</span>
-    <span class="n">LIMIT</span> <span class="mi">10</span><span class="p">)</span> <span class="k">as</span> <span class="n">nn</span>                 <span class="o">--</span> <span class="n">retain</span> <span class="n">up</span> <span class="n">to</span> <span class="mi">10</span> <span class="n">potential</span> <span class="n">matches</span>
-  <span class="n">WHERE</span> <span class="n">nn</span><span class="o">.</span><span class="n">distance_to_stream</span> <span class="o">&lt;</span> <span class="mi">50</span>  <span class="o">--</span> <span class="n">within</span> <span class="mi">50</span><span class="n">m</span>
-<span class="p">)</span>
+  <span class="n">SELECT</span> <span class="o">*</span>
+  <span class="n">FROM</span>
+  <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">i</span><span class="p">;</span>
 
-<span class="o">--</span> <span class="n">get</span> <span class="n">only</span> <span class="n">the</span> <span class="n">nearest</span> <span class="n">distinct</span> <span class="n">result</span> <span class="n">per</span> <span class="n">blue</span> <span class="n">line</span> <span class="n">key</span>
-<span class="o">--</span> <span class="p">(</span><span class="n">more</span> <span class="n">than</span> <span class="n">one</span> <span class="n">geometry</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">same</span> <span class="n">stream</span> <span class="n">could</span> <span class="n">be</span> <span class="n">near</span> <span class="n">the</span> <span class="n">point</span><span class="p">)</span>
-<span class="n">SELECT</span> <span class="n">DISTINCT</span> <span class="n">ON</span> <span class="p">(</span><span class="n">stream_crossing_id</span><span class="p">,</span> <span class="n">blue_line_key</span><span class="p">)</span>
-  <span class="n">c</span><span class="o">.</span><span class="n">stream_crossing_id</span><span class="p">,</span>
-  <span class="n">c</span><span class="o">.</span><span class="n">linear_feature_id</span><span class="p">,</span>
-  <span class="n">c</span><span class="o">.</span><span class="n">distance_to_stream</span><span class="p">,</span>
-  <span class="nb">str</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">,</span>
-  <span class="n">c</span><span class="o">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
-  <span class="n">FWA_LocateAlong</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">::</span><span class="n">integer</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">downstream_route_measure</span><span class="p">::</span><span class="nb">float</span><span class="p">)</span> <span class="k">as</span> <span class="n">geom</span>
-<span class="n">FROM</span> <span class="n">candidates</span> <span class="n">c</span>
-<span class="n">INNER</span> <span class="n">JOIN</span> <span class="n">whse_basemapping</span><span class="o">.</span><span class="n">fwa_stream_networks_sp</span> <span class="nb">str</span>
-<span class="n">ON</span> <span class="n">c</span><span class="o">.</span><span class="n">linear_feature_id</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">linear_feature_id</span>
-<span class="n">INNER</span> <span class="n">JOIN</span> <span class="n">src_pts</span>
-<span class="n">ON</span> <span class="n">c</span><span class="o">.</span><span class="n">stream_crossing_id</span> <span class="o">=</span> <span class="n">src_pts</span><span class="o">.</span><span class="n">stream_crossing_id</span>
-<span class="n">ORDER</span> <span class="n">BY</span> <span class="n">c</span><span class="o">.</span><span class="n">stream_crossing_id</span><span class="p">,</span> <span class="nb">str</span><span class="o">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">distance_to_stream</span><span class="p">;</span>
+
+ <span class="n">stream_crossing_id</span> <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">distance_to_stream</span>
+<span class="o">--------------------+---------------+--------------------------+--------------------</span>
+                  <span class="mi">1</span> <span class="o">|</span>     <span class="mi">360884282</span> <span class="o">|</span>        <span class="mf">866.1525308411424</span> <span class="o">|</span>  <span class="mf">6.945908761529624</span>
+                  <span class="mi">1</span> <span class="o">|</span>     <span class="mi">360825762</span> <span class="o">|</span>                        <span class="mi">0</span> <span class="o">|</span>  <span class="mf">94.80438292808357</span>
+                  <span class="mi">2</span> <span class="o">|</span>     <span class="mi">360866620</span> <span class="o">|</span>        <span class="mf">36032.59046348071</span> <span class="o">|</span> <span class="mf">3.7025663441681003</span>
+                  <span class="mi">3</span> <span class="o">|</span>     <span class="mi">360844576</span> <span class="o">|</span>        <span class="mf">639.6525834806826</span> <span class="o">|</span> <span class="mf">12.871574449849064</span>
+                  <span class="mi">3</span> <span class="o">|</span>     <span class="mi">360490551</span> <span class="o">|</span>        <span class="mf">2.699977324188454</span> <span class="o">|</span> <span class="mf">24.583859613366364</span>
+                  <span class="mi">3</span> <span class="o">|</span>     <span class="mi">360831182</span> <span class="o">|</span>       <span class="mf">29.035744096755185</span> <span class="o">|</span>  <span class="mf">72.04007831867183</span>
+                  <span class="mi">4</span> <span class="o">|</span>     <span class="mi">360844794</span> <span class="o">|</span>        <span class="mf">1992.315839723944</span> <span class="o">|</span>   <span class="mf">45.6151963657929</span>
+                  <span class="mi">5</span> <span class="o">|</span>     <span class="mi">360618851</span> <span class="o">|</span>       <span class="mf">3004.2644276369833</span> <span class="o">|</span>  <span class="mf">17.81520682728221</span>
+                  <span class="mi">6</span> <span class="o">|</span>     <span class="mi">360680835</span> <span class="o">|</span>        <span class="mf">1807.292852891016</span> <span class="o">|</span>  <span class="mf">4.180735207378935</span>
+                  <span class="mi">6</span> <span class="o">|</span>     <span class="mi">360499825</span> <span class="o">|</span>                        <span class="mi">0</span> <span class="o">|</span>  <span class="mf">50.15783001327493</span>
+                  <span class="mi">6</span> <span class="o">|</span>     <span class="mi">360764713</span> <span class="o">|</span>        <span class="mf">413.7116699105115</span> <span class="o">|</span>  <span class="mf">85.64774023526205</span>
+                  <span class="mi">7</span> <span class="o">|</span>     <span class="mi">360762345</span> <span class="o">|</span>       <span class="mf">1178.9361755598632</span> <span class="o">|</span> <span class="mf">28.829681452255283</span>
+                  <span class="mi">8</span> <span class="o">|</span>     <span class="mi">360611896</span> <span class="o">|</span>       <span class="mf">2001.5442239776783</span> <span class="o">|</span> <span class="mf">3.5761402667300364</span>
+                 <span class="mi">10</span> <span class="o">|</span>     <span class="mi">360845663</span> <span class="o">|</span>        <span class="mf">735.2729701743625</span> <span class="o">|</span>  <span class="mf">20.19883579415319</span>
+<span class="p">(</span><span class="mi">14</span> <span class="n">rows</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

@@ -28,66 +28,46 @@ This function is available via the `fwapg` [feature service](https://www.hillcre
 
 ### Reference many points to stream network
 
-Referencing a single point is handy but generally it is necessary to join/snap an entire table of point geometries to FWA streams.
+Referencing a single point is handy but generally it is necessary to join/snap an entire table of point geometries to FWA streams. Because `FWA_IndexPoint` is a table returning function this is not quite as intuitive as it might be, but by using a `LATERAL` join we can run the function on each of a set of points. Note that `FWA_IndexPoint` accepts point geometries directly, but only as BC Albers (EPSG:3005):
 
 ```
--- extract subset for testing
-WITH src_pts AS
+
+SELECT
+  pts.stream_crossing_id,
+  blue_line_key,
+  downstream_route_measure,
+  distance_to_stream
+FROM
 (
-  SELECT *
+  SELECT stream_crossing_id, geom
   FROM whse_fish.pscis_assessment_svw
   LIMIT 10
-),
-
--- find nearest neighbouring streams within given distance of input features
-candidates AS
+) pts
+CROSS JOIN LATERAL
 (
-  SELECT
-    pt.stream_crossing_id,
-    nn.linear_feature_id,
-    nn.distance_to_stream,
-    nn.blue_line_key,
-  CEIL(
-    GREATEST(nn.downstream_route_measure,
-      FLOOR(
-        LEAST(nn.upstream_route_measure,
-          (ST_LineLocatePoint(nn.geom, ST_ClosestPoint(pt.geom, pt.geom)) * nn.length_metre) + nn.downstream_route_measure
-  )))) as downstream_route_measure
-  FROM src_pts as pt
-  CROSS JOIN LATERAL
-  (SELECT
-     str.linear_feature_id,
-     ST_Distance(str.geom, pt.geom) as distance_to_stream,
-     str.blue_line_key,
-     str.downstream_route_measure,
-     str.upstream_route_measure,
-     str.length_metre,
-     str.geom
-    FROM whse_basemapping.fwa_stream_networks_sp AS str
-    -- use lines that have valid local code, are in the network, and within BC
-    WHERE str.localcode_ltree IS NOT NULL
-      AND NOT str.wscode_ltree <@ '999'
-      AND edge_type != 6010
-    ORDER BY str.geom <-> pt.geom
-    LIMIT 10) as nn                 -- retain up to 10 potential matches
-  WHERE nn.distance_to_stream < 50  -- within 50m
-)
+  SELECT *
+  FROM
+  FWA_IndexPoint(geom, 100, 10)
+) i;
 
--- get only the nearest distinct result per blue line key
--- (more than one geometry from the same stream could be near the point)
-SELECT DISTINCT ON (stream_crossing_id, blue_line_key)
-  c.stream_crossing_id,
-  c.linear_feature_id,
-  c.distance_to_stream,
-  str.blue_line_key,
-  c.downstream_route_measure,
-  FWA_LocateAlong(c.blue_line_key::integer, c.downstream_route_measure::float) as geom
-FROM candidates c
-INNER JOIN whse_basemapping.fwa_stream_networks_sp str
-ON c.linear_feature_id = str.linear_feature_id
-INNER JOIN src_pts
-ON c.stream_crossing_id = src_pts.stream_crossing_id
-ORDER BY c.stream_crossing_id, str.blue_line_key, c.distance_to_stream;
+
+ stream_crossing_id | blue_line_key | downstream_route_measure | distance_to_stream
+--------------------+---------------+--------------------------+--------------------
+                  1 |     360884282 |        866.1525308411424 |  6.945908761529624
+                  1 |     360825762 |                        0 |  94.80438292808357
+                  2 |     360866620 |        36032.59046348071 | 3.7025663441681003
+                  3 |     360844576 |        639.6525834806826 | 12.871574449849064
+                  3 |     360490551 |        2.699977324188454 | 24.583859613366364
+                  3 |     360831182 |       29.035744096755185 |  72.04007831867183
+                  4 |     360844794 |        1992.315839723944 |   45.6151963657929
+                  5 |     360618851 |       3004.2644276369833 |  17.81520682728221
+                  6 |     360680835 |        1807.292852891016 |  4.180735207378935
+                  6 |     360499825 |                        0 |  50.15783001327493
+                  6 |     360764713 |        413.7116699105115 |  85.64774023526205
+                  7 |     360762345 |       1178.9361755598632 | 28.829681452255283
+                  8 |     360611896 |       2001.5442239776783 | 3.5761402667300364
+                 10 |     360845663 |        735.2729701743625 |  20.19883579415319
+(14 rows)
 ```
 
 ### Check results
