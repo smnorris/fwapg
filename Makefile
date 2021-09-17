@@ -90,7 +90,7 @@ clean_db:
 data/FWA.gpkg:
 	mkdir -p data
 	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip -P data
-	unzip data/FWA.zip -d data
+	unzip -qun data/FWA.zip -d data
 
 
 # load basic/smaller tables from FWA.gpkg to whse_basemapping schema
@@ -185,7 +185,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 data/WBD_National_GDB.gdb:
 	mkdir -p data
 	wget --trust-server-names -qN https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip -P data
-	unzip data/WBD_National_GDB.zip -d data
+	unzip -qun data/WBD_National_GDB.zip -d data
 
 # load washington, idaho, montana and alaska
 .fwa_wbdhu12: .db data/WBD_National_GDB.gdb
@@ -216,7 +216,7 @@ data/WBD_National_GDB.gdb:
 # Source shapefiles must be manually downloaded, so I've cached them here:
 data/hybas_ar_lev12_v1c:
 	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip -P data
-	unzip data/hydrosheds.zip -d data
+	unzip -qun data/hydrosheds.zip -d data
 
 .fwa_hydrosheds: data/hybas_ar_lev12_v1c data/hybas_na_lev12_v1c
 	# Load _ar_ and _na_ shapefiles
@@ -303,7 +303,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 # rather than generating these lookups (slow), download pre-generated data
 .fwa_waterbodies_upstream_area: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_waterbodies_upstream_area.zip -P data
-	unzip data/fwa_waterbodies_upstream_area.zip -d data
+	unzip -qun data/fwa_waterbodies_upstream_area.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_waterbodies_upstream_area \
 		(linear_feature_id bigint primary key, \
 		upstream_lake_ha double precision, \
@@ -314,7 +314,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 
 .fwa_watersheds_upstream_area: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_watersheds_upstream_area.zip -P data
-	unzip data/fwa_watersheds_upstream_area.zip -d data
+	unzip -qun data/fwa_watersheds_upstream_area.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_watersheds_upstream_area \
 		(watershed_feature_id integer primary key, \
 		upstream_area double precision );"
@@ -323,7 +323,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 
 .fwa_assessment_watersheds_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip -P data
-	unzip data/fwa_assessment_watersheds_lut.csv.zip -d data
+	unzip -qun data/fwa_assessment_watersheds_lut.csv.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut \
 	(watershed_feature_id integer PRIMARY KEY, \
 	assmnt_watershed_id integer, \
@@ -335,7 +335,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 
 .fwa_assessment_watersheds_streams_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip -P data
-	unzip data/fwa_assessment_watersheds_streams_lut.csv.zip -d data
+	unzip -qun data/fwa_assessment_watersheds_streams_lut.csv.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut \
 	(watershed_feature_id integer PRIMARY KEY, \
 	assmnt_watershed_id integer, \
