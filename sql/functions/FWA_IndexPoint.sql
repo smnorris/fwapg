@@ -59,7 +59,7 @@ SELECT
       ST_ClosestPoint(stream_geom, pt_geom))
       * length_metre
     ) + downstream_route_measure AS downstream_route_measure,
-    distance_to_stream,
+    ROUND(distance_to_stream::numeric, 3) AS distance_to_stream,
     bc_ind,
     ST_ClosestPoint(stream_geom, pt_geom) as geom
 FROM
