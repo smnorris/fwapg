@@ -292,6 +292,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 		upstream_reservoir_ha double precision, \
 		upstream_wetland_ha double precision)"
 	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_waterbodies_upstream_area FROM 'data/fwa_waterbodies_upstream_area.csv' delimiter ',' csv header"
+	touch $@
 
 .fwa_watersheds_upstream_area: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_watersheds_upstream_area.zip -P data
@@ -300,6 +301,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 		(watershed_feature_id integer primary key, \
 		upstream_area double precision );"
 	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_watersheds_upstream_area FROM 'data/fwa_watersheds_upstream_area.csv' delimiter ',' csv header"
+	touch $@
 
 .fwa_assessment_watersheds_lut: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip -P data
