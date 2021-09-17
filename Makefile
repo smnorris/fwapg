@@ -296,7 +296,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 .fwa_watersheds_upstream_area: .db
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_watersheds_upstream_area.zip -P data
 	unzip data/fwa_watersheds_upstream_area.zip -d data
-	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_watersheds_upstream_area
+	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_watersheds_upstream_area \
 		(watershed_feature_id integer primary key, \
 		upstream_area double precision );"
 	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_watersheds_upstream_area FROM 'data/fwa_watersheds_upstream_area.csv' delimiter ',' csv header"
