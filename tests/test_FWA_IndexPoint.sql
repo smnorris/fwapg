@@ -1,8 +1,12 @@
--- very basic fwa_neareststream tests, all should return result=t
+-- very basic FWA_IndexPoint tests, all should return result=t
 
 -- simple closest stream
 SELECT gnis_name = 'Bowker Creek' as result
 FROM postgisftw.FWA_IndexPoint(1199447.0, 383113.0, 3005);
+
+-- geometry form of function
+SELECT gnis_name = 'Bowker Creek' as result
+FROM FWA_IndexPoint(ST_SetSRID(ST_MakePoint(1199447.0, 383113.0), 3005));
 
 -- outside BC
 SELECT bc_ind = 'f' as result
