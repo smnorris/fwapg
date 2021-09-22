@@ -92,7 +92,7 @@ CROSS JOIN LATERAL
 
 Matching points with variable precision and accuracy to FWA streams can be a challenge. In the example above, station `07EA004` has two streams within 50m - which one is correct? Station `07EC002` is 95m from the nearest stream, is this too far to be confident about the match?
 
-For quality matching of points to streams it is essential to be familiar with the contents and lineage of the point data. Is there any information in the data that can improve the match? How were the points collected? These ECC points were likely digitized from paper maps that used a much different scale from FWA 1:20,000 mapping - using the closest point will not work reliably. However, the data in the `name` column is consistent and appears to be very reliable - we can improve the join based on matching to the FWA stream name:
+For quality matching of points to streams it is essential to be familiar with the contents and lineage of the point data. Is there any information in the data that can improve the match? How were the points collected? These hydrometric station locations were likely digitized from paper maps that used a much different scale from FWA 1:20,000 mapping - using the closest point will not work reliably. However, the data in the `name` column is consistent and appears to be very reliable - we can improve the join based on matching to the FWA stream name:
 
 
 ```sql
@@ -126,7 +126,7 @@ For quality matching of points to streams it is essential to be familiar with th
  07EC002 | OMINECA RIVER ABOVE OSILINKA RIVER  | Omineca River  | t
 ```
 
-If this is good enough, the query can be adjusted to just return matches where the stream name matches:
+If this is good enough, the query can be adjusted to return only the stream within 100m where the point stream name matches the FWA stream name (according to `pg_trgm`):
 
 ```sql
 SELECT
@@ -166,25 +166,23 @@ Other possible attributes for improving matches could include:
 
 If no additional information is available, it may be best to filter results where there are >1 matches within 100m (or whatever tolerance works with your data) and complete the matching of these points manually.
 
-
-### Query downstream
-
-Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and `blue_line_key` / `route_measure`. Using `FWA_Downstream` enables doing this with a join:
+To cut down on the code for below examples, we can create a table holding the results:
 
 ```sql
-WITH events AS
-(SELECT
+CREATE TABLE hydrostn_events AS
+SELECT
   pts.id,
   pts.name,
-  blue_line_key,
-  downstream_route_measure,
-  wscode_ltree::ltree,
-  localcode_ltree::ltree
+  i.blue_line_key,
+  i.downstream_route_measure,
+  i.wscode_ltree,
+  i.localcode_ltree,
+  i.distance_to_stream,
+  i.geom
 FROM
 (
   SELECT id, name, geom
   FROM hydrostn
-  LIMIT 5
 ) pts
 CROSS JOIN LATERAL
 (
@@ -192,13 +190,20 @@ CROSS JOIN LATERAL
   FROM
   FWA_IndexPoint(geom, 100, 10)
 ) i
-WHERE gnis_name % pts.name::text)
+WHERE gnis_name % pts.name::text
+ORDER BY pts.id;
+```
 
+### Query downstream
+
+Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and `blue_line_key` / `route_measure`. Using `FWA_Downstream` enables doing this with a join:
+
+```sql
 SELECT
   e.id,
   e.name,
   SUM(st_length(s.geom)) / 1000 as length_dnstr_km
-FROM events e
+FROM (SELECT * FROM hydrostn_events LIMIT 5) as e
 INNER JOIN whse_basemapping.fwa_stream_networks_sp s
 ON FWA_Downstream(
   e.blue_line_key, e.downstream_route_measure, e.wscode_ltree, e.localcode_ltree,
@@ -223,33 +228,11 @@ Note that this is only the downstream portion present in the FWA data - if the p
 An upstream query is almost the same, using `FWA_Upstream`:
 
 ```sql
-WITH events AS
-(SELECT
-  pts.id,
-  pts.name,
-  blue_line_key,
-  downstream_route_measure,
-  wscode_ltree::ltree,
-  localcode_ltree::ltree
-FROM
-(
-  SELECT id, name, geom
-  FROM hydrostn
-  LIMIT 5
-) pts
-CROSS JOIN LATERAL
-(
-  SELECT *
-  FROM
-  FWA_IndexPoint(geom, 100, 10)
-) i
-WHERE gnis_name % pts.name::text)
-
 SELECT
   e.id,
   e.name,
   SUM(st_length(s.geom)) / 1000 as length_upstr_km
-FROM events e
+FROM (SELECT * FROM hydrostn_events LIMIT 5) as e
 INNER JOIN whse_basemapping.fwa_stream_networks_sp s
 ON FWA_Upstream(
   e.blue_line_key, e.downstream_route_measure, e.wscode_ltree, e.localcode_ltree,
@@ -268,6 +251,43 @@ ORDER BY e.id;
 ```
 
 As with the downstream query, only features within BC are returned. The above `length_upstr_km` will be incorrect for trans-boundary watersheds.
+
+More general upstream queries are possible as well:
+
+- how many stations are upstream of Hope?
+
+```sql
+SELECT
+  COUNT(*)
+FROM hydrostn_events e
+WHERE FWA_Upstream(
+  356364114, 160400, '100'::ltree, '100.113848'::ltree,
+  e.blue_line_key, e.downstream_route_measure, e.wscode_ltree, e.localcode_ltree
+);
+
+ count
+-------
+    83
+```
+
+- how much additional stream network is isolated by the Site C dam? (ie, upstream of Site C, but not upstream of the Bennet Dam)
+
+```sql
+SELECT
+  SUM(ST_Length(geom)) / 1000 as length_km
+FROM whse_basemapping.fwa_stream_networks_sp s
+WHERE FWA_Upstream(
+  359572348, 1597489, '200.948755'::ltree, '200.948755.816999'::ltree,
+  s.blue_line_key, s.downstream_route_measure, s.wscode_ltree, s.localcode_ltree
+) AND NOT FWA_Upstream(
+  359572348, 1706733, '200.948755'::ltree, '200.948755.871814'::ltree,
+  s.blue_line_key, s.downstream_route_measure, s.wscode_ltree, s.localcode_ltree
+);
+
+     length_km
+--------------------
+ 28974.584934736216
+```
 
 
 ### Generate watershed
