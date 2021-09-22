@@ -19,8 +19,8 @@ RETURNS TABLE
     (
         linear_feature_id bigint,
         gnis_name text,
-        wscode_ltree text,
-        localcode_ltree text,
+        wscode_ltree ltree,
+        localcode_ltree ltree,
         blue_line_key integer,
         downstream_route_measure float,
         distance_to_stream float,
@@ -52,8 +52,8 @@ WITH pt AS
 SELECT
     linear_feature_id,
     gnis_name,
-    wscode_ltree::text,
-    localcode_ltree::text,
+    wscode_ltree,
+    localcode_ltree,
     blue_line_key,
     (ST_LineLocatePoint(stream_geom,
       ST_ClosestPoint(stream_geom, pt_geom))
@@ -123,8 +123,8 @@ RETURNS TABLE
     (
         linear_feature_id bigint,
         gnis_name text,
-        wscode_ltree text,
-        localcode_ltree text,
+        wscode_ltree ltree,
+        localcode_ltree ltree,
         blue_line_key integer,
         downstream_route_measure float,
         distance_to_stream float,
