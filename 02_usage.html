@@ -159,7 +159,7 @@
 <div class="section" id="check-results">
 <h3>Check results<a class="headerlink" href="#check-results" title="Permalink to this headline"></a></h3>
 <p>Matching points with variable precision and accuracy to FWA streams can be a challenge. In the example above, station <code class="docutils literal notranslate"><span class="pre">07EA004</span></code> has two streams within 50m - which one is correct? Station <code class="docutils literal notranslate"><span class="pre">07EC002</span></code> is 95m from the nearest stream, is this too far to be confident about the match?</p>
-<p>For quality matching of points to streams it is essential to be familiar with the contents and lineage of the point data. Is there any information in the data that can improve the match? How were the points collected? These ECC points were likely digitized from paper maps that used a much different scale from FWA 1:20,000 mapping - using the closest point will not work reliably. However, the data in the <code class="docutils literal notranslate"><span class="pre">name</span></code> column is consistent and appears to be very reliable - we can improve the join based on matching to the FWA stream name:</p>
+<p>For quality matching of points to streams it is essential to be familiar with the contents and lineage of the point data. Is there any information in the data that can improve the match? How were the points collected? These hydrometric station locations were likely digitized from paper maps that used a much different scale from FWA 1:20,000 mapping - using the closest point will not work reliably. However, the data in the <code class="docutils literal notranslate"><span class="pre">name</span></code> column is consistent and appears to be very reliable - we can improve the join based on matching to the FWA stream name:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span>  <span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">pg_trgm</span><span class="p">;</span>
 
   <span class="k">SELECT</span>
@@ -190,7 +190,7 @@
  <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span> <span class="n">Omineca</span> <span class="n">River</span>  <span class="o">|</span> <span class="n">t</span>
 </pre></div>
 </div>
-<p>If this is good enough, the query can be adjusted to just return matches where the stream name matches:</p>
+<p>If this is good enough, the query can be adjusted to return only the stream within 100m where the point stream name matches the FWA stream name (according to <code class="docutils literal notranslate"><span class="pre">pg_trgm</span></code>):</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
   <span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
   <span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
@@ -226,23 +226,21 @@
 <li><p>channel width or similar (compare to the FWA stream order, a point at 1m width should not be matched to a 5th order FWA stream)</p></li>
 </ul>
 <p>If no additional information is available, it may be best to filter results where there are &gt;1 matches within 100m (or whatever tolerance works with your data) and complete the matching of these points manually.</p>
-</div>
-<div class="section" id="query-downstream">
-<h3>Query downstream<a class="headerlink" href="#query-downstream" title="Permalink to this headline"></a></h3>
-<p>Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">route_measure</span></code>. Using <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> enables doing this with a join:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span> <span class="n">events</span> <span class="k">AS</span>
-<span class="p">(</span><span class="k">SELECT</span>
+<p>To cut down on the code for below examples, we can create a table holding the results:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">hydrostn_events</span> <span class="k">AS</span>
+<span class="k">SELECT</span>
   <span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
   <span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
-  <span class="n">blue_line_key</span><span class="p">,</span>
-  <span class="n">downstream_route_measure</span><span class="p">,</span>
-  <span class="n">wscode_ltree</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
-  <span class="n">localcode_ltree</span><span class="p">::</span><span class="n">ltree</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">distance_to_stream</span><span class="p">,</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">geom</span>
 <span class="k">FROM</span>
 <span class="p">(</span>
   <span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">geom</span>
   <span class="k">FROM</span> <span class="n">hydrostn</span>
-  <span class="k">LIMIT</span> <span class="mi">5</span>
 <span class="p">)</span> <span class="n">pts</span>
 <span class="k">CROSS</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
 <span class="p">(</span>
@@ -250,13 +248,19 @@
   <span class="k">FROM</span>
   <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="p">)</span> <span class="n">i</span>
-<span class="k">WHERE</span> <span class="n">gnis_name</span> <span class="o">%</span> <span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">::</span><span class="nb">text</span><span class="p">)</span>
-
-<span class="k">SELECT</span>
+<span class="k">WHERE</span> <span class="n">gnis_name</span> <span class="o">%</span> <span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">::</span><span class="nb">text</span>
+<span class="k">ORDER</span> <span class="k">BY</span> <span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="query-downstream">
+<h3>Query downstream<a class="headerlink" href="#query-downstream" title="Permalink to this headline"></a></h3>
+<p>Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">route_measure</span></code>. Using <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> enables doing this with a join:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
   <span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
   <span class="n">e</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
   <span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span> <span class="k">as</span> <span class="n">length_dnstr_km</span>
-<span class="k">FROM</span> <span class="n">events</span> <span class="n">e</span>
+<span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">hydrostn_events</span> <span class="k">LIMIT</span> <span class="mi">5</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span>
 <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span> <span class="n">s</span>
 <span class="k">ON</span> <span class="n">FWA_Downstream</span><span class="p">(</span>
   <span class="n">e</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
@@ -279,33 +283,11 @@
 <div class="section" id="query-upstream">
 <h3>Query upstream<a class="headerlink" href="#query-upstream" title="Permalink to this headline"></a></h3>
 <p>An upstream query is almost the same, using <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code>:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span> <span class="n">events</span> <span class="k">AS</span>
-<span class="p">(</span><span class="k">SELECT</span>
-  <span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
-  <span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
-  <span class="n">blue_line_key</span><span class="p">,</span>
-  <span class="n">downstream_route_measure</span><span class="p">,</span>
-  <span class="n">wscode_ltree</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
-  <span class="n">localcode_ltree</span><span class="p">::</span><span class="n">ltree</span>
-<span class="k">FROM</span>
-<span class="p">(</span>
-  <span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">geom</span>
-  <span class="k">FROM</span> <span class="n">hydrostn</span>
-  <span class="k">LIMIT</span> <span class="mi">5</span>
-<span class="p">)</span> <span class="n">pts</span>
-<span class="k">CROSS</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
-<span class="p">(</span>
-  <span class="k">SELECT</span> <span class="o">*</span>
-  <span class="k">FROM</span>
-  <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="p">)</span> <span class="n">i</span>
-<span class="k">WHERE</span> <span class="n">gnis_name</span> <span class="o">%</span> <span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">::</span><span class="nb">text</span><span class="p">)</span>
-
-<span class="k">SELECT</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
   <span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
   <span class="n">e</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
   <span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span> <span class="k">as</span> <span class="n">length_upstr_km</span>
-<span class="k">FROM</span> <span class="n">events</span> <span class="n">e</span>
+<span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">hydrostn_events</span> <span class="k">LIMIT</span> <span class="mi">5</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span>
 <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span> <span class="n">s</span>
 <span class="k">ON</span> <span class="n">FWA_Upstream</span><span class="p">(</span>
   <span class="n">e</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
@@ -324,6 +306,42 @@
 </pre></div>
 </div>
 <p>As with the downstream query, only features within BC are returned. The above <code class="docutils literal notranslate"><span class="pre">length_upstr_km</span></code> will be incorrect for trans-boundary watersheds.</p>
+<p>More general upstream queries are possible as well:</p>
+<ul class="simple">
+<li><p>how many stations are upstream of Hope?</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+  <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">hydrostn_events</span> <span class="n">e</span>
+<span class="k">WHERE</span> <span class="n">FWA_Upstream</span><span class="p">(</span>
+  <span class="mi">356364114</span><span class="p">,</span> <span class="mi">160400</span><span class="p">,</span> <span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span> <span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+  <span class="n">e</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">);</span>
+
+ <span class="k">count</span>
+<span class="c1">-------</span>
+    <span class="mi">83</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>how much additional stream network is isolated by the Site C dam? (ie, upstream of Site C, but not upstream of the Bennet Dam)</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+  <span class="k">SUM</span><span class="p">(</span><span class="n">ST_Length</span><span class="p">(</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span> <span class="k">as</span> <span class="n">length_km</span>
+<span class="k">FROM</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span> <span class="n">s</span>
+<span class="k">WHERE</span> <span class="n">FWA_Upstream</span><span class="p">(</span>
+  <span class="mi">359572348</span><span class="p">,</span> <span class="mi">1597489</span><span class="p">,</span> <span class="s1">&#39;200.948755&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span> <span class="s1">&#39;200.948755.816999&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+  <span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span> <span class="k">AND</span> <span class="k">NOT</span> <span class="n">FWA_Upstream</span><span class="p">(</span>
+  <span class="mi">359572348</span><span class="p">,</span> <span class="mi">1706733</span><span class="p">,</span> <span class="s1">&#39;200.948755&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span> <span class="s1">&#39;200.948755.871814&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+  <span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">);</span>
+
+     <span class="n">length_km</span>
+<span class="c1">--------------------</span>
+ <span class="mi">28974</span><span class="p">.</span><span class="mi">584934736216</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="generate-watershed">
 <h3>Generate watershed<a class="headerlink" href="#generate-watershed" title="Permalink to this headline"></a></h3>
