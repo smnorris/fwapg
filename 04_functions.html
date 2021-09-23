@@ -40,7 +40,22 @@
 <li class="toctree-l1"><a class="reference internal" href="01_setup.html">Setup and data load</a></li>
 <li class="toctree-l1"><a class="reference internal" href="02_usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03_tables.html">Table reference</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Function reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Function reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-indexpoint">FWA_IndexPoint</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-watershedatmeasure">FWA_WatershedAtMeasure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output-table">Output table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -69,6 +84,139 @@
              
   <div class="tex2jax_ignore mathjax_ignore section" id="function-reference">
 <h1>Function reference<a class="headerlink" href="#function-reference" title="Permalink to this headline"></a></h1>
+<div class="section" id="fwa-indexpoint">
+<h2>FWA_IndexPoint<a class="headerlink" href="#fwa-indexpoint" title="Permalink to this headline"></a></h2>
+<div class="section" id="synopsis">
+<h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline"></a></h3>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">point</span> <span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span> <span class="mi">3005</span><span class="p">),</span> <span class="n">tolerance</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">num_features</span> <span class="nb">integer</span> <span class="k">DEFAULT</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">x</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span> <span class="nb">float</span><span class="p">,</span> <span class="n">srid</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">tolerance</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">num_features</span> <span class="nb">integer</span> <span class="k">DEFAULT</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="description">
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline"></a></h3>
+<p>Snaps a point to the stream network. Provided a point (as either a BC Albers point geometry or (<code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">srid</span></code>), return a table containing the point geometry of the closest point on the FWA stream network to the given point, plus additional attributes from the matched stream:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>field</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">linear_feature_id</span></code></p></td>
+<td><p>bigint</p></td>
+<td><p>unique identifier of matched stream</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">gnis_name</span></code></p></td>
+<td><p>text</p></td>
+<td><p>stream name of matched stream</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">wscode_ltree</span></code></p></td>
+<td><p>ltree</p></td>
+<td><p>stream watershed code</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">localcode_ltree</span></code></p></td>
+<td><p>ltree</p></td>
+<td><p>stream local watershed code</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code></p></td>
+<td><p>integer</p></td>
+<td><p>stream blue line key (route identifier)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code></p></td>
+<td><p>double precision</p></td>
+<td><p>measure value of output point</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">distance_to_stream</span></code></p></td>
+<td><p>double precision</p></td>
+<td><p>distance from input point to output point</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">bc_ind</span></code></p></td>
+<td><p>boolean</p></td>
+<td><p>Indicates if the source point is in BC</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
+<td><p>geometry(Point, 3005)</p></td>
+<td><p>The closest point on the FWA stream network</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h3>
+<p>Return the closest point on FWA stream network to a point defined by a lat/lon (within default 5000m tolerance):</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">7028</span><span class="p">,</span> <span class="mi">48</span><span class="p">.</span><span class="mi">3858</span><span class="p">,</span> <span class="mi">4326</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">linear_feature_id</span> <span class="o">|</span>  <span class="n">gnis_name</span>  <span class="o">|</span> <span class="n">wscode_ltree</span> <span class="o">|</span> <span class="n">localcode_ltree</span> <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">distance_to_stream</span> <span class="o">|</span> <span class="n">bc_ind</span> <span class="o">|</span>                        <span class="n">geom</span>
+<span class="o">-------------------+-------------+--------------+-----------------+---------------+--------------------------+--------------------+--------+----------------------------------------------------</span>
+         <span class="mi">710513719</span> <span class="o">|</span> <span class="n">Sooke</span> <span class="n">River</span> <span class="o">|</span> <span class="mf">930.023810</span>   <span class="o">|</span> <span class="mf">930.023810</span>      <span class="o">|</span>     <span class="mi">354153927</span> <span class="o">|</span>        <span class="mf">350.2530543284006</span> <span class="o">|</span>             <span class="mf">24.228</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B0000D579287B42DC314198937D515C061741</span>
+</pre></div>
+</div>
+<p>Index a set of point geometries, finding up to 10 features within 100m:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+  <span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+  <span class="n">i</span><span class="p">.</span><span class="o">*</span>
+<span class="k">FROM</span> <span class="p">(</span>
+  <span class="k">VALUES</span>
+  <span class="p">(</span><span class="s1">&#39;07EA004&#39;</span><span class="p">,</span> <span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1054676</span><span class="p">,</span> <span class="mi">1304723</span><span class="p">),</span> <span class="mi">3005</span><span class="p">)),</span>
+  <span class="p">(</span><span class="s1">&#39;07EA005&#39;</span><span class="p">,</span> <span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1045356</span><span class="p">,</span> <span class="mi">1348750</span><span class="p">),</span> <span class="mi">3005</span><span class="p">)),</span>
+  <span class="p">(</span><span class="s1">&#39;07EA007&#39;</span><span class="p">,</span> <span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1066334</span><span class="p">,</span> <span class="mi">1356262</span><span class="p">),</span> <span class="mi">3005</span><span class="p">)),</span>
+  <span class="p">(</span><span class="s1">&#39;07EB002&#39;</span><span class="p">,</span> <span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1126747</span><span class="p">,</span> <span class="mi">1283184</span><span class="p">),</span> <span class="mi">3005</span><span class="p">)),</span>
+  <span class="p">(</span><span class="s1">&#39;07EC002&#39;</span><span class="p">,</span> <span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1089342</span><span class="p">,</span> <span class="mi">1214473</span><span class="p">),</span> <span class="mi">3005</span><span class="p">))</span>
+<span class="p">)</span> <span class="k">AS</span> <span class="n">pts</span> <span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">geom</span><span class="p">)</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
+<span class="p">(</span>
+  <span class="k">SELECT</span> <span class="o">*</span>
+  <span class="k">FROM</span>
+  <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">i</span> <span class="k">on</span> <span class="k">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span> <span class="n">linear_feature_id</span> <span class="o">|</span>   <span class="n">gnis_name</span>    <span class="o">|</span>       <span class="n">wscode_ltree</span>       <span class="o">|</span>         <span class="n">localcode_ltree</span>         <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">distance_to_stream</span> <span class="o">|</span> <span class="n">bc_ind</span> <span class="o">|</span>                        <span class="n">geom</span>
+<span class="o">---------+-------------------+----------------+--------------------------+---------------------------------+---------------+--------------------------+--------------------+--------+----------------------------------------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span>          <span class="mi">68051401</span> <span class="o">|</span> <span class="n">Ingenika</span> <span class="n">River</span> <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mi">992594</span>        <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">992594.039418</span>        <span class="o">|</span>     <span class="mi">359571145</span> <span class="o">|</span>        <span class="mf">6096.256539019577</span> <span class="o">|</span>             <span class="mf">41.319</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B00007FFBC4C0C617304173BF3D23BAE83341</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span>          <span class="mi">68051402</span> <span class="o">|</span>                <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">992594.042767</span> <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">992594.042767</span>        <span class="o">|</span>     <span class="mi">359233576</span> <span class="o">|</span>                        <span class="mi">0</span> <span class="o">|</span>              <span class="mf">46.77</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B000023DBF9FEB11730413108AC1CB3E83341</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span>          <span class="mi">49095881</span> <span class="o">|</span> <span class="n">Finlay</span> <span class="n">River</span>   <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mi">999851</span>        <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">999851.137838</span>        <span class="o">|</span>     <span class="mi">359569942</span> <span class="o">|</span>        <span class="mf">42909.36746325051</span> <span class="o">|</span>             <span class="mf">47.258</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B0000C3F5289C79E62F41508D976E90943441</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span>          <span class="mi">49083226</span> <span class="o">|</span> <span class="n">Akie</span> <span class="n">River</span>     <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">999851.088011</span> <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">999851.088011</span><span class="o">.</span><span class="mi">231827</span> <span class="o">|</span>     <span class="mi">359571761</span> <span class="o">|</span>        <span class="mf">29215.40257114563</span> <span class="o">|</span>             <span class="mf">40.442</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B000037B9E4F44B4530410DDF6ACEC1B13441</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span>         <span class="mi">161051216</span> <span class="o">|</span> <span class="n">Ospika</span> <span class="n">River</span>   <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mi">951156</span>        <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">951156.201899</span>        <span class="o">|</span>     <span class="mi">359573063</span> <span class="o">|</span>       <span class="mf">29005.449548147713</span> <span class="o">|</span>             <span class="mf">41.647</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B0000D7D491C73F3131419708AD7A50943341</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span>         <span class="mi">115033725</span> <span class="o">|</span> <span class="n">Omineca</span> <span class="n">River</span>  <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mi">944288</span>        <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">944288.110746</span>        <span class="o">|</span>     <span class="mi">359571933</span> <span class="o">|</span>        <span class="mf">29317.40902691083</span> <span class="o">|</span>             <span class="mf">95.125</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B000054618DD09A9F3041A0D25C29F4873241</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="fwa-watershedatmeasure">
+<h2>FWA_WatershedAtMeasure<a class="headerlink" href="#fwa-watershedatmeasure" title="Permalink to this headline"></a></h2>
+<div class="section" id="id1">
+<h3>Synopsis<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure(blue_line_key</span> <span class="pre">integer,</span> <span class="pre">downstream_route_measure</span> <span class="pre">float)</span></code></p>
+</div>
+<div class="section" id="id2">
+<h3>Description<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<p>Given a point defined by <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> and <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>, return a table containting a polygon geometry that defines the point’s upstream watershed following this set of rules:</p>
+<ol class="simple">
+<li><p>If the point is within a lake, return everything upstream of the lake’s <em>outflow</em></p></li>
+<li><p>If the point is within a polygonal river/canal the fundamental watersheds are
+cut across the banks of the river/canal before being included in the aggregation</p></li>
+<li><p>If the point is &lt; 100m downstream from the top of the fundamental
+watershed in which it falls, then that fundamental watershed is not included in the aggregation</p></li>
+<li><p>If the point is &lt; 50 m upstream from the bottom of the fundamental
+watershed in which it falls, then that watershed is included in the aggregation</p></li>
+</ol>
+<p>For cross-boundary watersheds, the function returns non-BC areas using these data sources:
++ USGS <a class="reference external" href="https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con">huc12 watersheds</a> for USA (WA, ID, MT only)
++ <a class="reference external" href="https://www.hydrosheds.org">hydrosheds</a> watersheds for other neighbouring jurisdictions</p>
+</div>
+<div class="section" id="output-table">
+<h3>Output table<a class="headerlink" href="#output-table" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">FWA_WatershedAtMeasure(354155148,</span> <span class="pre">49129.75)</span></code></p>
+</div>
+</div>
 </div>
 
 

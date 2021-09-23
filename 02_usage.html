@@ -81,7 +81,7 @@
              
   <div class="tex2jax_ignore mathjax_ignore section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h1>
-<p>This document presumes a working familiarity with FWA data and PostgreSQL/PostGIS.</p>
+<p>This document presumes a working familiarity with FWA data and spatial SQL queries with PostgreSQL/PostGIS.</p>
 <div class="section" id="upstream-downstream-analysis">
 <h2>Upstream / downstream analysis<a class="headerlink" href="#upstream-downstream-analysis" title="Permalink to this headline"></a></h2>
 <p>The most typical use of <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> is to answer the question - “what is upstream or downstream of these points of interest”?  Before answering this question, we have to link the points of interest to the FWA streams.</p>
@@ -99,7 +99,7 @@
          710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.2530543284006 | 24.228 | t      |
 </pre></div>
 </div>
-<p>This function is available via the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> <a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint.html">feature service</a> - you can experiment with it <a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint/items.html?x=-123.7028&amp;y=48.3858&amp;srid=4326">directly</a> without having to install fwapg (zoom out to see the context in the default web map).</p>
+<p>This function is available via the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> <a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint.html">feature service</a> - you can experiment with it <a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint/items.html?x=-123.7028&amp;y=48.3858&amp;srid=4326">directly</a> without having to install anything other than a web browser (zoom out to see the context in the default web map).</p>
 </div>
 <div class="section" id="reference-many-points-to-stream-network">
 <h3>Reference many points to stream network<a class="headerlink" href="#reference-many-points-to-stream-network" title="Permalink to this headline"></a></h3>
@@ -137,22 +137,22 @@
   <span class="k">FROM</span> <span class="n">hydrostn</span>
   <span class="k">LIMIT</span> <span class="mi">5</span>   <span class="c1">-- only 5 stations for this example</span>
 <span class="p">)</span> <span class="n">pts</span>
-<span class="k">CROSS</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
 <span class="p">(</span>
   <span class="k">SELECT</span> <span class="o">*</span>
   <span class="k">FROM</span>
   <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1">-- find up to 10 streams within 100m</span>
-<span class="p">)</span> <span class="n">i</span><span class="p">;</span>
-
-
-   <span class="n">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">distance_to_stream</span>
-<span class="c1">---------+-------------------------------------+---------------+--------------------------+--------------------</span>
- <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359571145</span> <span class="o">|</span>       <span class="mi">6095</span><span class="p">.</span><span class="mi">5541123470175</span> <span class="o">|</span>             <span class="mi">41</span><span class="p">.</span><span class="mi">466</span>
- <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359233576</span> <span class="o">|</span>                        <span class="mi">0</span> <span class="o">|</span>             <span class="mi">47</span><span class="p">.</span><span class="mi">233</span>
- <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>     <span class="mi">359569942</span> <span class="o">|</span>       <span class="mi">42909</span><span class="p">.</span><span class="mi">470879005145</span> <span class="o">|</span>             <span class="mi">47</span><span class="p">.</span><span class="mi">372</span>
- <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span>     <span class="mi">359571761</span> <span class="o">|</span>       <span class="mi">29215</span><span class="p">.</span><span class="mi">311821971634</span> <span class="o">|</span>             <span class="mi">41</span><span class="p">.</span><span class="mi">002</span>
- <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>     <span class="mi">359573063</span> <span class="o">|</span>        <span class="mi">29005</span><span class="p">.</span><span class="mi">40894424251</span> <span class="o">|</span>              <span class="mi">42</span><span class="p">.</span><span class="mi">77</span>
- <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>     <span class="mi">359571933</span> <span class="o">|</span>       <span class="mi">29316</span><span class="p">.</span><span class="mi">915466924725</span> <span class="o">|</span>             <span class="mi">95</span><span class="p">.</span><span class="mi">172</span>
+<span class="p">)</span> <span class="n">i</span> <span class="k">ON</span> <span class="k">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">distance_to_stream</span>
+<span class="o">---------+-------------------------------------+---------------+--------------------------+--------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359571145</span> <span class="o">|</span>       <span class="mf">6095.5541123470175</span> <span class="o">|</span>             <span class="mf">41.466</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359233576</span> <span class="o">|</span>                        <span class="mi">0</span> <span class="o">|</span>             <span class="mf">47.233</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>     <span class="mi">359569942</span> <span class="o">|</span>       <span class="mf">42909.470879005145</span> <span class="o">|</span>             <span class="mf">47.372</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span>     <span class="mi">359571761</span> <span class="o">|</span>       <span class="mf">29215.311821971634</span> <span class="o">|</span>             <span class="mf">41.002</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>     <span class="mi">359573063</span> <span class="o">|</span>        <span class="mf">29005.40894424251</span> <span class="o">|</span>              <span class="mf">42.77</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>     <span class="mi">359571933</span> <span class="o">|</span>       <span class="mf">29316.915466924725</span> <span class="o">|</span>             <span class="mf">95.172</span>
 </pre></div>
 </div>
 </div>
@@ -173,15 +173,16 @@
     <span class="k">FROM</span> <span class="n">hydrostn</span>
     <span class="k">LIMIT</span> <span class="mi">5</span>
   <span class="p">)</span> <span class="n">pts</span>
-  <span class="k">CROSS</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
   <span class="p">(</span>
     <span class="k">SELECT</span> <span class="o">*</span>
     <span class="k">FROM</span>
     <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-  <span class="p">)</span> <span class="n">i</span><span class="p">;</span>
-
-     <span class="n">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">gnis_name</span>    <span class="o">|</span> <span class="n">trgm_comparison</span>
-<span class="c1">---------+-------------------------------------+----------------+-----------------</span>
+  <span class="p">)</span> <span class="n">i</span> <span class="k">ON</span> <span class="k">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">gnis_name</span>    <span class="o">|</span> <span class="n">trgm_comparison</span>
+<span class="o">---------+-------------------------------------+----------------+-----------------</span>
  <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span> <span class="n">Ingenika</span> <span class="n">River</span> <span class="o">|</span> <span class="n">t</span>
  <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>                <span class="o">|</span>
  <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span> <span class="n">Finlay</span> <span class="n">River</span>   <span class="o">|</span> <span class="n">t</span>
@@ -202,21 +203,22 @@
   <span class="k">FROM</span> <span class="n">hydrostn</span>
   <span class="k">LIMIT</span> <span class="mi">5</span>
 <span class="p">)</span> <span class="n">pts</span>
-<span class="k">CROSS</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
 <span class="p">(</span>
   <span class="k">SELECT</span> <span class="o">*</span>
   <span class="k">FROM</span>
   <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="p">)</span> <span class="n">i</span>
+<span class="p">)</span> <span class="n">i</span> <span class="k">ON</span> <span class="k">true</span>
 <span class="k">WHERE</span> <span class="n">gnis_name</span> <span class="o">%</span> <span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">::</span><span class="nb">text</span><span class="p">;</span>
-
-   <span class="n">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span>
-<span class="c1">---------+-------------------------------------+---------------+--------------------------</span>
- <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359571145</span> <span class="o">|</span>       <span class="mi">6095</span><span class="p">.</span><span class="mi">5541123470175</span>
- <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>     <span class="mi">359569942</span> <span class="o">|</span>       <span class="mi">42909</span><span class="p">.</span><span class="mi">470879005145</span>
- <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span>     <span class="mi">359571761</span> <span class="o">|</span>       <span class="mi">29215</span><span class="p">.</span><span class="mi">311821971634</span>
- <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>     <span class="mi">359573063</span> <span class="o">|</span>        <span class="mi">29005</span><span class="p">.</span><span class="mi">40894424251</span>
- <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>     <span class="mi">359571933</span> <span class="o">|</span>       <span class="mi">29316</span><span class="p">.</span><span class="mi">915466924725</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span>
+<span class="o">---------+-------------------------------------+---------------+--------------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359571145</span> <span class="o">|</span>       <span class="mf">6095.5541123470175</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>     <span class="mi">359569942</span> <span class="o">|</span>       <span class="mf">42909.470879005145</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span>     <span class="mi">359571761</span> <span class="o">|</span>       <span class="mf">29215.311821971634</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>     <span class="mi">359573063</span> <span class="o">|</span>        <span class="mf">29005.40894424251</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>     <span class="mi">359571933</span> <span class="o">|</span>       <span class="mf">29316.915466924725</span>
 </pre></div>
 </div>
 <p>This should produce a more reliable output than matching only on the closest stream. However, simply filtering on a true/false string comparison is likely still error prone - for the first station in the list, what would happen if Swanell River was within 100m? To ensure any subsequent upstream analysis are done on the correct stream system, matches for points in this dataset will generally have to have to be manually QA’ed.</p>
@@ -242,12 +244,12 @@
   <span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">geom</span>
   <span class="k">FROM</span> <span class="n">hydrostn</span>
 <span class="p">)</span> <span class="n">pts</span>
-<span class="k">CROSS</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
 <span class="p">(</span>
   <span class="k">SELECT</span> <span class="o">*</span>
   <span class="k">FROM</span>
   <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="p">)</span> <span class="n">i</span>
+<span class="p">)</span> <span class="n">i</span> <span class="k">ON</span> <span class="k">true</span>
 <span class="k">WHERE</span> <span class="n">gnis_name</span> <span class="o">%</span> <span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">::</span><span class="nb">text</span>
 <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
 </pre></div>
@@ -268,14 +270,15 @@
 <span class="p">)</span>
 <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">name</span>
 <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
-
-   <span class="n">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">length_dnstr_km</span>
-<span class="c1">---------+-------------------------------------+--------------------</span>
- <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>  <span class="mi">908</span><span class="p">.</span><span class="mi">3217090864651</span>
- <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>  <span class="mi">996</span><span class="p">.</span><span class="mi">3101858316527</span>
- <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span> <span class="mi">1011</span><span class="p">.</span><span class="mi">4124142994692</span>
- <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>  <span class="mi">834</span><span class="p">.</span><span class="mi">4111401643679</span>
- <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>  <span class="mi">778</span><span class="p">.</span><span class="mi">6774554185706</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">length_dnstr_km</span>
+<span class="o">---------+-------------------------------------+--------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>  <span class="mf">908.3217090864651</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>  <span class="mf">996.3101858316527</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span> <span class="mf">1011.4124142994692</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>  <span class="mf">834.4111401643679</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>  <span class="mf">778.6774554185706</span>
 </pre></div>
 </div>
 <p>Note that this is only the downstream portion present in the FWA data - if the point is in the Columbia basin or similar, portions of stream not in BC are not included.</p>
@@ -295,14 +298,15 @@
 <span class="p">)</span>
 <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">name</span>
 <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
-
-   <span class="n">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">length_upstr_km</span>
-<span class="c1">---------+-------------------------------------+--------------------</span>
- <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>  <span class="mi">8355</span><span class="p">.</span><span class="mi">325367888996</span>
- <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>   <span class="mi">41388</span><span class="p">.</span><span class="mi">6738526307</span>
- <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span> <span class="mi">4999</span><span class="p">.</span><span class="mi">9129992270255</span>
- <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>  <span class="mi">5907</span><span class="p">.</span><span class="mi">417221603829</span>
- <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span> <span class="mi">10042</span><span class="p">.</span><span class="mi">880207799402</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">length_upstr_km</span>
+<span class="o">---------+-------------------------------------+--------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>  <span class="mf">8355.325367888996</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>   <span class="mf">41388.6738526307</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span> <span class="mf">4999.9129992270255</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>  <span class="mf">5907.417221603829</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span> <span class="mf">10042.880207799402</span>
 </pre></div>
 </div>
 <p>As with the downstream query, only features within BC are returned. The above <code class="docutils literal notranslate"><span class="pre">length_upstr_km</span></code> will be incorrect for trans-boundary watersheds.</p>
@@ -317,9 +321,10 @@
   <span class="mi">356364114</span><span class="p">,</span> <span class="mi">160400</span><span class="p">,</span> <span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span> <span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
   <span class="n">e</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">localcode_ltree</span>
 <span class="p">);</span>
-
- <span class="k">count</span>
-<span class="c1">-------</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">count</span>
+<span class="o">-------</span>
     <span class="mi">83</span>
 </pre></div>
 </div>
@@ -336,10 +341,11 @@
   <span class="mi">359572348</span><span class="p">,</span> <span class="mi">1706733</span><span class="p">,</span> <span class="s1">&#39;200.948755&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span> <span class="s1">&#39;200.948755.871814&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
   <span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
 <span class="p">);</span>
-
-     <span class="n">length_km</span>
-<span class="c1">--------------------</span>
- <span class="mi">28974</span><span class="p">.</span><span class="mi">584934736216</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>     <span class="n">length_km</span>
+<span class="o">--------------------</span>
+ <span class="mf">28974.584934736216</span>
 </pre></div>
 </div>
 </div>
@@ -365,32 +371,15 @@
 <p><img alt="watershed" src="_images/watershed2.png" /></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> value for the stream at the point location is <code class="docutils literal notranslate"><span class="pre">920.252823.584332</span></code> - the three highlighted fundamental watersheds all have lower <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> values and are thus not returned by <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code>. This is typical for points found on FWA waterbodies - the fundamental watersheds making up waterbodies are defined by a complex set of rules.</p>
 <p><img alt="watershed" src="_images/watershed3.png" /></p>
-<p>To clean up this issue and others, <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> provides the <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> function. Given a point defined by <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> and <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>, the function will return a polygon defining the watershed upstream of the point following this set of rules:</p>
-<ol class="simple">
-<li><p>If the point is within a lake, return everything upstream of the lake’s <em>outflow</em></p></li>
-<li><p>If the point is within a polygonal river/canal the fundamental watersheds are
-cut across the banks of the river/canal before being included in the aggregation</p></li>
-<li><p>If the point is &lt; 100m downstream from the top of the fundamental
-watershed in which it falls, then that fundamental watershed is not included in the aggregation</p></li>
-<li><p>If the point is &lt; 50 m upstream from the bottom of the fundamental
-watershed in which it falls, then that watershed is included in the aggregation</p></li>
-</ol>
-<p><code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> also attempts to:</p>
-<ul class="simple">
-<li><p>speed up the aggregation by using pre-aggregated geometries (assessment watersheds and other)</p></li>
-<li><p>for cross-boundary watersheds, include watershed areas not in BC using these data sources:</p>
-<ul>
-<li><p>USGS <a class="reference external" href="https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con">huc12 watersheds</a> for USA (WA, ID, MT only)</p></li>
-<li><p><a class="reference external" href="https://www.hydrosheds.org">hydrosheds</a> watersheds for other neighbouring jurisdictions</p></li>
-</ul>
-</li>
-</ul>
-<p>See <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> for more.</p>
-<p>For the single example point, we can generate the watershed with this query:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span><span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">)</span>
+<p>To clean up this issue and others, <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> provides the function <a class="reference external" href="04_functions#FWA_WatershedAtMeasure"><code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code></a>.</p>
+<p>For a single point, we can provide the parameters (<code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>, <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>) directly:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span> <span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>And as <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> is also a table returning function, when joining to the source table, use a <code class="docutils literal notranslate"><span class="pre">LATERAL</span></code> join to run the query on each point. Note that this is very resource intensive, you may want to restrict the query to just a handful of points.</p>
+<p>Producing this output:</p>
+<p><img alt="watershed" src="_images/watershed4.png" /></p>
+<p>Like <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code>, this function is available via the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> <a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_watershedatmeasure.html">feature service</a> - you can experiment with it <a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_watershedatmeasure/items.html?blue_line_key=354155148&amp;downstream_route_measure=49129.75">directly</a> without having to install anything other than a web browser.</p>
+<p>Also like <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code>, <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> is a table returning function. When joining to the source table, use a <code class="docutils literal notranslate"><span class="pre">LATERAL</span></code> join to run the query on each point. Note that this can be very resource intensive, you may want to restrict the query to just a handful of points.</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
   <span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
   <span class="n">w</span><span class="p">.</span><span class="n">geom</span>
@@ -403,8 +392,6 @@ watershed in which it falls, then that watershed is included in the aggregation<
 <span class="k">WHERE</span> <span class="n">p</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;08HA002&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>The output looks like this:</p>
-<p><img alt="watershed" src="_images/watershed4.png" /></p>
 </div>
 </div>
 </div>
