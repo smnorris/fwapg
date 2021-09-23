@@ -345,15 +345,17 @@
 </div>
 <div class="section" id="generate-watershed">
 <h3>Generate watershed<a class="headerlink" href="#generate-watershed" title="Permalink to this headline"></a></h3>
-<p>With <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code> in hand, creating a watershed boundary now seems straightforward - find the fundamental watersheds upstream and aggregate them. For example, to extract the watershed upstream of hydrometric station <code class="docutils literal notranslate"><span class="pre">08HA002</span></code> as a single polygon:</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code> in hand, creating a watershed boundary now seems straightforward - find the fundamental watersheds upstream and aggregate them. For example, to extract the watershed upstream of hydrometric station <code class="docutils literal notranslate"><span class="pre">08HA002</span></code> as a single polygon, using unaltered FWA linework:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
-   <span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
-   <span class="n">ST_Union</span><span class="p">(</span><span class="n">w</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
-<span class="k">FROM</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_watersheds_poly</span> <span class="n">w</span>
-<span class="k">WHERE</span> <span class="n">p</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;08HA002&#39;</span> <span class="k">AND</span>
-<span class="n">FWA_Upstream</span><span class="p">(</span>
-  <span class="n">p</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">localcode_ltree</span>
-  <span class="n">w</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">w</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">)</span>
+  <span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+  <span class="n">ST_Union</span><span class="p">(</span><span class="n">w</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span> <span class="k">AS</span> <span class="n">geom</span>
+<span class="k">FROM</span> <span class="n">hydrostn_events</span> <span class="n">p</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_watersheds_poly</span> <span class="n">w</span>
+<span class="k">ON</span> <span class="n">FWA_Upstream</span><span class="p">(</span>
+  <span class="n">p</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">w</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span>
+<span class="k">WHERE</span> <span class="n">p</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;08HA002&#39;</span>
 <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -361,6 +363,48 @@
 <p><img alt="watershed" src="_images/watershed1.png" /></p>
 <p>But if we look closely at the fundamental watersheds near the point, the watershed boundary is a bit different from what might be expected:</p>
 <p><img alt="watershed" src="_images/watershed2.png" /></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> value for the stream at the point location is <code class="docutils literal notranslate"><span class="pre">920.252823.584332</span></code> - the three highlighted fundamental watersheds all have lower <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> values and are thus not returned by <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code>. This is typical for points found on FWA waterbodies - the fundamental watersheds making up waterbodies are defined by a complex set of rules.</p>
+<p><img alt="watershed" src="images/watershed3.png" /></p>
+<p>To clean up this issue and others, <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> provides the <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> function. Given a point defined by <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> and <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>, the function will return a polygon defining the watershed upstream of the point following this set of rules:</p>
+<ol class="simple">
+<li><p>If the point is within a lake, return everything upstream of the lake’s <em>outflow</em></p></li>
+<li><p>If the point is within a polygonal river/canal the fundamental watersheds are
+cut across the banks of the river/canal before being included in the aggregation</p></li>
+<li><p>If the point is &lt; 100m downstream from the top of the fundamental
+watershed in which it falls, then that fundamental watershed is not included in the aggregation</p></li>
+<li><p>If the point is &lt; 50 m upstream from the bottom of the fundamental
+watershed in which it falls, then that watershed is included in the aggregation</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> also attempts to:</p>
+<ul class="simple">
+<li><p>speed up the aggregation by using pre-aggregated geometries (assessment watersheds and other)</p></li>
+<li><p>for cross-boundary watersheds, include watershed areas not in BC using these data sources:</p>
+<ul>
+<li><p>USGS <a class="reference external" href="https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con">huc12 watersheds</a> for USA (WA, ID, MT only)</p></li>
+<li><p><a class="reference external" href="https://www.hydrosheds.org">hydrosheds</a> watersheds for other neighbouring jurisdictions</p></li>
+</ul>
+</li>
+</ul>
+<p>See <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> for more.</p>
+<p>For the single example point, we can generate the watershed with this query:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span><span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And as <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> is also a table returning function, when joining to the source table, use a <code class="docutils literal notranslate"><span class="pre">LATERAL</span></code> join to run the query on each point. Note that this is very resource intensive, you may want to restrict the query to just a handful of points.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+  <span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">geom</span>
+<span class="k">FROM</span> <span class="n">hydrostn_events</span> <span class="n">p</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
+<span class="p">(</span>
+  <span class="k">SELECT</span> <span class="o">*</span>
+  <span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">w</span> <span class="k">ON</span> <span class="k">true</span>
+<span class="k">WHERE</span> <span class="n">p</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;08HA002&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The output looks like this:</p>
+<p><img alt="watershed" src="images/watershed4.png" /></p>
 </div>
 </div>
 </div>

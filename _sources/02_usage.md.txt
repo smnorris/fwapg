@@ -292,17 +292,19 @@ WHERE FWA_Upstream(
 
 ### Generate watershed
 
-With `FWA_Upstream` in hand, creating a watershed boundary now seems straightforward - find the fundamental watersheds upstream and aggregate them. For example, to extract the watershed upstream of hydrometric station `08HA002` as a single polygon:
+With `FWA_Upstream` in hand, creating a watershed boundary now seems straightforward - find the fundamental watersheds upstream and aggregate them. For example, to extract the watershed upstream of hydrometric station `08HA002` as a single polygon, using unaltered FWA linework:
 
 ```sql
 SELECT
-   p.id,
-   ST_Union(w.geom)
-FROM whse_basemapping.fwa_watersheds_poly w
-WHERE p.id = '08HA002' AND
-FWA_Upstream(
-  p.wscode_ltree, p.localcode_ltree
-  w.wscode_ltree, w.localcode_ltree)
+  p.id,
+  ST_Union(w.geom) AS geom
+FROM hydrostn_events p
+INNER JOIN whse_basemapping.fwa_watersheds_poly w
+ON FWA_Upstream(
+  p.wscode_ltree, p.localcode_ltree,
+  w.wscode_ltree, w.localcode_ltree
+)
+WHERE p.id = '08HA002'
 GROUP BY p.id;
 ```
 
@@ -314,4 +316,52 @@ But if we look closely at the fundamental watersheds near the point, the watersh
 
 ![watershed](images/watershed2.png)
 
+The `local_watershed_code` value for the stream at the point location is `920.252823.584332` - the three highlighted fundamental watersheds all have lower `local_watershed_code` values and are thus not returned by `FWA_Upstream`. This is typical for points found on FWA waterbodies - the fundamental watersheds making up waterbodies are defined by a complex set of rules.
+
+![watershed](images/watershed3.png)
+
+To clean up this issue and others, `fwapg` provides the `FWA_WatershedAtMeasure` function. Given a point defined by `blue_line_key` and `downstream_route_measure`, the function will return a polygon defining the watershed upstream of the point following this set of rules:
+
+1. If the point is within a lake, return everything upstream of the lake's *outflow*
+2. If the point is within a polygonal river/canal the fundamental watersheds are
+cut across the banks of the river/canal before being included in the aggregation
+3. If the point is < 100m downstream from the top of the fundamental
+watershed in which it falls, then that fundamental watershed is not included in the aggregation
+4. If the point is < 50 m upstream from the bottom of the fundamental
+watershed in which it falls, then that watershed is included in the aggregation
+
+`FWA_WatershedAtMeasure` also attempts to:
+
+- speed up the aggregation by using pre-aggregated geometries (assessment watersheds and other)
+- for cross-boundary watersheds, include watershed areas not in BC using these data sources:
+    + USGS [huc12 watersheds](https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con) for USA (WA, ID, MT only)
+    + [hydrosheds](https://www.hydrosheds.org) watersheds for other neighbouring jurisdictions
+
+See `FWA_WatershedAtMeasure` for more.
+
+
+For the single example point, we can generate the watershed with this query:
+
+```sql
+SELECT * FROM FWA_WatershedAtMeasure(354155148,49129.75)
+```
+
+And as `FWA_WatershedAtMeasure` is also a table returning function, when joining to the source table, use a `LATERAL` join to run the query on each point. Note that this is very resource intensive, you may want to restrict the query to just a handful of points.
+
+```sql
+SELECT
+  p.id,
+  w.geom
+FROM hydrostn_events p
+LEFT JOIN LATERAL
+(
+  SELECT *
+  FROM FWA_WatershedAtMeasure(p.blue_line_key, p.downstream_route_measure)
+) w ON true
+WHERE p.id = '08HA002';
+```
+
+The output looks like this:
+
+![watershed](images/watershed4.png)
 
