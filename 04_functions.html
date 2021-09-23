@@ -41,18 +41,44 @@
 <li class="toctree-l1"><a class="reference internal" href="02_usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03_tables.html">Table reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Function reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#fwa-indexpoint">FWA_IndexPoint</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-downstream">FWA_Downstream</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#web-service">Web service</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#fwa-watershedatmeasure">FWA_WatershedAtMeasure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-indexpoint">FWA_IndexPoint</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Synopsis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">Examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Web service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#web-service">Web service</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-locatealong">FWA_LocateAlong</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Web service</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-locatealonginterval">FWA_LocateAlongInterval</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Web service</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-upstream">FWA_Upstream</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-watershedatmeasure">FWA_WatershedAtMeasure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Web service</a></li>
 </ul>
 </li>
 </ul>
@@ -85,10 +111,126 @@
              
   <div class="tex2jax_ignore mathjax_ignore section" id="function-reference">
 <h1>Function reference<a class="headerlink" href="#function-reference" title="Permalink to this headline"></a></h1>
-<div class="section" id="fwa-indexpoint">
-<h2>FWA_IndexPoint<a class="headerlink" href="#fwa-indexpoint" title="Permalink to this headline"></a></h2>
+<div class="section" id="fwa-downstream">
+<h2>FWA_Downstream<a class="headerlink" href="#fwa-downstream" title="Permalink to this headline"></a></h2>
 <div class="section" id="synopsis">
 <h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline"></a></h3>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_Downstream</span><span class="p">(</span>
+      <span class="n">wscode</span> <span class="n">A</span> <span class="n">ltree</span><span class="p">,</span>
+      <span class="n">localcode</span> <span class="n">A</span> <span class="n">ltree</span><span class="p">,</span>
+      <span class="n">wscode</span> <span class="n">B</span> <span class="n">ltree</span><span class="p">,</span>
+      <span class="n">localcode</span> <span class="n">B</span> <span class="n">ltree</span>
+<span class="p">)</span>
+
+<span class="n">FWA_Downstream</span><span class="p">(</span>
+    <span class="n">blue_line_key</span> <span class="n">A</span> <span class="nb">integer</span><span class="p">,</span>
+    <span class="n">downstream_route_measure</span> <span class="n">A</span> <span class="n">double</span> <span class="k">precision</span><span class="p">,</span>
+    <span class="n">wscode_ltree</span> <span class="n">A</span> <span class="n">ltree</span><span class="p">,</span>
+    <span class="n">localcode_ltree</span> <span class="n">A</span> <span class="n">ltree</span><span class="p">,</span>
+    <span class="n">blue_line_key</span> <span class="n">B</span> <span class="nb">integer</span><span class="p">,</span>
+    <span class="n">downstream_route_measure</span> <span class="n">B</span> <span class="n">double</span> <span class="k">precision</span><span class="p">,</span>
+    <span class="n">wscode_ltree</span> <span class="n">B</span> <span class="n">ltree</span><span class="p">,</span>
+    <span class="n">localcode_ltree</span> <span class="n">B</span> <span class="n">ltree</span><span class="p">,</span>
+    <span class="n">include_equivalents</span> <span class="nb">boolean</span> <span class="k">default</span> <span class="k">False</span><span class="p">,</span>
+    <span class="n">tolerance</span> <span class="n">double</span> <span class="k">precision</span> <span class="k">default</span> <span class="p">.</span><span class="mi">001</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="description">
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline"></a></h3>
+<p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the watershed codes / measures B are downstream of watershed codes / measure A.</p>
+<p>For polygonal features (where no <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code> is present), use the shorter form of the function.</p>
+<p>For point locations referenced to the stream network, use the form of the function with <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> and <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>.  Also, specify <code class="docutils literal notranslate"><span class="pre">True</span></code> for <code class="docutils literal notranslate"><span class="pre">include_equivalents</span></code> if you want to evaluate as true for features with exactly the same linear position.</p>
+</div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h3>
+<ol>
+<li><p>At its most basic, the function compares two watershed code / local code <code class="docutils literal notranslate"><span class="pre">ltree</span></code> pairs and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the second pair is a parent of the first set (ie, downstream).</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">FWA_Downstream</span><span class="p">(</span>
+  <span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+  <span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+  <span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+  <span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">fwa_downstream</span>
+<span class="o">----------------</span>
+ <span class="n">t</span>
+</pre></div>
+</div>
+</li>
+<li><p>Find features downstream of a known location on the network - this query finds the total length of stream downstream from Hope. Note that this result includes side channels, it is not necessarily the distance to the ocean:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+  <span class="n">ROUND</span><span class="p">((</span><span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">length_dnstr_km</span>
+<span class="k">FROM</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span> <span class="n">s</span>
+<span class="k">WHERE</span> <span class="n">FWA_Downstream</span><span class="p">(</span>
+  <span class="mi">356364114</span><span class="p">,</span> <span class="mi">160400</span><span class="p">,</span> <span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span> <span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+  <span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">length_dnstr_km</span>
+<span class="o">-----------------</span>
+          <span class="mf">308.54</span>
+</pre></div>
+</div>
+<p>Refine this slightly to find the distance to the ocean along the Fraser mainstem:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+  <span class="n">ROUND</span><span class="p">((</span><span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">length_dnstr_km</span>
+<span class="k">FROM</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span> <span class="n">s</span>
+<span class="k">WHERE</span> <span class="n">FWA_Downstream</span><span class="p">(</span>
+  <span class="mi">356364114</span><span class="p">,</span> <span class="mi">160400</span><span class="p">,</span> <span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span> <span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+  <span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span> <span class="k">AND</span> <span class="n">watershed_key</span> <span class="o">=</span> <span class="n">blue_line_key</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">length_dnstr_km</span>
+<span class="o">-----------------</span>
+          <span class="mf">161.40</span>
+</pre></div>
+</div>
+</li>
+<li><p>For each feature in table a, find all records downstream in table b and collect them into an array:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+  <span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span><span class="p">,</span>
+  <span class="n">array_agg</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">dam_id</span><span class="p">)</span> <span class="k">as</span> <span class="n">downstream_dam_ids</span>
+<span class="k">FROM</span> <span class="n">bcfishpass</span><span class="p">.</span><span class="n">crossings</span> <span class="n">a</span>
+<span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">bcfishpass</span><span class="p">.</span><span class="n">dams</span> <span class="n">b</span>
+<span class="k">ON</span> <span class="n">FWA_Downstream</span><span class="p">(</span>
+  <span class="n">a</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+  <span class="n">a</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+  <span class="n">a</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
+  <span class="n">a</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+  <span class="n">b</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+  <span class="n">b</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+  <span class="n">b</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
+  <span class="n">b</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span>
+<span class="k">WHERE</span> <span class="n">a</span><span class="p">.</span><span class="n">stream_crossing_id</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">aggregated_crossings_id</span> <span class="o">|</span> <span class="n">downstream_dam_ids</span>
+<span class="o">-------------------------+-----------------------</span>
+                    <span class="mi">4790</span> <span class="o">|</span> <span class="p">{</span><span class="mi">2343</span><span class="p">}</span>
+                   <span class="mi">69233</span> <span class="o">|</span> <span class="p">{</span><span class="mi">917</span><span class="p">,</span><span class="mi">1801</span><span class="p">,</span><span class="mi">2165</span><span class="p">,</span><span class="mi">2310</span><span class="p">}</span>
+                    <span class="mi">5468</span> <span class="o">|</span> <span class="p">{</span><span class="mi">2472</span><span class="p">}</span>
+                  <span class="mi">125252</span> <span class="o">|</span> <span class="p">{</span><span class="mi">15</span><span class="p">,</span><span class="mi">97</span><span class="p">,</span><span class="mi">213</span><span class="p">,</span><span class="mi">1917</span><span class="p">}</span>
+                    <span class="mi">5697</span> <span class="o">|</span> <span class="p">{</span><span class="mi">2472</span><span class="p">}</span>
+                     <span class="mi">176</span> <span class="o">|</span> <span class="p">{</span><span class="mi">2472</span><span class="p">}</span>
+                     <span class="mi">576</span> <span class="o">|</span> <span class="p">{</span><span class="mi">426</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="fwa-indexpoint">
+<h2>FWA_IndexPoint<a class="headerlink" href="#fwa-indexpoint" title="Permalink to this headline"></a></h2>
+<div class="section" id="id1">
+<h3>Synopsis<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_IndexPoint</span><span class="p">(</span>
     <span class="n">point</span> <span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span> <span class="mi">3005</span><span class="p">),</span>
     <span class="n">tolerance</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="mi">5000</span><span class="p">,</span>
@@ -105,8 +247,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="description">
-<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline"></a></h3>
+<div class="section" id="id2">
+<h3>Description<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
 <p>Snaps a point to the stream network. Provided a point (as either a BC Albers point geometry or (<code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">srid</span></code>), return a table containing the point geometry of the closest point on the FWA stream network to the given point, plus additional attributes from the matched stream:</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -155,9 +297,10 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h3>
-<p>Return the closest point on FWA stream network to a point defined by a lat/lon (within default 5000m tolerance):</p>
+<div class="section" id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<ol>
+<li><p>Return the closest point on FWA stream network to a point defined by a lat/lon (within default 5000m tolerance):</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">7028</span><span class="p">,</span> <span class="mi">48</span><span class="p">.</span><span class="mi">3858</span><span class="p">,</span> <span class="mi">4326</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -166,7 +309,8 @@
          <span class="mi">710513719</span> <span class="o">|</span> <span class="n">Sooke</span> <span class="n">River</span> <span class="o">|</span> <span class="mf">930.023810</span>   <span class="o">|</span> <span class="mf">930.023810</span>      <span class="o">|</span>     <span class="mi">354153927</span> <span class="o">|</span>        <span class="mf">350.2530543284006</span> <span class="o">|</span>             <span class="mf">24.228</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B0000D579287B42DC314198937D515C061741</span>
 </pre></div>
 </div>
-<p>Index a set of point geometries, finding up to 10 features within 100m:</p>
+</li>
+<li><p>Index a set of point geometries, finding up to 10 features within 100m:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
   <span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
   <span class="n">i</span><span class="p">.</span><span class="o">*</span>
@@ -196,16 +340,60 @@
  <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span>         <span class="mi">115033725</span> <span class="o">|</span> <span class="n">Omineca</span> <span class="n">River</span>  <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mi">944288</span>        <span class="o">|</span> <span class="mf">200.948755</span><span class="o">.</span><span class="mf">944288.110746</span>        <span class="o">|</span>     <span class="mi">359571933</span> <span class="o">|</span>        <span class="mf">29317.40902691083</span> <span class="o">|</span>             <span class="mf">95.125</span> <span class="o">|</span> <span class="n">t</span>      <span class="o">|</span> <span class="mi">0101000020</span><span class="n">BD0B000054618DD09A9F3041A0D25C29F4873241</span>
 </pre></div>
 </div>
+</li>
+</ol>
 </div>
 <div class="section" id="web-service">
 <h3>Web service<a class="headerlink" href="#web-service" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint.html">FWA_IndexPoint</a></p>
 </div>
 </div>
+<div class="section" id="fwa-locatealong">
+<h2>FWA_LocateAlong<a class="headerlink" href="#fwa-locatealong" title="Permalink to this headline"></a></h2>
+<div class="section" id="id4">
+<h3>Synopsis<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id5">
+<h3>Description<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id6">
+<h3>Examples<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id7">
+<h3>Web service<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h3>
+</div>
+</div>
+<div class="section" id="fwa-locatealonginterval">
+<h2>FWA_LocateAlongInterval<a class="headerlink" href="#fwa-locatealonginterval" title="Permalink to this headline"></a></h2>
+<div class="section" id="id8">
+<h3>Synopsis<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id9">
+<h3>Description<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id10">
+<h3>Examples<a class="headerlink" href="#id10" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id11">
+<h3>Web service<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h3>
+</div>
+</div>
+<div class="section" id="fwa-upstream">
+<h2>FWA_Upstream<a class="headerlink" href="#fwa-upstream" title="Permalink to this headline"></a></h2>
+<div class="section" id="id12">
+<h3>Synopsis<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id13">
+<h3>Description<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h3>
+</div>
+<div class="section" id="id14">
+<h3>Examples<a class="headerlink" href="#id14" title="Permalink to this headline"></a></h3>
+</div>
+</div>
 <div class="section" id="fwa-watershedatmeasure">
 <h2>FWA_WatershedAtMeasure<a class="headerlink" href="#fwa-watershedatmeasure" title="Permalink to this headline"></a></h2>
-<div class="section" id="id1">
-<h3>Synopsis<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<div class="section" id="id15">
+<h3>Synopsis<a class="headerlink" href="#id15" title="Permalink to this headline"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span>
     <span class="n">blue_line_key</span> <span class="nb">integer</span><span class="p">,</span>
     <span class="n">downstream_route_measure</span> <span class="nb">float</span>
@@ -213,8 +401,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="id2">
-<h3>Description<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<div class="section" id="id16">
+<h3>Description<a class="headerlink" href="#id16" title="Permalink to this headline"></a></h3>
 <p>Given a point defined by its position on the FWA stream network (<code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>,<code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>), return a table containing a polygon geometry that defines the point’s upstream watershed.</p>
 <p>Watershed delineation following this set of rules, in order of descending priority:</p>
 <ol class="simple">
@@ -285,8 +473,8 @@ watershed in which it falls, then that watershed is included in the aggregation<
 </tbody>
 </table>
 </div>
-<div class="section" id="id3">
-<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<div class="section" id="id17">
+<h3>Examples<a class="headerlink" href="#id17" title="Permalink to this headline"></a></h3>
 <ol>
 <li><p>Extract the geometry of the watershed upstream of the Cowichan River at Hwy 19:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">geom</span> <span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span> <span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">);</span>
@@ -331,8 +519,8 @@ watershed in which it falls, then that watershed is included in the aggregation<
 </li>
 </ol>
 </div>
-<div class="section" id="id4">
-<h3>Web service<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
+<div class="section" id="id18">
+<h3>Web service<a class="headerlink" href="#id18" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://www.hillcrestgeo.ca/fwapg/functions/fwa_watershedatmeasure.html">FWA_WatershedAtMeasure</a></p>
 </div>
 </div>
