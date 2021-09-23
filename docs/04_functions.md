@@ -81,6 +81,10 @@ LEFT JOIN LATERAL
  07EC002 |         115033725 | Omineca River  | 200.948755.944288        | 200.948755.944288.110746        |     359571933 |        29317.40902691083 |             95.125 | t      | 0101000020BD0B000054618DD09A9F3041A0D25C29F4873241
 ```
 
+### Web service
+
+[FWA_IndexPoint](https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint.html)
+
 ## FWA_WatershedAtMeasure
 
 ### Synopsis
@@ -177,3 +181,7 @@ The `refine_method` field in the output table has several possible values:
     Mapped, the geometry looks like this - FWA heights of land in BC, HUC12 heights of land in the USA:
 
     ![watershed](images/watershed6.png)
+
+### Web service
+
+[FWA_WatershedAtMeasure](https://www.hillcrestgeo.ca/fwapg/functions/fwa_watershedatmeasure.html)
