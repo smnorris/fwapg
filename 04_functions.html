@@ -271,7 +271,7 @@ watershed in which it falls, then that watershed is included in the aggregation<
 <td><p>Input point falls in a river/canal, output geometry is cut across the banks of the river/canal</p></td>
 </tr>
 <tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">DEM</span></code></p></td>
-<td><p>Input point falls on a linear stream &gt;50m upstream from outlet of input watershed and &gt;100m downstream from top of watershed, further processing of the fundamental watershed in which the point lies with the DEM would be valuable to improve the output watershed. This is functionally equivalent to the <code class="docutils literal notranslate"><span class="pre">DROP</span></code> value</p></td>
+<td><p>Input point falls on a linear stream &gt;50m upstream from outlet of input watershed and &gt;100m downstream from top of watershed, further processing of the fundamental watershed in which the point lies with the DEM would be valuable to improve the output watershed. This is functionally equivalent to the <code class="docutils literal notranslate"><span class="pre">DROP</span></code> value, the fundamental watershed in which the point lies is not included in the output geometry</p></td>
 </tr>
 <tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">DROP</span></code></p></td>
 <td><p>Input point falls on a linear stream and is &lt;=100m downstream from the top of the fundamental watershed in which it lies - this fundamental watershed is not included in output geometry</p></td>
