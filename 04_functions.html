@@ -50,7 +50,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#fwa-watershedatmeasure">FWA_WatershedAtMeasure</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Synopsis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">Description</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#output-table">Output table</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">Examples</a></li>
 </ul>
 </li>
@@ -88,9 +87,19 @@
 <h2>FWA_IndexPoint<a class="headerlink" href="#fwa-indexpoint" title="Permalink to this headline"></a></h2>
 <div class="section" id="synopsis">
 <h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">point</span> <span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span> <span class="mi">3005</span><span class="p">),</span> <span class="n">tolerance</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">num_features</span> <span class="nb">integer</span> <span class="k">DEFAULT</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_IndexPoint</span><span class="p">(</span>
+    <span class="n">point</span> <span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span> <span class="mi">3005</span><span class="p">),</span>
+    <span class="n">tolerance</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="mi">5000</span><span class="p">,</span>
+    <span class="n">num_features</span> <span class="nb">integer</span> <span class="k">DEFAULT</span> <span class="mi">1</span>
+<span class="p">)</span>
 
-<span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">x</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span> <span class="nb">float</span><span class="p">,</span> <span class="n">srid</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">tolerance</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">num_features</span> <span class="nb">integer</span> <span class="k">DEFAULT</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">FWA_IndexPoint</span><span class="p">(</span>
+    <span class="n">x</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">y</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">srid</span> <span class="nb">integer</span><span class="p">,</span>
+    <span class="n">tolerance</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="mi">5000</span><span class="p">,</span>
+    <span class="n">num_features</span> <span class="nb">integer</span> <span class="k">DEFAULT</span> <span class="mi">1</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -191,11 +200,17 @@
 <h2>FWA_WatershedAtMeasure<a class="headerlink" href="#fwa-watershedatmeasure" title="Permalink to this headline"></a></h2>
 <div class="section" id="id1">
 <h3>Synopsis<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure(blue_line_key</span> <span class="pre">integer,</span> <span class="pre">downstream_route_measure</span> <span class="pre">float)</span></code></p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span>
+    <span class="n">blue_line_key</span> <span class="nb">integer</span><span class="p">,</span>
+    <span class="n">downstream_route_measure</span> <span class="nb">float</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="id2">
 <h3>Description<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
-<p>Given a point defined by <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> and <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>, return a table containting a polygon geometry that defines the point’s upstream watershed following this set of rules:</p>
+<p>Given a point defined by its position on the FWA stream network (<code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>,<code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>), return a table containing a polygon geometry that defines the point’s upstream watershed.</p>
+<p>Watershed delineation following this set of rules, in order of descending priority:</p>
 <ol class="simple">
 <li><p>If the point is within a lake, return everything upstream of the lake’s <em>outflow</em></p></li>
 <li><p>If the point is within a polygonal river/canal the fundamental watersheds are
@@ -208,13 +223,107 @@ watershed in which it falls, then that watershed is included in the aggregation<
 <p>For cross-boundary watersheds, the function returns non-BC areas using these data sources:
 + USGS <a class="reference external" href="https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con">huc12 watersheds</a> for USA (WA, ID, MT only)
 + <a class="reference external" href="https://www.hydrosheds.org">hydrosheds</a> watersheds for other neighbouring jurisdictions</p>
-</div>
-<div class="section" id="output-table">
-<h3>Output table<a class="headerlink" href="#output-table" title="Permalink to this headline"></a></h3>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>field</p></th>
+<th class="head"><p>type</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">wscode_ltree</span></code></p></td>
+<td><p>ltree</p></td>
+<td><p>watershed code of the source point</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">localcode_ltree</span></code></p></td>
+<td><p>ltree</p></td>
+<td><p>local watershed code of the source point</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">area_ha</span></code></p></td>
+<td><p>numeric</p></td>
+<td><p>area of output geometry, hectares</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">refine_method</span></code></p></td>
+<td><p>text</p></td>
+<td><p>how the watershed was processed / what further processing may be required</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
+<td><p>geometry(Polygon, 3005)</p></td>
+<td><p>a polygon representing the watershed contributing to the input location</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">refine_method</span></code> field in the output table has several possible values:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p>value</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">CUT</span></code></p></td>
+<td><p>Input point falls in a river/canal, output geometry is cut across the banks of the river/canal</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">DEM</span></code></p></td>
+<td><p>Input point falls on a linear stream &gt;50m upstream from outlet of input watershed and &gt;100m downstream from top of watershed, further processing of the fundamental watershed in which the point lies with the DEM would be valuable to improve the output watershed. This is functionally equivalent to the <code class="docutils literal notranslate"><span class="pre">DROP</span></code> value</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">DROP</span></code></p></td>
+<td><p>Input point falls on a linear stream and is &lt;=100m downstream from the top of the fundamental watershed in which it lies - this fundamental watershed is not included in output geometry</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">KEEP</span></code></p></td>
+<td><p>Input point falls on a linear stream and is &lt;=50m upstream from the outlet of the fundamental watershed in which it lies - this fundamental watershed is entirely retained in the output geometry</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">LAKE</span></code></p></td>
+<td><p>Input point falls within a lake/reservoir - watershed returned includes everything upstream of the outlet of the lake/reservoir</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">FWA_WatershedAtMeasure(354155148,</span> <span class="pre">49129.75)</span></code></p>
+<ol>
+<li><p>Extract the geometry of the watershed upstream of the Cowichan River at Hwy 19:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">geom</span> <span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span> <span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><img alt="watershed" src="images/watershed5.png" /></p>
+</li>
+<li><p>Extract the watershed upstream of Chilliwack Lake:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span> <span class="n">indexed_pt</span> <span class="k">AS</span>
+<span class="p">(</span>
+  <span class="k">SELECT</span>
+    <span class="n">i</span><span class="p">.</span><span class="o">*</span>
+  <span class="k">FROM</span>
+  <span class="p">(</span>
+    <span class="c1">-- find a point in the lake</span>
+    <span class="k">SELECT</span> <span class="n">st_pointonsurface</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span> <span class="k">AS</span> <span class="n">geom</span>
+    <span class="k">FROM</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_lakes_poly</span>
+    <span class="k">WHERE</span> <span class="n">gnis_name_1</span> <span class="o">=</span> <span class="s1">&#39;Chilliwack Lake&#39;</span>
+  <span class="p">)</span> <span class="k">AS</span> <span class="n">pt</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="k">LATERAL</span>
+  <span class="p">(</span>
+    <span class="k">SELECT</span> <span class="o">*</span>
+    <span class="k">FROM</span>
+    <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="c1">-- index the point in the lake to the nearest FWA stream</span>
+  <span class="p">)</span> <span class="n">i</span> <span class="k">on</span> <span class="k">true</span>
+<span class="p">)</span>
+
+<span class="k">SELECT</span> <span class="o">*</span>
+<span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span>
+  <span class="p">(</span><span class="k">SELECT</span> <span class="n">blue_line_key</span> <span class="k">from</span> <span class="n">indexed_pt</span><span class="p">),</span>
+  <span class="p">(</span><span class="k">SELECT</span> <span class="n">downstream_route_measure</span> <span class="k">from</span> <span class="n">indexed_pt</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">wscode_ltree</span>    <span class="o">|</span>     <span class="n">localcode_ltree</span>      <span class="o">|</span> <span class="n">area_ha</span>  <span class="o">|</span> <span class="n">refine_method</span>  <span class="o">|</span> <span class="n">geom</span>
+<span class="o">-------------------+--------------------------+----------+----------------+-----</span>
+ <span class="mf">100.064535</span><span class="o">.</span><span class="mi">057628</span> <span class="o">|</span> <span class="mf">100.064535</span><span class="o">.</span><span class="mf">057628.634957</span> <span class="o">|</span> <span class="mf">33478.28</span> <span class="o">|</span> <span class="n">LAKE</span>           <span class="o">|</span>
+</pre></div>
+</div>
+<p>Mapped, the geometry looks like this - FWA heights of land in BC, HUC12 heights of land in the USA:</p>
+<p><img alt="watershed" src="images/watershed6.png" /></p>
+</li>
+</ol>
 </div>
 </div>
 </div>

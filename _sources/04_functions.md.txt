@@ -5,9 +5,19 @@
 ### Synopsis
 
 ```sql
-FWA_IndexPoint(point geometry(Point, 3005), tolerance float DEFAULT 5000, num_features integer DEFAULT 1)
+FWA_IndexPoint(
+    point geometry(Point, 3005),
+    tolerance float DEFAULT 5000,
+    num_features integer DEFAULT 1
+)
 
-FWA_IndexPoint(x float, y float, srid integer, tolerance float DEFAULT 5000, num_features integer DEFAULT 1)
+FWA_IndexPoint(
+    x float,
+    y float,
+    srid integer,
+    tolerance float DEFAULT 5000,
+    num_features integer DEFAULT 1
+)
 ```
 
 ### Description
@@ -75,11 +85,18 @@ LEFT JOIN LATERAL
 
 ### Synopsis
 
-`FWA_WatershedAtMeasure(blue_line_key integer, downstream_route_measure float)`
+```sql
+FWA_WatershedAtMeasure(
+    blue_line_key integer,
+    downstream_route_measure float
+)
+```
 
 ### Description
 
-Given a point defined by `blue_line_key` and `downstream_route_measure`, return a table containting a polygon geometry that defines the point's upstream watershed following this set of rules:
+Given a point defined by its position on the FWA stream network (`blue_line_key`,`downstream_route_measure`), return a table containing a polygon geometry that defines the point's upstream watershed.
+
+Watershed delineation following this set of rules, in order of descending priority:
 
 1. If the point is within a lake, return everything upstream of the lake's *outflow*
 2. If the point is within a polygonal river/canal the fundamental watersheds are
@@ -89,15 +106,74 @@ watershed in which it falls, then that fundamental watershed is not included in 
 4. If the point is < 50 m upstream from the bottom of the fundamental
 watershed in which it falls, then that watershed is included in the aggregation
 
-
 For cross-boundary watersheds, the function returns non-BC areas using these data sources:
     + USGS [huc12 watersheds](https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con) for USA (WA, ID, MT only)
     + [hydrosheds](https://www.hydrosheds.org) watersheds for other neighbouring jurisdictions
 
+| field                     | type                    | description                                 |
+| :-------------------------| ---------------------   |-------------------------------------------- |
+| `wscode_ltree`            | ltree                   | watershed code of the source point          |
+| `localcode_ltree`         | ltree                   | local watershed code of the source point    |
+| `area_ha`                 | numeric                 | area of output geometry, hectares           |
+| `refine_method`           | text                    | how the watershed was processed / what further processing may be required |
+| `geom`                    | geometry(Polygon, 3005) | a polygon representing the watershed contributing to the input location |
 
-### Output table
+The `refine_method` field in the output table has several possible values:
+
+| value                     | description                                 |
+| :-------------------------|-------------------------------------------- |
+| `CUT`                     | Input point falls in a river/canal, output geometry is cut across the banks of the river/canal
+| `DEM`                     | Input point falls on a linear stream >50m upstream from outlet of input watershed and >100m downstream from top of watershed, further processing of the fundamental watershed in which the point lies with the DEM would be valuable to improve the output watershed. This is functionally equivalent to the `DROP` value
+| `DROP`                    | Input point falls on a linear stream and is <=100m downstream from the top of the fundamental watershed in which it lies - this fundamental watershed is not included in output geometry
+| `KEEP`                    | Input point falls on a linear stream and is <=50m upstream from the outlet of the fundamental watershed in which it lies - this fundamental watershed is entirely retained in the output geometry
+| `LAKE`                    | Input point falls within a lake/reservoir - watershed returned includes everything upstream of the outlet of the lake/reservoir
 
 
 ### Examples
 
-`SELECT * FROM FWA_WatershedAtMeasure(354155148, 49129.75)`
+1. Extract the geometry of the watershed upstream of the Cowichan River at Hwy 19:
+
+    ```sql
+    SELECT geom FROM FWA_WatershedAtMeasure(354155148, 49129.75);
+    ```
+
+    ![watershed](images/watershed5.png)
+
+2. Extract the watershed upstream of Chilliwack Lake:
+
+    ```sql
+    WITH indexed_pt AS
+    (
+      SELECT
+        i.*
+      FROM
+      (
+        -- find a point in the lake
+        SELECT st_pointonsurface(geom) AS geom
+        FROM whse_basemapping.fwa_lakes_poly
+        WHERE gnis_name_1 = 'Chilliwack Lake'
+      ) AS pt
+      LEFT JOIN LATERAL
+      (
+        SELECT *
+        FROM
+        FWA_IndexPoint(geom, 100) -- index the point in the lake to the nearest FWA stream
+      ) i on true
+    )
+
+    SELECT *
+    FROM FWA_WatershedAtMeasure(
+      (SELECT blue_line_key from indexed_pt),
+      (SELECT downstream_route_measure from indexed_pt)
+    );
+    ```
+
+    ```
+       wscode_ltree    |     localcode_ltree      | area_ha  | refine_method  | geom
+    -------------------+--------------------------+----------+----------------+-----
+     100.064535.057628 | 100.064535.057628.634957 | 33478.28 | LAKE           |
+    ```
+
+    Mapped, the geometry looks like this - FWA heights of land in BC, HUC12 heights of land in the USA:
+
+    ![watershed](images/watershed6.png)
