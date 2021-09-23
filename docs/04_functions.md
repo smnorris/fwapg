@@ -262,7 +262,7 @@ Return a table representing points along a stream between input locations at spe
 
 | field                     | type                  | description                                 |
 | :-------------------------| --------------------- |-------------------------------------------- |
-| `id`                      | integer               | 0 based index of returned features          |
+| `index`                   | integer               | 0 based index of returned features          |
 | `downstream_route_measure`| double precision      | measure value of output point               |
 | `geom`                    | geometry(Point, 3005) | Point geometry at the measure               |
 
