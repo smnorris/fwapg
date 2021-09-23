@@ -1,6 +1,6 @@
 # Usage
 
-This document presumes a working familiarity with FWA data and PostgreSQL/PostGIS.
+This document presumes a working familiarity with FWA data and spatial SQL queries with PostgreSQL/PostGIS.
 
 
 ## Upstream / downstream analysis
@@ -25,7 +25,7 @@ This snaps the input point to the closest stream - it returns information about 
     -------------------+-------------+--------------+-----------------+---------------+--------------------------+--------------------+--------+
              710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.2530543284006 | 24.228 | t      |
 
-This function is available via the `fwapg` [feature service](https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint.html) - you can experiment with it [directly](https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint/items.html?x=-123.7028&y=48.3858&srid=4326) without having to install fwapg (zoom out to see the context in the default web map).
+This function is available via the `fwapg` [feature service](https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint.html) - you can experiment with it [directly](https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint/items.html?x=-123.7028&y=48.3858&srid=4326) without having to install anything other than a web browser (zoom out to see the context in the default web map).
 
 
 ### Reference many points to stream network
@@ -56,7 +56,6 @@ Referencing a single point is handy but generally it is necessary to join/snap a
 Because `FWA_IndexPoint` is a table returning function, matching many points to the stream network in a single query can be done with a `LATERAL` join. Note that `FWA_IndexPoint` accepts point geometries directly, but only as BC Albers (`EPSG:3005`). For this example, just query the first five hydrometric stations.
 
 ```sql
-
 SELECT
   pts.id,
   pts.name,
@@ -69,14 +68,14 @@ FROM
   FROM hydrostn
   LIMIT 5   -- only 5 stations for this example
 ) pts
-CROSS JOIN LATERAL
+LEFT JOIN LATERAL
 (
   SELECT *
   FROM
   FWA_IndexPoint(geom, 100, 10) -- find up to 10 streams within 100m
-) i;
-
-
+) i ON true;
+```
+```
    id    |                name                 | blue_line_key | downstream_route_measure | distance_to_stream
 ---------+-------------------------------------+---------------+--------------------------+--------------------
  07EA004 | INGENIKA RIVER ABOVE SWANNELL RIVER |     359571145 |       6095.5541123470175 |             41.466
@@ -109,14 +108,15 @@ For quality matching of points to streams it is essential to be familiar with th
     FROM hydrostn
     LIMIT 5
   ) pts
-  CROSS JOIN LATERAL
+  LEFT JOIN LATERAL
   (
     SELECT *
     FROM
     FWA_IndexPoint(geom, 100, 10)
-  ) i;
-
-     id    |                name                 |   gnis_name    | trgm_comparison
+  ) i ON true;
+```
+```
+   id    |                name                 |   gnis_name    | trgm_comparison
 ---------+-------------------------------------+----------------+-----------------
  07EA004 | INGENIKA RIVER ABOVE SWANNELL RIVER | Ingenika River | t
  07EA004 | INGENIKA RIVER ABOVE SWANNELL RIVER |                |
@@ -140,14 +140,15 @@ FROM
   FROM hydrostn
   LIMIT 5
 ) pts
-CROSS JOIN LATERAL
+LEFT JOIN LATERAL
 (
   SELECT *
   FROM
   FWA_IndexPoint(geom, 100, 10)
-) i
+) i ON true
 WHERE gnis_name % pts.name::text;
-
+```
+```
    id    |                name                 | blue_line_key | downstream_route_measure
 ---------+-------------------------------------+---------------+--------------------------
  07EA004 | INGENIKA RIVER ABOVE SWANNELL RIVER |     359571145 |       6095.5541123470175
@@ -184,12 +185,12 @@ FROM
   SELECT id, name, geom
   FROM hydrostn
 ) pts
-CROSS JOIN LATERAL
+LEFT JOIN LATERAL
 (
   SELECT *
   FROM
   FWA_IndexPoint(geom, 100, 10)
-) i
+) i ON true
 WHERE gnis_name % pts.name::text
 ORDER BY pts.id;
 ```
@@ -211,7 +212,8 @@ ON FWA_Downstream(
 )
 GROUP BY e.id, e.name
 ORDER BY e.id;
-
+```
+```
    id    |                name                 |   length_dnstr_km
 ---------+-------------------------------------+--------------------
  07EA004 | INGENIKA RIVER ABOVE SWANNELL RIVER |  908.3217090864651
@@ -240,7 +242,8 @@ ON FWA_Upstream(
 )
 GROUP BY e.id, e.name
 ORDER BY e.id;
-
+```
+```
    id    |                name                 |   length_upstr_km
 ---------+-------------------------------------+--------------------
  07EA004 | INGENIKA RIVER ABOVE SWANNELL RIVER |  8355.325367888996
@@ -264,7 +267,8 @@ WHERE FWA_Upstream(
   356364114, 160400, '100'::ltree, '100.113848'::ltree,
   e.blue_line_key, e.downstream_route_measure, e.wscode_ltree, e.localcode_ltree
 );
-
+```
+```
  count
 -------
     83
@@ -283,7 +287,8 @@ WHERE FWA_Upstream(
   359572348, 1706733, '200.948755'::ltree, '200.948755.871814'::ltree,
   s.blue_line_key, s.downstream_route_measure, s.wscode_ltree, s.localcode_ltree
 );
-
+```
+```
      length_km
 --------------------
  28974.584934736216
@@ -320,33 +325,22 @@ The `local_watershed_code` value for the stream at the point location is `920.25
 
 ![watershed](images/watershed3.png)
 
-To clean up this issue and others, `fwapg` provides the `FWA_WatershedAtMeasure` function. Given a point defined by `blue_line_key` and `downstream_route_measure`, the function will return a polygon defining the watershed upstream of the point following this set of rules:
+To clean up this issue and others, `fwapg` provides the function [`FWA_WatershedAtMeasure`](04_functions#FWA_WatershedAtMeasure).
 
-1. If the point is within a lake, return everything upstream of the lake's *outflow*
-2. If the point is within a polygonal river/canal the fundamental watersheds are
-cut across the banks of the river/canal before being included in the aggregation
-3. If the point is < 100m downstream from the top of the fundamental
-watershed in which it falls, then that fundamental watershed is not included in the aggregation
-4. If the point is < 50 m upstream from the bottom of the fundamental
-watershed in which it falls, then that watershed is included in the aggregation
-
-`FWA_WatershedAtMeasure` also attempts to:
-
-- speed up the aggregation by using pre-aggregated geometries (assessment watersheds and other)
-- for cross-boundary watersheds, include watershed areas not in BC using these data sources:
-    + USGS [huc12 watersheds](https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con) for USA (WA, ID, MT only)
-    + [hydrosheds](https://www.hydrosheds.org) watersheds for other neighbouring jurisdictions
-
-See `FWA_WatershedAtMeasure` for more.
-
-
-For the single example point, we can generate the watershed with this query:
+For a single point, we can provide the parameters (`blue_line_key`, `downstream_route_measure`) directly:
 
 ```sql
-SELECT * FROM FWA_WatershedAtMeasure(354155148,49129.75)
+SELECT * FROM FWA_WatershedAtMeasure(354155148, 49129.75)
 ```
 
-And as `FWA_WatershedAtMeasure` is also a table returning function, when joining to the source table, use a `LATERAL` join to run the query on each point. Note that this is very resource intensive, you may want to restrict the query to just a handful of points.
+Producing this output:
+
+![watershed](images/watershed4.png)
+
+
+Like `FWA_IndexPoint`, this function is available via the `fwapg` [feature service](https://www.hillcrestgeo.ca/fwapg/functions/fwa_watershedatmeasure.html) - you can experiment with it [directly](https://www.hillcrestgeo.ca/fwapg/functions/fwa_watershedatmeasure/items.html?blue_line_key=354155148&downstream_route_measure=49129.75) without having to install anything other than a web browser.
+
+Also like `FWA_IndexPoint`, `FWA_WatershedAtMeasure` is a table returning function. When joining to the source table, use a `LATERAL` join to run the query on each point. Note that this can be very resource intensive, you may want to restrict the query to just a handful of points.
 
 ```sql
 SELECT
@@ -360,8 +354,3 @@ LEFT JOIN LATERAL
 ) w ON true
 WHERE p.id = '08HA002';
 ```
-
-The output looks like this:
-
-![watershed](images/watershed4.png)
-
