@@ -364,7 +364,7 @@
 <p>But if we look closely at the fundamental watersheds near the point, the watershed boundary is a bit different from what might be expected:</p>
 <p><img alt="watershed" src="_images/watershed2.png" /></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> value for the stream at the point location is <code class="docutils literal notranslate"><span class="pre">920.252823.584332</span></code> - the three highlighted fundamental watersheds all have lower <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> values and are thus not returned by <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code>. This is typical for points found on FWA waterbodies - the fundamental watersheds making up waterbodies are defined by a complex set of rules.</p>
-<p><img alt="watershed" src="images/watershed3.png" /></p>
+<p><img alt="watershed" src="_images/watershed3.png" /></p>
 <p>To clean up this issue and others, <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> provides the <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> function. Given a point defined by <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> and <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>, the function will return a polygon defining the watershed upstream of the point following this set of rules:</p>
 <ol class="simple">
 <li><p>If the point is within a lake, return everything upstream of the lake’s <em>outflow</em></p></li>
@@ -404,7 +404,7 @@ watershed in which it falls, then that watershed is included in the aggregation<
 </pre></div>
 </div>
 <p>The output looks like this:</p>
-<p><img alt="watershed" src="images/watershed4.png" /></p>
+<p><img alt="watershed" src="_images/watershed4.png" /></p>
 </div>
 </div>
 </div>
