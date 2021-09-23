@@ -312,6 +312,6 @@ This successfully creates the watershed boundary:
 
 But if we look closely at the fundamental watersheds near the point, the watershed boundary is a bit different from what might be expected:
 
-![watershed](images/watershed1.png)
+![watershed](images/watershed2.png)
 
 
