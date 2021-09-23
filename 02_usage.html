@@ -236,7 +236,7 @@
   <span class="n">i</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
   <span class="n">i</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
   <span class="n">i</span><span class="p">.</span><span class="n">distance_to_stream</span><span class="p">,</span>
-  <span class="n">i</span><span class="p">.</span><span class="n">geom</span>
+  <span class="n">i</span><span class="p">.</span><span class="n">geom</span><span class="p">::</span><span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span> <span class="mi">3005</span><span class="p">)</span>
 <span class="k">FROM</span>
 <span class="p">(</span>
   <span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">geom</span>
@@ -345,6 +345,22 @@
 </div>
 <div class="section" id="generate-watershed">
 <h3>Generate watershed<a class="headerlink" href="#generate-watershed" title="Permalink to this headline"></a></h3>
+<p>With <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code> in hand, creating a watershed boundary now seems straightforward - find the fundamental watersheds upstream and aggregate them. For example, to extract the watershed upstream of hydrometric station <code class="docutils literal notranslate"><span class="pre">08HA002</span></code> as a single polygon:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+   <span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+   <span class="n">ST_Union</span><span class="p">(</span><span class="n">w</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_watersheds_poly</span> <span class="n">w</span>
+<span class="k">WHERE</span> <span class="n">p</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;08HA002&#39;</span> <span class="k">AND</span>
+<span class="n">FWA_Upstream</span><span class="p">(</span>
+  <span class="n">p</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">p</span><span class="p">.</span><span class="n">localcode_ltree</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span> <span class="n">w</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">)</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This successfully creates the watershed boundary:</p>
+<p><img alt="watershed" src="_images/watershed1.png" /></p>
+<p>But if we look closely at the fundamental watersheds near the point, the watershed boundary is a bit different from what might be expected:</p>
+<p><img alt="watershed" src="_images/watershed1.png" /></p>
 </div>
 </div>
 </div>
