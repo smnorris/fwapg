@@ -84,7 +84,7 @@ For point locations referenced to the stream network, use the form of the functi
     -----------------
               161.40
     ```
-3. For each feature in table a, find all records downstream in table b and collect them into an array:
+3. For each feature in table a, find all records downstream in table b and collect them into an array. This query summarizes all dams downstream of each PSCIS assessment location (data from [`bcfishpass`](https://github.com/smnorris/bcfishpass))
 
     ```sql
     SELECT
@@ -208,26 +208,99 @@ Snaps a point to the stream network. Provided a point (as either a BC Albers poi
 
 ### Synopsis
 
+```sql
+FWA_LocateAlong(blue_line_key integer, downstream_route_measure float)
+```
+
 ### Description
 
-### Examples
+Return a table containing a single point geometry corresponding to the position on the FWA stream network of input `blue_line_key`, `downstream_route_measure`.
+
+### Example
+
+Create a point geometry at measure 25,000 on the Skeena River:
+```sql
+    SELECT ST_AsText(
+        FWA_LocateAlong(
+          (
+            SELECT DISTINCT blue_line_key
+            FROM whse_basemapping.fwa_stream_networks_sp
+            WHERE gnis_name = 'Skeena River'
+          ),
+        25000
+        )
+    );
+```
+```
+                         st_astext
+-----------------------------------------------------------
+ POINT ZM (754013.9457165595 1029911.1568720527 5.5 25000)
+
+```
 
 ### Web service
 
-
+[FWA_LocateAlong](https://www.hillcrestgeo.ca/fwapg/functions/fwa_locatealong.html)
 
 
 ## FWA_LocateAlongInterval
 
 ### Synopsis
 
+```sql
+FWA_LocateAlongInterval(
+  blue_line_key integer,
+  start_measure integer DEFAULT 0,
+  interval_length integer DEFAULT 1000,
+  end_measure integer DEFAULT NULL
+)
+```
+
 ### Description
 
-### Examples
+Return a table representing points along a stream between input locations at specified interval.
+
+| field                     | type                  | description                                 |
+| :-------------------------| --------------------- |-------------------------------------------- |
+| `id`                      | integer               | 0 based index of returned features          |
+| `downstream_route_measure`| double precision      | measure value of output point               |
+| `geom`                    | geometry(Point, 3005) | Point geometry at the measure               |
+
+### Example
+
+Return points at a 1km interval along the Peace between Site C and Bennet dams:
+
+```sql
+  SELECT
+     index as id,
+     downstream_route_measure,
+     ST_AsText(geom)
+  FROM FWA_LocateAlongInterval(
+    359572348,
+    1597489,
+    1000,
+    1706733
+    );
+```
+```
+ id  | downstream_route_measure |                                  st_astext
+-----+--------------------------+-----------------------------------------------------------------------------
+   0 |                  1597489 | POINT ZM (1314468.0708699157 1256099.567354601 412.98247677532964 1597489)
+   1 |                  1598489 | POINT ZM (1313779.3421101477 1256817.5566858777 413.709000000003 1598489)
+   2 |                  1599489 | POINT ZM (1313217.588407995 1257612.8656611862 413.9290255060764 1599489)
+   3 |                  1600489 | POINT ZM (1312633.1479665248 1258419.2668507479 414 1600489)
+...
+```
+Mapping the returned features:
+
+![watershed](images/locatealonginterval.png)
 
 ### Web service
 
+[FWA_LocateAlongInterval](https://www.hillcrestgeo.ca/fwapg/functions/fwa_locatealonginterval.html)
 
+Make the same request as the example above, but
+[at 10km](https://www.hillcrestgeo.ca/fwapg/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100)
 
 
 ## FWA_Upstream
