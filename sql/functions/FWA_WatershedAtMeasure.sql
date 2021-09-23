@@ -344,7 +344,7 @@ begin
           SELECT
             ST_Safe_Difference(exbc.geom, bc.geom) as geom
           FROM exbc
-          INNER JOIN whse_basemapping.fwa_bc_boundary bc
+          INNER JOIN whse_basemapping.fwa_bcboundary bc
           ON ST_Intersects(exbc.geom, bc.geom)
 
         ) as to_agg,
@@ -506,7 +506,7 @@ begin
           SELECT
             ST_Safe_Difference(exbc.geom, bc.geom) as geom
           FROM exbc
-          INNER JOIN whse_basemapping.fwa_bc_boundary bc
+          INNER JOIN whse_basemapping.fwa_bcboundary bc
           ON ST_Intersects(exbc.geom, bc.geom)
         ) w
         GROUP BY o.wscode_ltree, o.localcode_ltree, refine_method;
