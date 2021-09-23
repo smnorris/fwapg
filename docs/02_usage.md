@@ -178,7 +178,7 @@ SELECT
   i.wscode_ltree,
   i.localcode_ltree,
   i.distance_to_stream,
-  i.geom
+  i.geom::geometry(Point, 3005)
 FROM
 (
   SELECT id, name, geom
@@ -291,3 +291,27 @@ WHERE FWA_Upstream(
 
 
 ### Generate watershed
+
+With `FWA_Upstream` in hand, creating a watershed boundary now seems straightforward - find the fundamental watersheds upstream and aggregate them. For example, to extract the watershed upstream of hydrometric station `08HA002` as a single polygon:
+
+```sql
+SELECT
+   p.id,
+   ST_Union(w.geom)
+FROM whse_basemapping.fwa_watersheds_poly w
+WHERE p.id = '08HA002' AND
+FWA_Upstream(
+  p.wscode_ltree, p.localcode_ltree
+  w.wscode_ltree, w.localcode_ltree)
+GROUP BY p.id;
+```
+
+This successfully creates the watershed boundary:
+
+![watershed](images/watershed1.png)
+
+But if we look closely at the fundamental watersheds near the point, the watershed boundary is a bit different from what might be expected:
+
+![watershed](images/watershed1.png)
+
+

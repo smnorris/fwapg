@@ -25,7 +25,7 @@ RETURNS TABLE
         downstream_route_measure float,
         distance_to_stream float,
         bc_ind boolean,
-        geom geometry
+        geom geometry(Point, 3005)
     )
 
 AS
@@ -129,7 +129,7 @@ RETURNS TABLE
         downstream_route_measure float,
         distance_to_stream float,
         bc_ind boolean,
-        geom geometry
+        geom geometry(Point, 3005)
     )
 
 AS
