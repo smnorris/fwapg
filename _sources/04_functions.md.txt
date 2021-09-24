@@ -68,7 +68,7 @@ For point locations referenced to the stream network, use the form of the functi
     -----------------
               308.54
     ```
-    Refine this slightly to find the distance to the ocean along the Fraser mainstem:
+    Refine this slightly to find the distance to the ocean along the Fraser mainstem (where `blue_line_key` is equal to `watershed_key`:
 
     ```sql
     SELECT
@@ -77,14 +77,15 @@ For point locations referenced to the stream network, use the form of the functi
     WHERE FWA_Downstream(
       356364114, 160400, '100'::ltree, '100.113848'::ltree,
       s.blue_line_key, s.downstream_route_measure, s.wscode_ltree, s.localcode_ltree
-    ) AND watershed_key = blue_line_key;
+    )
+    AND watershed_key = blue_line_key; -- do not include side channels
     ```
     ```
      length_dnstr_km
     -----------------
               161.40
     ```
-3. For each feature in table a, find all records downstream in table b and collect them into an array. This query summarizes all dams downstream of each PSCIS assessment location (data from [`bcfishpass`](https://github.com/smnorris/bcfishpass))
+3. For each feature in table A, find all records downstream in table B and collect them into an array. This query lists all dams downstream of each fish passage field assessment location (data from [`bcfishpass`](https://github.com/smnorris/bcfishpass))
 
     ```sql
     SELECT
@@ -262,7 +263,7 @@ Return a table representing points along a stream between input locations at spe
 
 | field                     | type                  | description                                 |
 | :-------------------------| --------------------- |-------------------------------------------- |
-| `id`                      | integer               | 0 based index of returned features          |
+| `index`                   | integer               | 0 based index of returned features          |
 | `downstream_route_measure`| double precision      | measure value of output point               |
 | `geom`                    | geometry(Point, 3005) | Point geometry at the measure               |
 
@@ -307,10 +308,125 @@ Make the same request as the example above, but
 
 ### Synopsis
 
+```sql
+-- compare watershed codes only
+FWA_Upstream(
+    wscode_ltree_a ltree,
+    localcode_ltree_a ltree,
+    wscode_ltree_b ltree,
+    localcode_ltree_b ltree
+)
+
+-- compare watershed codes and route positions (lines)
+FWA_Upstream(
+    blue_line_key_a integer,
+    downstream_route_measure_a double precision,
+    upstream_route_measure_a double precision,
+    wscode_ltree_a ltree,
+    localcode_ltree_a ltree,
+    blue_line_key_b integer,
+    downstream_route_measure_b double precision,
+    wscode_ltree_b ltree,
+    localcode_ltree_b ltree,
+    include_equivalents boolean default False,
+    tolerance double precision default .001
+)
+
+-- compare watershed codes and route positions (points)
+FWA_Upstream(
+    blue_line_key_a integer,
+    downstream_route_measure_a double precision,
+    wscode_ltree_a ltree,
+    localcode_ltree_a ltree,
+    blue_line_key_b integer,
+    downstream_route_measure_b double precision,
+    wscode_ltree_b ltree,
+    localcode_ltree_b ltree,
+    include_equivalents boolean default False,
+    tolerance double precision default .001
+)
+```
+
 ### Description
+
+Return `True` if the watershed codes / measures B are upstream of watershed codes / measure A.
+
+For polygonal features (where no `blue_line_key` / `downstream_route_measure` is present), use the shorter form of the function.
+
+For line features, use the form of the function with `blue_line_key`, `downstream_route_measure` and `upstream_route_measure`
+
+For point features, use the form of the function with `blue_line_key` and `downstream_route_measure`, but not `upstream_route_measure`
+
+Specify `True` for `include_equivalents` if you want to evaluate as true for features with exactly the same linear position.
+
 
 ### Examples
 
+1. At its most basic, the function compares two watershed code / local code `ltree` pairs and returns `True` if the second pair is upstream of the first pair.
+
+    ```sql
+    SELECT FWA_Upstream(
+      '100.100000'::ltree,
+      '100.100000'::ltree,
+      '100.100000.000100'::ltree,
+      '100.100000.000100'::ltree
+    );
+    ```
+    ```
+     fwa_upstream
+    --------------
+     t
+    ```
+
+2. Find features upstream of a known location on the network. This query finds the number of lakes upstream of the Mission/Terzaghi Dam on the Bridge River. As source FWA lakes do not have a `local_watershed_code` value, we use the `fwapg` lookup.
+
+    ```sql
+    SELECT
+      count(*) AS n_lakes
+    FROM whse_basemapping.fwa_lakes_poly l
+    INNER JOIN whse_basemapping.fwa_waterbodies wb
+    ON l.waterbody_key = wb.waterbody_key
+    WHERE FWA_Upstream('100.239855','100.239855.240724', wb.wscode_ltree, wb.localcode_ltree);
+    ```
+     ```
+     n_lakes
+    ---------
+         998
+    (1 row)
+    ```
+
+3. For each feature in table A, find all records upstream in table B and collect them into an array. This query lists all dams upstream of each fish passage field assessment location (data from [`bcfishpass`](https://github.com/smnorris/bcfishpass))
+
+    ```sql
+    SELECT
+      a.aggregated_crossings_id,
+      array_agg(b.dam_id) as upstream_dam_ids
+    FROM bcfishpass.crossings a
+    INNER JOIN bcfishpass.dams b
+    ON FWA_Upstream(
+      a.blue_line_key,
+      a.downstream_route_measure,
+      a.wscode_ltree,
+      a.localcode_ltree,
+      b.blue_line_key,
+      b.downstream_route_measure,
+      b.wscode_ltree,
+      b.localcode_ltree
+    )
+    WHERE a.stream_crossing_id IS NOT NULL
+    GROUP BY a.aggregated_crossings_id
+    ```
+    ```
+     aggregated_crossings_id | upstream_dam_ids
+    -------------------------+-----------------------
+                       69195 | {163}
+                      196198 | {1427,2362}
+                      195590 | {1914}
+                       51959 | {2371}
+                      103090 | {1085,1693,1483}
+                      103088 | {1693}
+                        7520 | {416,1129,708,1937,1128}
+    ```
 
 ## FWA_WatershedAtMeasure
 
