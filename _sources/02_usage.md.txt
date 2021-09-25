@@ -195,9 +195,19 @@ WHERE gnis_name % pts.name::text
 ORDER BY pts.id;
 ```
 
+### Watershed codes
+
+Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and the `blue_line_key` / `route_measure` values.
+
+From the [FWA user guide](https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater), the watershed codes are *a hierarchical key that provides the ability to process both upstream and downstream queries*. The source FWA database stores these codes as strings, with trailing `-000000-` values to fill in the full 143 characters.
+
+`fwapg` translates the watershed code strings to [`ltree`](https://www.postgresql.org/docs/current/ltree.html) types for easier searching of the hierarchical tree-like structure (these codes are stored in columns `wscode_ltree` and `localcode_ltree` in the various tables).
+
+While the `ltree` module provides operators simple hierarchy queries (eg `ltree @> ltree`, is left argument an ancestor of right (or equal)), upstream/downstream queries are [not quite as simple](https://github.com/smnorris/fwapg/blob/main/sql/functions/FWA_Upstream.sql) as ancestor/descendant queries of the codes. Therefore, functions `FWA_Upstream` and `FWA_Downstream` are provided to make these operations simpler.
+
 ### Query downstream
 
-Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and `blue_line_key` / `route_measure`. Using `FWA_Downstream` enables doing this with a join:
+ Using `FWA_Downstream` enables doing this with a join:
 
 ```sql
 SELECT

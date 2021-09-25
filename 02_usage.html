@@ -44,6 +44,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reference-a-single-point-to-the-stream-network">Reference a single point to the stream network</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reference-many-points-to-stream-network">Reference many points to stream network</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#check-results">Check results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#watershed-codes">Watershed codes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#query-downstream">Query downstream</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#query-upstream">Query upstream</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#generate-watershed">Generate watershed</a></li>
@@ -255,9 +256,16 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="watershed-codes">
+<h3>Watershed codes<a class="headerlink" href="#watershed-codes" title="Permalink to this headline"></a></h3>
+<p>Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and the <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">route_measure</span></code> values.</p>
+<p>From the <a class="reference external" href="https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater">FWA user guide</a>, the watershed codes are <em>a hierarchical key that provides the ability to process both upstream and downstream queries</em>. The source FWA database stores these codes as strings, with trailing <code class="docutils literal notranslate"><span class="pre">-000000-</span></code> values to fill in the full 143 characters.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fwapg</span></code> translates the watershed code strings to <a class="reference external" href="https://www.postgresql.org/docs/current/ltree.html"><code class="docutils literal notranslate"><span class="pre">ltree</span></code></a> types for easier searching of the hierarchical tree-like structure (these codes are stored in columns <code class="docutils literal notranslate"><span class="pre">wscode_ltree</span></code> and <code class="docutils literal notranslate"><span class="pre">localcode_ltree</span></code> in the various tables).</p>
+<p>While the <code class="docutils literal notranslate"><span class="pre">ltree</span></code> module provides operators simple hierarchy queries (eg <code class="docutils literal notranslate"><span class="pre">ltree</span> <span class="pre">&#64;&gt;</span> <span class="pre">ltree</span></code>, is left argument an ancestor of right (or equal)), upstream/downstream queries are <a class="reference external" href="https://github.com/smnorris/fwapg/blob/main/sql/functions/FWA_Upstream.sql">not quite as simple</a> as ancestor/descendant queries of the codes. Therefore, functions <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code> and <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> are provided to make these operations simpler.</p>
+</div>
 <div class="section" id="query-downstream">
 <h3>Query downstream<a class="headerlink" href="#query-downstream" title="Permalink to this headline"></a></h3>
-<p>Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">route_measure</span></code>. Using <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> enables doing this with a join:</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> enables doing this with a join:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
   <span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
   <span class="n">e</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
