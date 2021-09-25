@@ -388,7 +388,7 @@ Specify `True` for `include_equivalents` if you want to evaluate as true for fea
     ON l.waterbody_key = wb.waterbody_key
     WHERE FWA_Upstream('100.239855','100.239855.240724', wb.wscode_ltree, wb.localcode_ltree);
     ```
-     ```
+    ```
      n_lakes
     ---------
          998
