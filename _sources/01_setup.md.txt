@@ -6,7 +6,7 @@
 - [PostGIS](https://postgis.net/) (>=v3.1 with GEOS >=3.9)
 - [GDAL](https://gdal.org/index.html) (tested with v3.3.0)
 - [GNU parallel](https://www.gnu.org/software/parallel/)
-- [`make`](https://www.gnu.org/software/make/)
+- [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
 
 The instructions below presume postgres is set up and accepting connections.
 
