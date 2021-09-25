@@ -16,10 +16,13 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
 ## Quickstart
 
-1. Ensure you have access to a PostgreSQL 13 (>=13) database with the PostGIS extension (>=3.1) and GDAL (>=3.3) is available on your system.
+1. Ensure all requirements/dependencies are met/installed:
+    - access to a PostgreSQL 13 (>=13) database with the PostGIS extension (>=3.1) installed
+    - GDAL >=3.3
+    - [GNU parallel](https://www.gnu.org/software/parallel/)
+    - [`make`](https://www.gnu.org/software/make/)
 
-
-2. Create or update the required environment variables to point to your database. If a password is required for `$PGUSER`, either [create a password file](https://www.postgresql.org/docs/current/libpq-pgpass.html) or modify the connection strings directly in the `Makefile` as required.
+2. Set the required environment variables to point to your database. If a password is required for `$PGUSER`, [create a password file](https://www.postgresql.org/docs/current/libpq-pgpass.html)
 
     - `$PGHOST`
     - `$PGUSER`

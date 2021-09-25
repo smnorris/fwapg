@@ -2,13 +2,22 @@
 
 ## Requirements
 
-- PostgreSQL (>=13)
-- PostGIS (>=v3.1 with GEOS >=3.9)
-- GDAL (tested with v3.3.0)
-- GNU make
+- [PostgreSQL](https://www.postgresql.org) (>=13)
+- [PostGIS](https://postgis.net/) (>=v3.1 with GEOS >=3.9)
+- [GDAL](https://gdal.org/index.html) (tested with v3.3.0)
+- [GNU parallel](https://www.gnu.org/software/parallel/)
+- [`make`](https://www.gnu.org/software/make/)
 
 The instructions below presume postgres is set up and accepting connections.
 
+
+## Create the database
+
+If you are not loading to an existing database, create a new one (adjusting the database name as required):
+
+```bash
+createdb fwapg
+```
 
 ## Environment variables
 
@@ -19,15 +28,26 @@ The data load script requires these [postgres environment variables](https://www
 - `$PGDATABASE`
 - `$PGPORT`
 
-If a password is required for `$PGUSER`, either [create a password file](https://www.postgresql.org/docs/current/libpq-pgpass.html) or modify the connection strings directly in the `Makefile` as required.
+For example:
 
+```bash
+export PGHOST=localhost
+export PGUSER=fwapguser
+export PGDATABASE=fwapg
+export PGPORT=5432
+```
 
-## Create the database
+If a password is required for `$PGUSER`, [create a password file](https://www.postgresql.org/docs/current/libpq-pgpass.html).
 
-If you are not loading to an existing database, create a new one:
+To confirm that you can connect to the database using these environment variables, start `psql` without any arguments:
 
-    createdb $PGDATABASE
+```bash
+$ psql
+psql (13.3)
+Type "help" for help.
 
+fwapg=#
+```
 
 ## Data load and optimization
 
