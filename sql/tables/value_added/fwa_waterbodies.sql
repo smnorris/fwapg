@@ -167,4 +167,4 @@ CREATE INDEX ON whse_basemapping.fwa_waterbodies USING BTREE (wscode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_waterbodies USING GIST (localcode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_waterbodies USING BTREE (localcode_ltree);
 
-COMMENT ON TABLE whse_basemapping.fwa_waterbodies IS 'All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions';
+COMMENT ON TABLE whse_basemapping.fwa_waterbodies IS 'All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions.';

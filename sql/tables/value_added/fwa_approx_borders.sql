@@ -62,4 +62,7 @@ FROM (SELECT
         -120.0005 AS x,
         generate_series(60, 53.79914, -.01) AS y) AS segments;
 
-COMMENT ON TABLE whse_basemapping.fwa_approx_borders IS 'Lines for 49N, 60N, -120W - used by fwapg for finding cross-border streams';
+COMMENT ON TABLE whse_basemapping.fwa_approx_borders IS 'Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for finding cross-border streams';
+COMMENT ON COLUMN whse_basemapping.fwa_approx_borders.aprox_border_id_id IS 'Unique identifer';
+COMMENT ON COLUMN whse_basemapping.fwa_approx_borders.border IS 'A code identifying the border (USA49, YTNWT_60, AB_120)';
+COMMENT ON COLUMN whse_basemapping.fwa_approx_borders.geom IS 'Geometry of the border line';

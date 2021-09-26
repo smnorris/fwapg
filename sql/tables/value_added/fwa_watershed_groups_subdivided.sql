@@ -20,4 +20,8 @@ FROM whse_basemapping.fwa_watershed_groups_poly;
 CREATE INDEX ON whse_basemapping.fwa_watershed_groups_subdivided (watershed_group_id);
 CREATE INDEX ON whse_basemapping.fwa_watershed_groups_subdivided USING gist (geom);
 
-COMMENT ON TABLE whse_basemapping.fwa_watershed_groups_subdivided IS 'Subdivided watershed groups polygons, use for faster point in poly queries';
+COMMENT ON TABLE whse_basemapping.fwa_watershed_groups_subdivided IS 'Subdivided watershed groups polygons, for faster point in poly queries';
+COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.fwa_watershed_groups_subdivided_id IS 'Unique identifer';
+COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.watershed_group_id IS 'Watershed group unique identifier';
+COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.watershed_group_code IS 'See FWA docs';
+COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.watershed_group_code IS 'Geometry of the subdivided watershed group';
