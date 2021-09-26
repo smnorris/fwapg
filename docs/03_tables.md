@@ -75,5 +75,5 @@ Subdivided watershed groups polygons, for faster point in poly queries
 | `fwa_watershed_groups_subdivided_id` | `integer` | Unique identifer |
 | `watershed_group_id` | `integer` | Watershed group unique identifier |
 | `watershed_group_code` | `text` | Geometry of the subdivided watershed group |
-| `geom` | `geometry(Polygon,3005)` |  |
+| `geom` | `geometry(Polygon,3005)` | Geometry of the subdivided watershed group |
 

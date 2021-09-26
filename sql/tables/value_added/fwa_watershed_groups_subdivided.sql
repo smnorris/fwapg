@@ -24,4 +24,4 @@ COMMENT ON TABLE whse_basemapping.fwa_watershed_groups_subdivided IS 'Subdivided
 COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.fwa_watershed_groups_subdivided_id IS 'Unique identifer';
 COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.watershed_group_id IS 'Watershed group unique identifier';
 COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.watershed_group_code IS 'See FWA docs';
-COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.watershed_group_code IS 'Geometry of the subdivided watershed group';
+COMMENT ON COLUMN whse_basemapping.fwa_watershed_groups_subdivided.geom IS 'Geometry of the subdivided watershed group';
