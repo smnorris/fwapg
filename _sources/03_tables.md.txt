@@ -2,13 +2,13 @@
 
 ## whse_basemapping.fwa_approx_borders
 
-Lines for 49N, 60N, -120W - used by fwapg for finding cross-border streams
+Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for finding cross-border streams
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `approx_border_id` | `integer` |  |
-| `border` | `text` |  |
-| `geom` | `geometry(LineString,3005)` |  |
+| `approx_border_id` | `integer` | Unique identifer |
+| `border` | `text` | A code identifying the border (USA49, YTNWT_60, AB_120) |
+| `geom` | `geometry(LineString,3005)` | Geometry of the border line |
 
 ## whse_basemapping.fwa_basins_poly
 
@@ -46,16 +46,16 @@ Named streams of BC, aggregated per watershed group and simplified using a 25m t
 
 ## whse_basemapping.fwa_streams_watersheds_lut
 
-
+A convenience lookup for quickly relating streams and fundamental watersheds
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `linear_feature_id` | `bigint` |  |
-| `watershed_feature_id` | `integer` |  |
+| `linear_feature_id` | `bigint` | FWA stream segment unique identifier |
+| `watershed_feature_id` | `integer` | FWA fundamental watershed unique identifer |
 
 ## whse_basemapping.fwa_waterbodies
 
-All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions
+All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions.
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -68,12 +68,12 @@ All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manma
 
 ## whse_basemapping.fwa_watershed_groups_subdivided
 
-Subdivided watershed groups polygons, use for faster point in poly queries
+Subdivided watershed groups polygons, for faster point in poly queries
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `fwa_watershed_groups_subdivided_id` | `integer` |  |
-| `watershed_group_id` | `integer` |  |
-| `watershed_group_code` | `text` |  |
+| `fwa_watershed_groups_subdivided_id` | `integer` | Unique identifer |
+| `watershed_group_id` | `integer` | Watershed group unique identifier |
+| `watershed_group_code` | `text` | Geometry of the subdivided watershed group |
 | `geom` | `geometry(Polygon,3005)` |  |
 

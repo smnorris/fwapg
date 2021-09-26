@@ -81,7 +81,7 @@
 <h1>Table reference<a class="headerlink" href="#table-reference" title="Permalink to this headline"></a></h1>
 <div class="section" id="whse-basemapping-fwa-approx-borders">
 <h2>whse_basemapping.fwa_approx_borders<a class="headerlink" href="#whse-basemapping-fwa-approx-borders" title="Permalink to this headline"></a></h2>
-<p>Lines for 49N, 60N, -120W - used by fwapg for finding cross-border streams</p>
+<p>Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for finding cross-border streams</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Column</p></th>
@@ -92,15 +92,15 @@
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">approx_border_id</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
-<td><p></p></td>
+<td><p>Unique identifer</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">border</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
-<td><p></p></td>
+<td><p>A code identifying the border (USA49, YTNWT_60, AB_120)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">geometry(LineString,3005)</span></code></p></td>
-<td><p></p></td>
+<td><p>Geometry of the border line</p></td>
 </tr>
 </tbody>
 </table>
@@ -201,6 +201,7 @@
 </div>
 <div class="section" id="whse-basemapping-fwa-streams-watersheds-lut">
 <h2>whse_basemapping.fwa_streams_watersheds_lut<a class="headerlink" href="#whse-basemapping-fwa-streams-watersheds-lut" title="Permalink to this headline"></a></h2>
+<p>A convenience lookup for quickly relating streams and fundamental watersheds</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Column</p></th>
@@ -211,18 +212,18 @@
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">linear_feature_id</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code></p></td>
-<td><p></p></td>
+<td><p>FWA stream segment unique identifier</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">watershed_feature_id</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
-<td><p></p></td>
+<td><p>FWA fundamental watershed unique identifer</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="whse-basemapping-fwa-waterbodies">
 <h2>whse_basemapping.fwa_waterbodies<a class="headerlink" href="#whse-basemapping-fwa-waterbodies" title="Permalink to this headline"></a></h2>
-<p>All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions</p>
+<p>All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions.</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Column</p></th>
@@ -260,7 +261,7 @@
 </div>
 <div class="section" id="whse-basemapping-fwa-watershed-groups-subdivided">
 <h2>whse_basemapping.fwa_watershed_groups_subdivided<a class="headerlink" href="#whse-basemapping-fwa-watershed-groups-subdivided" title="Permalink to this headline"></a></h2>
-<p>Subdivided watershed groups polygons, use for faster point in poly queries</p>
+<p>Subdivided watershed groups polygons, for faster point in poly queries</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Column</p></th>
@@ -271,15 +272,15 @@
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fwa_watershed_groups_subdivided_id</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
-<td><p></p></td>
+<td><p>Unique identifer</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">watershed_group_id</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
-<td><p></p></td>
+<td><p>Watershed group unique identifier</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">watershed_group_code</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
-<td><p></p></td>
+<td><p>Geometry of the subdivided watershed group</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">geometry(Polygon,3005)</span></code></p></td>
