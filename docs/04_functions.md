@@ -454,16 +454,19 @@ watershed in which it falls, then that fundamental watershed is not included in 
 watershed in which it falls, then that watershed is included in the aggregation
 
 For cross-boundary watersheds, the function returns non-BC areas using these data sources:
-    + USGS [huc12 watersheds](https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con) for USA (WA, ID, MT only)
-    + [hydrosheds](https://www.hydrosheds.org) watersheds for other neighbouring jurisdictions
 
-| field                     | type                    | description                                 |
-| :-------------------------| ---------------------   |-------------------------------------------- |
-| `wscode_ltree`            | ltree                   | watershed code of the source point          |
-| `localcode_ltree`         | ltree                   | local watershed code of the source point    |
-| `area_ha`                 | numeric                 | area of output geometry, hectares           |
-| `refine_method`           | text                    | how the watershed was processed / what further processing may be required |
-| `geom`                    | geometry(Polygon, 3005) | a polygon representing the watershed contributing to the input location |
+- USGS [huc12 watersheds](https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con) for USA (WA, ID, MT only)
+- [hydrosheds](https://www.hydrosheds.org) watersheds for other neighbouring jurisdictions
+
+The table returned includes these columns:
+
+| field                     | type                      | description                                 |
+| :-------------------------| --------------------------|-------------------------------------------- |
+| `wscode_ltree`            | `ltree`                   | watershed code of the source point          |
+| `localcode_ltree`         | `ltree`                   | local watershed code of the source point    |
+| `area_ha`                 | `numeric`                 | area of output geometry, hectares           |
+| `refine_method`           | `text`                    | how the watershed was processed / what further processing may be required |
+| `geom`                    | `geometry(Polygon, 3005)` | a polygon representing the watershed contributing to the input location |
 
 The `refine_method` field in the output table has several possible values:
 
