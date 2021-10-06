@@ -21,6 +21,7 @@ ON (s.wscode_ltree = w.wscode_ltree AND
 WHERE s.watershed_group_code = :'wsg'
 AND s.fwa_watershed_code NOT LIKE '999%'
 AND s.local_watershed_code IS NOT NULL
+AND s.edge_type != 6100
 ORDER BY s.linear_feature_id, ST_Distance(ST_LineInterpolatePoint(s.geom, .5), ST_Centroid(w.geom));
 
 
@@ -44,4 +45,5 @@ WHERE l.watershed_feature_id IS NULL -- extract only streams that are not alread
 AND s.watershed_group_code = :'wsg'
 AND s.fwa_watershed_code NOT LIKE '999%'
 AND s.local_watershed_code IS NOT NULL
+AND s.edge_type != 6100
 ORDER BY s.linear_feature_id, ST_Distance(ST_LineInterpolatePoint(s.geom, .5), ST_Centroid(w.geom));
