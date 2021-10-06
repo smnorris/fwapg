@@ -21,7 +21,7 @@ ON (s.wscode_ltree = w.wscode_ltree AND
 WHERE s.watershed_group_code = :'wsg'
 AND s.fwa_watershed_code NOT LIKE '999%'
 AND s.local_watershed_code IS NOT NULL
-ORDER BY s.linear_feature_id, ST_Distance(ST_LineInterpolatePoint(s.geom, .5), ST_PointOnSurface(w.geom));
+ORDER BY s.linear_feature_id, ST_Distance(ST_LineInterpolatePoint(s.geom, .5), ST_Centroid(w.geom));
 
 
 -- For streams with no matching watershed based on watershed codes,
