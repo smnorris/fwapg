@@ -11,7 +11,7 @@ INSERT INTO temp.fwa_watersheds_upstream_area_:wsg
 -- find total area of fundamental watersheds upstream
 SELECT
     a.watershed_feature_id,
-    ROUND((SUM(ST_Area(b.geom)) / 10000)::numeric, 2) as upstream_area_ha
+    (SUM(ST_Area(b.geom)) / 10000) as upstream_area_ha
 FROM whse_basemapping.fwa_watersheds_poly a
 INNER JOIN whse_basemapping.fwa_watersheds_poly b
 ON FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)

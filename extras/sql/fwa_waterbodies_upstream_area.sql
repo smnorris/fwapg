@@ -11,9 +11,9 @@ INSERT INTO whse_basemapping.fwa_waterbodies_upstream_area
 )
 SELECT DISTINCT
   a.linear_feature_id,
-  ROUND((SUM(COALESCE(ST_Area(l.geom), 0)) / 10000)::numeric, 2) AS upstream_lake_ha,
-  ROUND((SUM(COALESCE(ST_Area(r.geom), 0)) / 10000)::numeric, 2) AS upstream_reservoir_ha,
-  ROUND((SUM(COALESCE(ST_Area(w.geom), 0)) / 10000)::numeric, 2) AS upstream_wetland_ha
+  (SUM(COALESCE(ST_Area(l.geom), 0)) / 10000) AS upstream_lake_ha,
+  (SUM(COALESCE(ST_Area(r.geom), 0)) / 10000) AS upstream_reservoir_ha,
+  (SUM(COALESCE(ST_Area(w.geom), 0)) / 10000) AS upstream_wetland_ha
 FROM whse_basemapping.fwa_stream_networks_sp a
 INNER JOIN whse_basemapping.fwa_waterbodies b
 ON FWA_Upstream(

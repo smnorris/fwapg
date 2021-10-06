@@ -11,7 +11,7 @@ It is often useful to know how much area is upstream of a given location, and of
 
     ./fwa_watersheds_upstream_area.sh
 
-When working with watersheds, join to the lookup via `watershed_feature_id`. When working with streams, relate the streams to watersheds via the lookup `fwawatersheds_streams_lut`:
+When working with watersheds, join to the lookup via `watershed_feature_id`. When working with streams, relate the streams to watersheds via the lookup `fwa_streams_watersheds_lut`:
 
     SELECT
       s.linear_feature_id,
