@@ -256,18 +256,22 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	$(PSQL_CMD) -f sql/tables/value_added/$(subst .,,$@).sql
 	touch $@
 
-# create streams - watersheds lookup (looping through groups should speed this up a bit)
+# create streams - watersheds lookup
 .fwa_streams_watersheds_lut: .fwa_stream_networks_sp .fwa_watersheds_poly .fwa_watershed_groups_poly
 	# create table
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_streams_watersheds_lut \
 					(linear_feature_id bigint, watershed_feature_id integer);"
-	# load data per group
+	# load data per group so inserts are in managable chunks
 	for wsg in $(GROUPS) ; do \
 		psql -v wsg=$$wsg -f sql/tables/value_added/fwa_streams_watersheds_lut.sql ; \
 	done
-	# create indexes after load
+	# comment and index after load
 	$(PSQL_CMD) -c "ALTER TABLE whse_basemapping.fwa_streams_watersheds_lut ADD PRIMARY KEY (linear_feature_id);"
 	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_streams_watersheds_lut (watershed_feature_id);"
+	$(PSQL_CMD) -c "COMMENT ON TABLE whse_basemapping.fwa_streams_watersheds_lut IS 'A convenience lookup for quickly relating streams and fundamental watersheds';"
+	$(PSQL_CMD) -c "COMMENT ON COLUMN whse_basemapping.fwa_streams_watersheds_lut.linear_feature_id IS 'FWA stream segment unique identifier';"
+	$(PSQL_CMD) -c "COMMENT ON COLUMN whse_basemapping.fwa_streams_watersheds_lut.watershed_feature_id IS 'FWA fundamental watershed unique identifer';"
+
 	touch $@
 
 
