@@ -82,8 +82,7 @@ clean_db:
 	$(PSQL_CMD) -c 'CREATE SCHEMA IF NOT EXISTS usgs'
 	$(PSQL_CMD) -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'
 	$(PSQL_CMD) -c "CREATE SCHEMA IF NOT EXISTS postgisftw"       # for fwapg featureserv functions
-	#$(PSQL_CMD) -c "ALTER database "$(PGDATABASE)" SET search_path TO "$(PGUSER)", public, postgisftw;"
-	touch .db
+	touch $@
 
 
 # get the latest FWA archive from hillcrestgeo.ca
