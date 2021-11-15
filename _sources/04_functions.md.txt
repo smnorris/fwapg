@@ -201,7 +201,7 @@ Snaps a point to the stream network. Provided a point (as either a BC Albers poi
 
 ### Web service
 
-[FWA_IndexPoint](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_indexpoint.html)
+[FWA_IndexPoint](https://features.hillcrestgeo.ca/fwa/functions/fwa_indexpoint.html)
 
 
 
@@ -241,7 +241,7 @@ Create a point geometry at measure 25,000 on the Skeena River:
 
 ### Web service
 
-[FWA_LocateAlong](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_locatealong.html)
+[FWA_LocateAlong](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealong.html)
 
 
 ## FWA_LocateAlongInterval
@@ -298,10 +298,10 @@ Mapping the returned features:
 
 ### Web service
 
-[FWA_LocateAlongInterval](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval.html)
+[FWA_LocateAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval.html)
 
 Make the same request as the example above, but
-[at 10km](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100)
+[at 10km](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100)
 
 
 ## FWA_Upstream
@@ -530,4 +530,4 @@ The `refine_method` field in the output table has several possible values:
 
 ### Web service
 
-[FWA_WatershedAtMeasure](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_watershedatmeasure.html)
+[FWA_WatershedAtMeasure](https://features.hillcrestgeo.ca/fwa/functions/fwa_watershedatmeasure.html)
