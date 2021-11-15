@@ -25,7 +25,7 @@ This snaps the input point to the closest stream - it returns information about 
     -------------------+-------------+--------------+-----------------+---------------+--------------------------+--------------------+--------+
              710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.2530543284006 | 24.228 | t      |
 
-This function is available via the `fwapg` [feature service](https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint.html) - you can experiment with it [directly](https://www.hillcrestgeo.ca/fwapg/functions/fwa_indexpoint/items.html?x=-123.7028&y=48.3858&srid=4326) without having to install anything other than a web browser (zoom out to see the context in the default web map).
+This function is available via the `fwapg` [feature service](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_indexpoint.html) - you can experiment with it [directly](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_indexpoint/items.html?x=-123.7028&y=48.3858&srid=4326) without having to install anything other than a web browser (zoom out to see the context in the default web map).
 
 
 ### Reference many points to stream network
@@ -348,7 +348,7 @@ Producing this output:
 ![watershed](images/watershed4.png)
 
 
-Like `FWA_IndexPoint`, this function is available via the `fwapg` [feature service](https://www.hillcrestgeo.ca/fwapg/functions/fwa_watershedatmeasure.html) - you can experiment with it [directly](https://www.hillcrestgeo.ca/fwapg/functions/fwa_watershedatmeasure/items.html?blue_line_key=354155148&downstream_route_measure=49129.75) without having to install anything other than a web browser.
+Like `FWA_IndexPoint`, this function is available via the `fwapg` [feature service](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_watershedatmeasure.html) - you can experiment with it [directly](https://tiles.hillcrestgeo.ca/fwa/functions/fwa_watershedatmeasure/items.html?blue_line_key=354155148&downstream_route_measure=49129.75) without having to install anything other than a web browser.
 
 Also like `FWA_IndexPoint`, `FWA_WatershedAtMeasure` is a table returning function. When joining to the source table, use a `LATERAL` join to run the query on each point. Note that this can be very resource intensive, you may want to restrict the query to just a handful of points.
 

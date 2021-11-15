@@ -64,10 +64,10 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
 If you prefer not to create your own database, `fwapg` features and functions are served from hillcrestgeo.ca as GeoJSON or vector tiles via these web services and wrappers:
 
-- [hillcrestgeo.ca/fwapg](https://www.hillcrestgeo.ca/fwapg): tables and functions served as GeoJSON
-- [fwapgr (R)](https://github.com/poissonconsulting/fwapgr): an R wrapper around the `fwapg` feature service
+- [features.hillcrestgeo.ca/fwa](https://features.hillcrestgeo.ca/fwa): tables and functions served as GeoJSON
+- [fwapgr (R)](https://github.com/poissonconsulting/fwapgr): an R wrapper around the `tiles.hillcrestgeo.ca/fwa` feature service
 - [fwatlasbc (R)](https://github.com/poissonconsulting/fwatlasbc): an R package for higher level queries
-- [hillcrestgeo.ca/pg_tileserv](https://www.hillcrestgeo.ca/pg_tileserv): `fwapg` features served as vector tiles (MVT)
+- [tiles.hillcrestgeo.ca/bcfishpass](https://tiles.hillcrestgeo.ca/bcfishpass): FWA features (and others) served as vector tiles (MVT)
 
 
 ## Source data
