@@ -33,13 +33,13 @@ DROP TABLE IF EXISTS usgs.wdbhu12;
 DROP TABLE IF EXISTS hydrosheds.hybas_lev12_v1c;
 
 -- functions 
-DROP FUNCTION IF EXISTS CDB_MakeHexagon.sql;
-DROP FUNCTION IF EXISTS ST_Safe_Repair.sql;
-DROP FUNCTION IF EXISTS ST_Safe_Difference.sql
+DROP FUNCTION IF EXISTS CDB_MakeHexagon;
+DROP FUNCTION IF EXISTS ST_Safe_Repair;
+DROP FUNCTION IF EXISTS ST_Safe_Difference;
 
-DROP FUNCTION IF EXISTS FWA_huc12.sql;
-DROP FUNCTION IF EXISTS FWA_hydroshed.sql;
-DROP FUNCTION IF EXISTS FWA_IndexPoint.sql;
+DROP FUNCTION IF EXISTS FWA_huc12;
+DROP FUNCTION IF EXISTS FWA_hydroshed;
+DROP FUNCTION IF EXISTS FWA_IndexPoint;
 
 DROP FUNCTION FWA_Upstream(ltree,ltree,ltree,ltree);
 DROP FUNCTION FWA_Upstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
@@ -49,14 +49,14 @@ DROP FUNCTION FWA_Downstream(ltree,ltree,ltree,ltree);
 DROP FUNCTION FWA_Downstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
 DROP FUNCTION FWA_Downstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
 
-DROP FUNCTION IF EXISTS FWA_UpstreamBorderCrossings.sql;
-DROP FUNCTION IF EXISTS FWA_SliceWatershedAtPoint.sql;
-DROP FUNCTION IF EXISTS FWA_WatershedExBC.sql;
-DROP FUNCTION IF EXISTS FWA_WatershedAtMeasure.sql;
-DROP FUNCTION IF EXISTS FWA_WatershedHex.sql;
-DROP FUNCTION IF EXISTS FWA_WatershedStream.sql;
-DROP FUNCTION IF EXISTS FWA_LocateAlong.sql;
-DROP FUNCTION IF EXISTS FWA_LocateAlongInterval.sql;
+DROP FUNCTION IF EXISTS FWA_UpstreamBorderCrossings;
+DROP FUNCTION IF EXISTS FWA_SliceWatershedAtPoint;
+DROP FUNCTION IF EXISTS FWA_WatershedExBC;
+DROP FUNCTION IF EXISTS FWA_WatershedAtMeasure;
+DROP FUNCTION IF EXISTS FWA_WatershedHex;
+DROP FUNCTION IF EXISTS FWA_WatershedStream;
+DROP FUNCTION IF EXISTS FWA_LocateAlong;
+DROP FUNCTION IF EXISTS FWA_LocateAlongInterval;
 
 -- schema
 DROP SCHEMA postgisftw CASCADE;
