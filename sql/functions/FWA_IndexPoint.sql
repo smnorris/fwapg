@@ -45,7 +45,7 @@ WITH pt AS
     (
         SELECT $1 as geom
     ) p
-    LEFT OUTER JOIN whse_basemapping.fwa_watershed_groups wsg
+    LEFT OUTER JOIN whse_basemapping.fwa_watershed_groups_poly wsg
     ON ST_intersects(p.geom, wsg.geom)
 )
 
