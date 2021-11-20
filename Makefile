@@ -25,8 +25,7 @@ TABLES_VALUEADDED = fwa_approx_borders \
 	fwa_basins_poly \
 	fwa_bcboundary \
 	fwa_named_streams \
-	fwa_waterbodies \
-	fwa_watershed_groups_subdivided
+	fwa_waterbodies
 
 TABLES_SOURCE_TARGETS := $(addprefix .,$(TABLES_SOURCE))
 TABLES_VALUEADDED_TARGETS := $(addprefix .,$(TABLES_VALUEADDED))

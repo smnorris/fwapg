@@ -10,8 +10,7 @@ for table in approx_borders \
   bcboundary \
   named_streams \
   streams_watersheds_lut \
-  waterbodies \
-  watershed_groups_subdivided
+  waterbodies
 do
     echo "## whse_basemapping.fwa_$table" >> 03_tables.md
     echo -en '\n' >> 03_tables.md

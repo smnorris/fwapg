@@ -26,7 +26,6 @@ DROP TABLE IF EXISTS whse_basemapping.fwa_basins_poly;
 DROP TABLE IF EXISTS whse_basemapping.fwa_bcboundary;
 DROP TABLE IF EXISTS whse_basemapping.fwa_named_streams;
 DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies;
-DROP TABLE IF EXISTS whse_basemapping.fwa_watershed_groups_subdivided;
 
 -- additional data
 DROP TABLE IF EXISTS usgs.wdbhu12;

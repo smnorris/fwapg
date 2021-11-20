@@ -65,15 +65,3 @@ All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manma
 | `downstream_route_measure` | `double precision` |  |
 | `wscode_ltree` | `ltree` |  |
 | `localcode_ltree` | `ltree` |  |
-
-## whse_basemapping.fwa_watershed_groups_subdivided
-
-Subdivided watershed groups polygons, for faster point in poly queries
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `fwa_watershed_groups_subdivided_id` | `integer` | Unique identifer |
-| `watershed_group_id` | `integer` | Watershed group unique identifier |
-| `watershed_group_code` | `text` | Geometry of the subdivided watershed group |
-| `geom` | `geometry(Polygon,3005)` | Geometry of the subdivided watershed group |
-
