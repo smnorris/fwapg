@@ -59,6 +59,30 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
     See [Usage](https://smnorris.github.io/fwapg/02_usage.html) for more examples.
 
 
+## Docker
+
+Download the repo, create containers, create database, load fwa data:
+
+    git clone https://github.com/smnorris/fwapg.git
+    cd fwapg
+    docker-compose build
+    docker-compose up -d
+    docker-compose run --rm loader psql -c "CREATE DATABASE fwapg" postgres
+    docker-compose run --rm loader make
+
+As long as you do not remove the container `fwapg-db`, it will retain all the data you put in it.
+If you have shut down Docker or the container, start it up again with this command:
+
+    docker-compose up -d
+
+Connect to the db from your host OS via the port specified in `docker-compose.yml`:
+
+    psql -p 8002 -U postgres fwapg
+
+Delete the containers (and associated fwa data):
+
+    docker-compose down
+
 
 ## Tile and feature services
 

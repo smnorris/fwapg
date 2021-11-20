@@ -1,0 +1,54 @@
+version: "3.9"  
+services:
+  db:
+    image: postgis/postgis:14-master
+    container_name: fwapg-db
+    ports:
+      - 8002:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PG_DATABASE=fwapg
+  loader:
+    build: .
+    container_name: fwapg-loader
+    volumes:
+      - "./:/home/fwapg"
+    environment:
+      - PGHOST=db
+      - PGPORT=5432
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGDATABASE=fwapg
+    depends_on:
+      db:
+        condition: service_healthy
+  featureserv:
+    image: pramsey/pg_featureserv:latest
+    container_name: fwapg-fs
+    ports:
+      - 9000:9000
+    volumes:
+      - "./:/home/fwapg"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/fwapg
+    depends_on:
+      db:
+        condition: service_healthy
+  tileserv:
+    image: pramsey/pg_tileserv:latest
+    container_name: fwapg-ts
+    ports:
+      - 7800:7800
+    volumes:
+      - "./:/home/fwapg"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/fwapg
+    depends_on:
+      db:
+        condition: service_healthy
