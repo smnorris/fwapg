@@ -79,6 +79,11 @@ Connect to the db from your host OS via the port specified in `docker-compose.ym
 
     psql -p 8002 -U postgres fwapg
 
+Or see the FWA data in the browser as vector tiles/geojson features:
+
+    http://localhost:7800/
+    http://localhost:9000/
+
 Delete the containers (and associated fwa data):
 
     docker-compose down
@@ -86,7 +91,7 @@ Delete the containers (and associated fwa data):
 
 ## Tile and feature services
 
-If you prefer not to create your own database, `fwapg` features and functions are served from hillcrestgeo.ca as GeoJSON or vector tiles via these web services and wrappers:
+`fwapg` features and functions are served from hillcrestgeo.ca as GeoJSON or vector tiles via these web services and wrappers:
 
 - [features.hillcrestgeo.ca/fwa](https://features.hillcrestgeo.ca/fwa): tables and functions served as GeoJSON
 - [fwapgr (R)](https://github.com/poissonconsulting/fwapgr): an R wrapper around the `features.hillcrestgeo.ca/fwa` feature service
