@@ -82,7 +82,7 @@ AND s.upstream_route_measure > i.downstream_route_measure
 SELECT
   s.n::integer as index,
   s.downstream_route_measure::float,
-  FWA_LocateAlong(s.blue_line_key, s.downstream_route_measure) as geom
+  postgisftw.FWA_LocateAlong(s.blue_line_key, s.downstream_route_measure::float) as geom
 FROM segments s;
 
 END;
