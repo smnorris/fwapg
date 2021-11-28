@@ -17,7 +17,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 ## Quickstart
 
 1. Ensure all requirements/dependencies are met/installed:
-    - access to a PostgreSQL 13 (>=13) database with the PostGIS extension (>=3.1) installed
+    - access to a PostgreSQL (>=13) database with the PostGIS extension (>=3.1) installed
     - GDAL >=3.4
     - [GNU parallel](https://www.gnu.org/software/parallel/)
     - [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
