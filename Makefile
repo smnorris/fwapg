@@ -48,12 +48,8 @@ ALL_TARGETS = .db \
 	.fwa_assessment_watersheds_streams_lut \
 	.fwa_functions
 
-# shortcuts for ogr2ogr
-PGOGR_SCHEMA = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT) active_schema=whse_basemapping"
-PGOGR = "PG:host=$(PGHOST) user=$(PGUSER) dbname=$(PGDATABASE) port=$(PGPORT)"
-
-# Ensure psql stops on error so make script stops when there is a problem
-PSQL_CMD = psql -v ON_ERROR_STOP=1
+# provide db connection param to psql and ensure scripts stop on error
+PSQL_CMD = psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 
 # get list of watershed groups
 GROUPS = $(shell psql -AtX -P border=0,footer=no -c "SELECT watershed_group_code FROM whse_basemapping.fwa_watershed_groups_poly ORDER BY watershed_group_code")
@@ -93,13 +89,15 @@ data/FWA.gpkg:
 
 # load basic/smaller tables from FWA.gpkg to whse_basemapping schema
 $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
+	$(PSQL_CMD) -c "DROP TABLE IF EXISTS whse_basemapping.fwa_obstructions_sp"
 	$(PSQL_CMD) -f sql/tables/source/$(subst .,,$@).sql
 	ogr2ogr \
 		-f PostgreSQL \
 		-update \
 		-append \
+		-nln whse_basemapping$@ \
 		--config PG_USE_COPY YES \
-		$(PGOGR_SCHEMA) \
+		"PG:$(DATABASE_URL)" \
 		-preserve_fid \
 		data/FWA.gpkg \
 		$(subst .,,$@)
@@ -113,9 +111,9 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 .fwa_stream_networks_sp: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		$(PGOGR_SCHEMA) \
+		"PG:$(DATABASE_URL)" \
 		-nlt LINESTRING \
-		-nln fwa_stream_networks_sp_load \
+		-nln whse_basemapping.fwa_stream_networks_sp_load \
 		-lco GEOMETRY_NAME=geom \
 		-dim XYZ \
 		-lco SPATIAL_INDEX=NONE \
@@ -134,9 +132,9 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 .fwa_watersheds_poly: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		$(PGOGR_SCHEMA) \
+		"PG:$(DATABASE_URL)" \
 		-nlt MULTIPOLYGON \
-		-nln fwa_watersheds_poly \
+		-nln whse_basemapping.fwa_watersheds_poly \
 		-lco GEOMETRY_NAME=geom \
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
@@ -154,9 +152,9 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 .fwa_linear_boundaries_sp: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		$(PGOGR_SCHEMA) \
+		"PG:$(DATABASE_URL)" \
 		-nlt MULTILINESTRING \
-		-nln fwa_linear_boundaries_sp \
+		-nln whse_basemapping.fwa_linear_boundaries_sp \
 		-lco GEOMETRY_NAME=geom \
 		-dim XY \
 		-lco SPATIAL_INDEX=NONE \
@@ -189,7 +187,7 @@ data/WBD_National_GDB.gdb:
 .fwa_wbdhu12: .db data/WBD_National_GDB.gdb
 	ogr2ogr \
 		-f PostgreSQL \
-		$(PGOGR) \
+		"PG:$(DATABASE_URL)" \
 		-t_srs EPSG:3005 \
 		-lco SCHEMA=usgs \
 		-lco GEOMETRY_NAME=geom \
@@ -220,7 +218,7 @@ data/hybas_ar_lev12_v1c:
 	# Load _ar_ and _na_ shapefiles
 	ogr2ogr \
 		-f PostgreSQL \
-		$(PGOGR) \
+		"PG:$(DATABASE_URL)" \
 		-lco OVERWRITE=YES \
 		-t_srs EPSG:3005 \
 		-lco SCHEMA=hydrosheds \
@@ -229,7 +227,7 @@ data/hybas_ar_lev12_v1c:
 		data/hybas_ar_lev12_v1c/hybas_ar_lev12_v1c.shp
 	ogr2ogr \
 		-f PostgreSQL \
-		$(PGOGR) \
+		"PG:$(DATABASE_URL)" \
 		-t_srs EPSG:3005 \
 		-lco OVERWRITE=YES \
 		-lco SCHEMA=hydrosheds \

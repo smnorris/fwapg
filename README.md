@@ -18,25 +18,21 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
 1. Ensure all requirements/dependencies are met/installed:
     - access to a PostgreSQL 13 (>=13) database with the PostGIS extension (>=3.1) installed
-    - GDAL >=3.3
+    - GDAL >=3.4
     - [GNU parallel](https://www.gnu.org/software/parallel/)
     - [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
 
-2. Set the required environment variables to point to your database. If a password is required for `$PGUSER`, [create a password file](https://www.postgresql.org/docs/current/libpq-pgpass.html)
+2. Ensure you have a `DATABASE_URL` environment variable set to point to your database, for example:
 
-    - `$PGHOST`
-    - `$PGUSER`
-    - `$PGDATABASE`
-    - `$PGPORT`
+        export DATABASE_URL=postgres://username:password@localhost:5432/fwapg
 
-3. Download and extract [latest fwapg release](https://github.com/smnorris/fwapg/releases)
+3. Get scripts, load and optimize the data (this takes some time):
 
-4. Load and optimize the data (this takes some time):
-
+        git clone https://github.com/smnorris/fwapg.git
         cd fwapg
-        make all
+        make
 
-5. Run `fwapg` enabled queries with your favorite sql client. For example:
+4. Run `fwapg` enabled queries with your favorite sql client. For example:
 
     *Locate the nearest point on the FWA stream network to a X,Y location on Highway 14:*
 
