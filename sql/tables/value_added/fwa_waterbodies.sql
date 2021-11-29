@@ -5,8 +5,6 @@
 -- / downstream_route_measure at the outlet of the wb for
 -- easier queries of 'how much lake is upstream of this point?'
 
-DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies;
-
 CREATE TABLE whse_basemapping.fwa_waterbodies
 (
   waterbody_key integer primary key,
