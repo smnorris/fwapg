@@ -24,7 +24,7 @@ services:
       - PGPORT=5432
       - PGUSER=postgres
       - PGPASSWORD=postgres
-      - PGDATABASE=fwapg
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/fwapg
     depends_on:
       db:
         condition: service_healthy
