@@ -89,7 +89,6 @@ data/FWA.gpkg:
 
 # load basic/smaller tables from FWA.gpkg to whse_basemapping schema
 $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
-	$(PSQL_CMD) -c "DROP TABLE IF EXISTS whse_basemapping.fwa_obstructions_sp"
 	$(PSQL_CMD) -f sql/tables/source/$(subst .,,$@).sql
 	ogr2ogr \
 		-f PostgreSQL \
