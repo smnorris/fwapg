@@ -9,6 +9,9 @@
 # data files
 data/
 
+# docker postgres volume
+postgres-data
+
 # Sphinx documentation
 docs/_build/
 .buildinfo
