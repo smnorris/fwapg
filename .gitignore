@@ -4,6 +4,7 @@
 # do not ignore these files
 !.gitignore
 !.github
+!.env.docker
 
 # data files
 data/

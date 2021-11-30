@@ -2,9 +2,13 @@ version: "3.9"
 services:
   db:
     image: postgis/postgis:14-master
+    shm_size: 16gb
     container_name: fwapg-db
+    command: postgres -c default_statistics_target=100 -c max_connections=100 -c max_locks_per_transaction=64 -c checkpoint_timeout=30min -c maintenance_work_mem=1GB -c effective_cache_size=16GB -c work_mem=500MB -c max_wal_size=10GB -c wal_buffers=16MB -c shared_buffers=8GB
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     ports:
-      - 8002:5432
+      - ${DB_PORT}:5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -32,7 +36,7 @@ services:
     image: pramsey/pg_featureserv:latest
     container_name: fwapg-fs
     ports:
-      - 9000:9000
+      - ${FS_PORT}:9000
     volumes:
       - "./:/home/fwapg"
     environment:
@@ -44,7 +48,7 @@ services:
     image: pramsey/pg_tileserv:latest
     container_name: fwapg-ts
     ports:
-      - 7800:7800
+      - ${TS_PORT}:7800
     volumes:
       - "./:/home/fwapg"
     environment:
