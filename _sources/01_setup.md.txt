@@ -29,7 +29,7 @@ For example:
 export DATABASE_URL=postgresql://postgres:postgres@db:5432/fwapg
 ```
 
-To confirm that you can connect to the database with this environment variables, start `psql` with it as the first argument:
+To confirm that you can connect to the database with this environment variable, start `psql` with it as the first argument:
 
 ```bash
 $ psql $DATABASE_URL
