@@ -115,7 +115,7 @@
   ogr2ogr <span class="se">\</span>
     -s_srs EPSG:4326 <span class="se">\</span>
     -t_srs EPSG:3005 <span class="se">\</span>
-    -f PostgreSQL <span class="s2">&quot;PG:host=</span><span class="nv">$PGHOST</span><span class="s2"> user=</span><span class="nv">$PGUSER</span><span class="s2"> dbname=</span><span class="nv">$PGDATABASE</span><span class="s2">&quot;</span> <span class="se">\</span>
+    -f PostgreSQL <span class="s2">&quot;PG:</span><span class="nv">$DATABASE_URL</span><span class="s2">&quot;</span> <span class="se">\</span>
     -lco <span class="nv">GEOMETRY_NAME</span><span class="o">=</span>geom <span class="se">\</span>
     -oo <span class="nv">X_POSSIBLE_NAMES</span><span class="o">=</span>lon* <span class="se">\</span>
     -oo <span class="nv">Y_POSSIBLE_NAMES</span><span class="o">=</span>lat* <span class="se">\</span>
