@@ -316,7 +316,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	unzip -qun data/fwa_watersheds_upstream_area.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_watersheds_upstream_area \
 		(watershed_feature_id integer primary key, \
-		upstream_area double precision );"
+		upstream_area_ha double precision );"
 	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_watersheds_upstream_area FROM 'data/fwa_watersheds_upstream_area.csv' delimiter ',' csv header"
 	touch $@
 

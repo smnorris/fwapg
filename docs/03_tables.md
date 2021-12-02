@@ -65,3 +65,52 @@ All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manma
 | `downstream_route_measure` | `double precision` |  |
 | `wscode_ltree` | `ltree` |  |
 | `localcode_ltree` | `ltree` |  |
+
+
+## fwa_watersheds_upstream_area
+
+Area upstream (ha) for all fundamental watersheds as a lookup table. Area *includes* the area of the fundamental watershed indicated by the id.
+
+**NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
+
+When working with watersheds, join to this lookup directly via `watershed_feature_id`.
+When working with streams, relate the streams to watersheds via the lookup `fwa_streams_watersheds_lut`:
+
+    SELECT
+      s.linear_feature_id,
+      ua.upstream_area_ha
+    FROM whse_basemapping.fwa_stream_networks_sp s
+    LEFT OUTER JOIN whse_basemapping.fwa_streams_watersheds_lut l
+    ON s.linear_feature_id = l.linear_feature_id
+    INNER JOIN whse_basemapping.fwa_watersheds_upstream_area ua
+    ON l.watershed_feature_id = ua.watershed_feature_id
+
+| Column | Type | Description |
+|--------|------|-------------|
+| watershed_feature_id | integer          | |
+| upstream_area_ha     | double precision | |
+
+## fwa_waterbodies_upstream_area
+
+A lookup storing area of lake/reservoir/wetland upstream of individual stream segments.
+Note that this table differs from `fwa_watersheds_upstream_area` noted above - we use streams as the lookup base rather than watersheds because waterbodies can be nested within fundamental watersheds.
+
+**NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
+
+| Column | Type | Description |
+|--------|------|-------------|
+| linear_feature_id     | bigint           |           |
+| upstream_lake_ha      | double precision |           |
+| upstream_reservoir_ha | double precision |           |
+| upstream_wetland_ha   | double precision |           |
+
+## Assessment watersheds lookups
+
+Some workflows require relating `fwa_assessment_watersheds_poly` to stream segments and fundamental watersheds. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| watershed_feature_id | integer |           |
+| assmnt_watershed_id  | integer |           |
+| watershed_group_code | text    |           |
+| watershed_group_id   | integer |           |
