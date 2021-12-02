@@ -47,6 +47,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#whse-basemapping-fwa-named-streams">whse_basemapping.fwa_named_streams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#whse-basemapping-fwa-streams-watersheds-lut">whse_basemapping.fwa_streams_watersheds_lut</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#whse-basemapping-fwa-waterbodies">whse_basemapping.fwa_waterbodies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-watersheds-upstream-area">fwa_watersheds_upstream_area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-waterbodies-upstream-area">fwa_waterbodies_upstream_area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#assessment-watersheds-lookups">Assessment watersheds lookups</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="04_functions.html">Function reference</a></li>
@@ -253,6 +256,103 @@
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">localcode_ltree</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ltree</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="fwa-watersheds-upstream-area">
+<h2>fwa_watersheds_upstream_area<a class="headerlink" href="#fwa-watersheds-upstream-area" title="Permalink to this headline"></a></h2>
+<p>Area upstream (ha) for all fundamental watersheds as a lookup table. Area <em>includes</em> the area of the fundamental watershed indicated by the id.</p>
+<p><strong>NOTE</strong> - output currently includes area upstream <strong>WITHIN BC ONLY</strong>, this will not be accurate in watersheds that have contributing drainage outside of BC!</p>
+<p>When working with watersheds, join to this lookup directly via <code class="docutils literal notranslate"><span class="pre">watershed_feature_id</span></code>.
+When working with streams, relate the streams to watersheds via the lookup <code class="docutils literal notranslate"><span class="pre">fwa_streams_watersheds_lut</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SELECT
+  s.linear_feature_id,
+  ua.upstream_area_ha
+FROM whse_basemapping.fwa_stream_networks_sp s
+LEFT OUTER JOIN whse_basemapping.fwa_streams_watersheds_lut l
+ON s.linear_feature_id = l.linear_feature_id
+INNER JOIN whse_basemapping.fwa_watersheds_upstream_area ua
+ON l.watershed_feature_id = ua.watershed_feature_id
+</pre></div>
+</div>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>watershed_feature_id</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>upstream_area_ha</p></td>
+<td><p>double precision</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="fwa-waterbodies-upstream-area">
+<h2>fwa_waterbodies_upstream_area<a class="headerlink" href="#fwa-waterbodies-upstream-area" title="Permalink to this headline"></a></h2>
+<p>A lookup storing area of lake/reservoir/wetland upstream of individual stream segments.
+Note that this table differs from <code class="docutils literal notranslate"><span class="pre">fwa_watersheds_upstream_area</span></code> noted above - we use streams as the lookup base rather than watersheds because waterbodies can be nested within fundamental watersheds.</p>
+<p><strong>NOTE</strong> - output currently includes area upstream <strong>WITHIN BC ONLY</strong>, this will not be accurate in watersheds that have contributing drainage outside of BC!</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>linear_feature_id</p></td>
+<td><p>bigint</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>upstream_lake_ha</p></td>
+<td><p>double precision</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>upstream_reservoir_ha</p></td>
+<td><p>double precision</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>upstream_wetland_ha</p></td>
+<td><p>double precision</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="assessment-watersheds-lookups">
+<h2>Assessment watersheds lookups<a class="headerlink" href="#assessment-watersheds-lookups" title="Permalink to this headline"></a></h2>
+<p>Some workflows require relating <code class="docutils literal notranslate"><span class="pre">fwa_assessment_watersheds_poly</span></code> to stream segments and fundamental watersheds. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>watershed_feature_id</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>assmnt_watershed_id</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>watershed_group_code</p></td>
+<td><p>text</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>watershed_group_id</p></td>
+<td><p>integer</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
