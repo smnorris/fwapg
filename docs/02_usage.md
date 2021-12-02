@@ -43,7 +43,7 @@ Referencing a single point is handy but generally it is necessary to join/snap a
   ogr2ogr \
     -s_srs EPSG:4326 \
     -t_srs EPSG:3005 \
-    -f PostgreSQL "PG:host=$PGHOST user=$PGUSER dbname=$PGDATABASE" \
+    -f PostgreSQL "PG:$DATABASE_URL" \
     -lco GEOMETRY_NAME=geom \
     -oo X_POSSIBLE_NAMES=lon* \
     -oo Y_POSSIBLE_NAMES=lat* \

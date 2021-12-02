@@ -21,28 +21,18 @@ createdb fwapg
 
 ## Environment variables
 
-The data load script requires these [postgres environment variables](https://www.postgresql.org/docs/current/libpq-envars.html) to be set in order to connect to the database:
-
-- `$PGHOST`
-- `$PGUSER`
-- `$PGDATABASE`
-- `$PGPORT`
+The data load script requires the environment variable `DATABASE_URL` to be set in order to connect to the database.
 
 For example:
 
 ```bash
-export PGHOST=localhost
-export PGUSER=fwapguser
-export PGDATABASE=fwapg
-export PGPORT=5432
+export DATABASE_URL=postgresql://postgres:postgres@db:5432/fwapg
 ```
 
-If a password is required for `$PGUSER`, [create a password file](https://www.postgresql.org/docs/current/libpq-pgpass.html).
-
-To confirm that you can connect to the database using these environment variables, start `psql` without any arguments:
+To confirm that you can connect to the database with this environment variables, start `psql` with it as the first argument:
 
 ```bash
-$ psql
+$ psql $DATABASE_URL
 psql (13.3)
 Type "help" for help.
 
