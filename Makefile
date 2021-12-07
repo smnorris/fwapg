@@ -98,8 +98,9 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		--config PG_USE_COPY YES \
 		"PG:$(DATABASE_URL)" \
 		-preserve_fid \
-		data/FWA.gpkg \
-		$(subst .,,$@)
+		-dialect SQLITE \
+		-sql "SELECT * FROM $(subst .,,$@) ORDER BY RANDOM()" \
+		data/FWA.gpkg
 	touch $@
 
 
@@ -139,8 +140,9 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=WATERSHED_FEATURE_ID \
 		-preserve_fid \
+		-dialect SQLITE \
+		-sql "SELECT * FROM FWA_WATERSHEDS_POLY ORDER BY RANDOM()"
 		data/FWA.gpkg \
-		FWA_WATERSHEDS_POLY
 	$(PSQL_CMD) -f sql/tables/source/fwa_watersheds_poly.sql
 	touch $@
 
@@ -159,8 +161,9 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-lco SPATIAL_INDEX=NONE \
 		-lco FID=LINEAR_FEATURE_ID \
 		-preserve_fid \
+		-dialect SQLITE \
+		-sql "SELECT * FROM FWA_LINEAR_BOUNDARIES_SP ORDER BY RANDOM()"
 		data/FWA.gpkg \
-		FWA_LINEAR_BOUNDARIES_SP
 	$(PSQL_CMD) -f sql/tables/source/fwa_linear_boundaries_sp.sql
 	touch $@
 
@@ -198,7 +201,7 @@ data/WBD_National_GDB.gdb:
 		OR states LIKE '%%WA%%' \
 		OR states LIKE '%%AK%%' \
 		OR states LIKE '%%ID%%' \
-		OR states LIKE '%%MT%%'" \
+		OR states LIKE '%%MT%%' ORDER BY RANDOM()" \
 		data/WBD_National_GDB.gdb
 	# index the columns of interest
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"

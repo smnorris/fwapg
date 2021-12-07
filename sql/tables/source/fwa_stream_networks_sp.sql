@@ -30,7 +30,6 @@ CREATE TABLE whse_basemapping.fwa_stream_networks_sp (
     (REPLACE(REPLACE(local_watershed_code, '-000000', ''), '-', '.')::ltree) STORED,
   upstream_route_measure double precision GENERATED ALWAYS AS (downstream_route_measure +
     ST_Length (geom)) STORED,
-  upstream_area_ha double precision,
   geom geometry(LineStringZM, 3005)
 );
 
@@ -64,7 +63,8 @@ SELECT
   feature_code,
   ST_AddMeasure (geom, downstream_route_measure, downstream_route_measure + ST_Length (geom)) AS geom
 FROM
-  whse_basemapping.fwa_stream_networks_sp_load;
+  whse_basemapping.fwa_stream_networks_sp_load
+ORDER BY random(); --https://blog.crunchydata.com/blog/tricks-for-faster-spatial-indexes
 
 -- create the necessary indices
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp (edge_type);
@@ -80,7 +80,7 @@ CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING GIST (localcode_lt
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING BTREE (localcode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING GIST (geom);
 
--- clustering on disk by wscode may speed us/ds queries slightly
+-- once indexes are created, clustering on disk by wscode may speed us/ds queries slightly
 CLUSTER whse_basemapping.fwa_stream_networks_sp USING fwa_stream_networks_sp_wscode_ltree_gist_idx;
 
 -- drop the load table
