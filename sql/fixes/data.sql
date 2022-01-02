@@ -21,3 +21,9 @@ WHERE linear_feature_id = 710530993;
 UPDATE whse_basemapping.fwa_stream_networks_sp
 SET local_watershed_code = '920-722273-347291-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000'
 WHERE linear_feature_id IN (710445801, 710446876);
+
+-- local code is not populated in obstruction table, get it from streams
+UPDATE whse_basemapping.fwa_obstructions_sp o
+SET local_watershed_code = s.local_watershed_code
+FROM whse_basemapping.fwa_stream_networks_sp s
+WHERE o.linear_feature_id = s.linear_feature_id;
