@@ -1,6 +1,6 @@
 # Table reference
 
-## whse_basemapping.fwa_approx_borders
+## fwa_approx_borders
 
 Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for finding cross-border streams
 
@@ -10,7 +10,7 @@ Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for f
 | `border` | `text` | A code identifying the border (USA49, YTNWT_60, AB_120) |
 | `geom` | `geometry(LineString,3005)` | Geometry of the border line |
 
-## whse_basemapping.fwa_basins_poly
+## fwa_basins_poly
 
 Large BC waterhseds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation
 
@@ -22,7 +22,7 @@ Large BC waterhseds consisting of at least 2-3 watershed groups, used by fwapg f
 | `localcode_ltree` | `ltree` | The local watershed code associated with the stream at the outlet of the basin |
 | `geom` | `geometry(Polygon,3005)` | Geometry of the basin |
 
-## whse_basemapping.fwa_bcboundary
+## fwa_bcboundary
 
 Boundary of BC as defined by FWA - used by FWA_WatershedAtMeasure()
 
@@ -31,7 +31,7 @@ Boundary of BC as defined by FWA - used by FWA_WatershedAtMeasure()
 | `bcboundary_id` | `integer` | Boundary polygon id |
 | `geom` | `geometry(Polygon,3005)` | Boundary geometry |
 
-## whse_basemapping.fwa_named_streams
+## fwa_named_streams
 
 Named streams of BC, aggregated per watershed group and simplified using a 25m tolerance (primarily for mapping use)
 
@@ -44,7 +44,7 @@ Named streams of BC, aggregated per watershed group and simplified using a 25m t
 | `watershed_group_code` | `text` | The watershed group code associated with the named stream |
 | `geom` | `geometry(MultiLineString,3005)` | The geometry of the named stream, an aggregation of the source features and simpified by 25m |
 
-## whse_basemapping.fwa_streams_watersheds_lut
+## fwa_streams_watersheds_lut
 
 A convenience lookup for quickly relating streams and fundamental watersheds
 
@@ -53,7 +53,7 @@ A convenience lookup for quickly relating streams and fundamental watersheds
 | `linear_feature_id` | `bigint` | FWA stream segment unique identifier |
 | `watershed_feature_id` | `integer` | FWA fundamental watershed unique identifer |
 
-## whse_basemapping.fwa_waterbodies
+## fwa_waterbodies
 
 All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions.
 
