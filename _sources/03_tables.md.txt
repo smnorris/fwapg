@@ -12,7 +12,7 @@ Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for f
 
 ## fwa_basins_poly
 
-Large BC waterhseds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation
+Large BC watersheds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation
 
 | Column | Type | Description |
 |--------|------|-------------|
