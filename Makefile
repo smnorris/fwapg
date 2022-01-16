@@ -52,7 +52,7 @@ ALL_TARGETS = .db \
 PSQL_CMD = psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 
 # get list of watershed groups
-GROUPS = $(shell psql -AtX -P border=0,footer=no -c "SELECT watershed_group_code FROM whse_basemapping.fwa_watershed_groups_poly ORDER BY watershed_group_code")
+GROUPS = $(shell $(PSQL_CMD) -AtX -c "SELECT watershed_group_code FROM whse_basemapping.fwa_watershed_groups_poly")
 
 
 all: $(ALL_TARGETS)
@@ -261,7 +261,7 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 					(linear_feature_id bigint, watershed_feature_id integer);"
 	# load data per group so inserts are in managable chunks
 	for wsg in $(GROUPS) ; do \
-		psql -v wsg=$$wsg -f sql/tables/value_added/fwa_streams_watersheds_lut.sql ; \
+		$(PSQL_CMD) -v wsg=$$wsg -f sql/tables/value_added/fwa_streams_watersheds_lut.sql ; \
 	done
 	# comment and index after load
 	$(PSQL_CMD) -c "ALTER TABLE whse_basemapping.fwa_streams_watersheds_lut ADD PRIMARY KEY (linear_feature_id);"
