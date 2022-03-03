@@ -80,7 +80,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="tex2jax_ignore mathjax_ignore section" id="usage">
+  <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h1>
 <p>This document presumes a working familiarity with FWA data and spatial SQL queries with PostgreSQL/PostGIS.</p>
 <div class="section" id="upstream-downstream-analysis">
@@ -379,7 +379,7 @@
 <p><img alt="watershed" src="_images/watershed2.png" /></p>
 <p>The <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> value for the stream at the point location is <code class="docutils literal notranslate"><span class="pre">920.252823.584332</span></code> - the three highlighted fundamental watersheds all have lower <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> values and are thus not returned by <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code>. This is typical for points found on FWA waterbodies - the fundamental watersheds making up waterbodies are defined by a complex set of rules.</p>
 <p><img alt="watershed" src="_images/watershed3.png" /></p>
-<p>To clean up this issue and others, <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> provides the function <a class="reference external" href="04_functions#FWA_WatershedAtMeasure"><code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code></a>.</p>
+<p>To clean up this issue and others, <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> provides the function <span class="xref myst"><code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code></span>.</p>
 <p>For a single point, we can provide the parameters (<code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>, <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>) directly:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span> <span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">)</span>
 </pre></div>
