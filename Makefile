@@ -83,7 +83,7 @@ clean_db:
 # get the latest FWA archive from hillcrestgeo.ca
 data/FWA.gpkg:
 	mkdir -p data
-	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/FWA.zip -P data
+	wget --trust-server-names -qN https://nrs.objectstore.gov.bc.ca/dzzrch/FWA.zip -P data
 	unzip -qun data/FWA.zip -d data
 
 
@@ -96,7 +96,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-append \
 		-nln whse_basemapping$@ \
 		--config PG_USE_COPY YES \
-		"PG:$(DATABASE_URL)" \
+		PG:$(DATABASE_URL) \
 		-preserve_fid \
 		-dialect SQLITE \
 		-sql "SELECT * FROM $(subst .,,$@) ORDER BY RANDOM()" \
@@ -111,7 +111,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 .fwa_stream_networks_sp: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:$(DATABASE_URL)" \
+		PG:$(DATABASE_URL) \
 		-nlt LINESTRING \
 		-nln whse_basemapping.fwa_stream_networks_sp_load \
 		-lco GEOMETRY_NAME=geom \
@@ -132,7 +132,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 .fwa_watersheds_poly: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:$(DATABASE_URL)" \
+		PG:$(DATABASE_URL) \
 		-nlt MULTIPOLYGON \
 		-nln whse_basemapping.fwa_watersheds_poly \
 		-lco GEOMETRY_NAME=geom \
@@ -153,7 +153,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 .fwa_linear_boundaries_sp: .db data/FWA.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:$(DATABASE_URL)" \
+		PG:$(DATABASE_URL) \
 		-nlt MULTILINESTRING \
 		-nln whse_basemapping.fwa_linear_boundaries_sp \
 		-lco GEOMETRY_NAME=geom \
@@ -189,7 +189,7 @@ data/WBD_National_GDB.gdb:
 .fwa_wbdhu12: .db data/WBD_National_GDB.gdb
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:$(DATABASE_URL)" \
+		PG:$(DATABASE_URL) \
 		-t_srs EPSG:3005 \
 		-lco SCHEMA=usgs \
 		-lco GEOMETRY_NAME=geom \
@@ -220,7 +220,7 @@ data/hybas_ar_lev12_v1c:
 	# Load _ar_ and _na_ shapefiles
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:$(DATABASE_URL)" \
+		PG:$(DATABASE_URL) \
 		-lco OVERWRITE=YES \
 		-t_srs EPSG:3005 \
 		-lco SCHEMA=hydrosheds \
@@ -229,7 +229,7 @@ data/hybas_ar_lev12_v1c:
 		data/hybas_ar_lev12_v1c/hybas_ar_lev12_v1c.shp
 	ogr2ogr \
 		-f PostgreSQL \
-		"PG:$(DATABASE_URL)" \
+		PG:$(DATABASE_URL) \
 		-t_srs EPSG:3005 \
 		-lco OVERWRITE=YES \
 		-lco SCHEMA=hydrosheds \
