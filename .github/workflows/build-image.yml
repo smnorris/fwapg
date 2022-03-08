@@ -46,9 +46,10 @@ jobs:
       shell: bash
       run: |
         DATESTAMP=$(date +%Y%m%d-%H%M)
+        #REPO=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]'
         echo datestamp is $DATESTAMP
-        echo ::set-output name=DATESTAMP::${DATESTAMP}
-    - name: Log in to GitHub Docker Registry
+        #echo ::set-output name=DATESTAMP::${DATESTAMP}
+        echo ::set-env name=IMAGE_REPOSITORY::$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')    - name: Log in to GitHub Docker Registry
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
@@ -61,5 +62,5 @@ jobs:
       with:
         push: true # Will only build if this is not here
         tags: |
-          ghcr.io/${{ github.repository_owner }}/gdal-util:latest
-          ghcr.io/${{ github.repository_owner }}/gdal-util:${{ steps.calculateImageTag.outputs.DATESTAMP }}
+          ghcr.io/${{ env.IMAGE_REPOSITORY }}/gdal-util:latest
+          ghcr.io/${{ env.IMAGE_REPOSITORY }}/gdal-util:${{ steps.calculateImageTag.outputs.DATESTAMP }}
