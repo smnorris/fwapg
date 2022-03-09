@@ -1,23 +1,23 @@
 name: build-gdalutil-image
 
 # used on push for testing / development
-# on:
-#   push:
-
-
 on:
-  pull_request:
-    # debug: remove the dev,putting build action on non existent branches for debug
-    branches: ['master', 'main']
-    types: ['opened', 'reopened']
-    paths-ignore:
-      - .vscode/**
-      - .gitignore
-      - LICENSE
-      - README.md
-      - code_of_conduct.md
-      - pyproject.toml
-      - python-objstore/**
+  push:
+
+
+# on:
+#   pull_request:
+#     # debug: remove the dev,putting build action on non existent branches for debug
+#     branches: ['master', 'main']
+#     types: ['opened', 'reopened']
+#     paths-ignore:
+#       - .vscode/**
+#       - .gitignore
+#       - LICENSE
+#       - README.md
+#       - code_of_conduct.md
+#       - pyproject.toml
+#       - python-objstore/**
 
 jobs:
   # This workflow contains a single job called "build"
@@ -38,8 +38,8 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       id: checkout
-      #with:
-      #  fetch-depth: 0
+      with:
+       fetch-depth: 0
 
     - name: calculate image tag
       id: calculateImageTag
