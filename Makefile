@@ -81,10 +81,14 @@ clean_db:
 
 
 # get the latest FWA archive from hillcrestgeo.ca
+# should calculate an md5/sha1 when data is dumped to object store... then
+# check to see if a cached version in .data is the same, and if so then
+# don't re-download the data.
 data/FWA.gpkg:
-	mkdir -p data
-	wget -O - --trust-server-names -qN https://nrs.objectstore.gov.bc.ca/dzzrch/fwa.gpkg.gz | gunzip > ./data/FWA.gpkg
-
+	if [ ! -f ./data/FWA.gpkg ]; then
+	    mkdir -p data
+	    wget -O - --trust-server-names -qN https://nrs.objectstore.gov.bc.ca/dzzrch/fwa.gpkg.gz | gunzip > ./data/FWA.gpkg
+	fi
 
 # load basic/smaller tables from FWA.gpkg to whse_basemapping schema
 $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
