@@ -1,4 +1,4 @@
-CREATE TABLE whse_basemapping.fwa_bays_and_channels_poly (
+CREATE TABLE IF NOT EXISTS whse_basemapping.fwa_bays_and_channels_poly (
     bay_and_channel_id integer PRIMARY KEY,
     bay_channel_type character varying(14),
     gnis_id integer,

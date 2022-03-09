@@ -1,4 +1,4 @@
-CREATE TABLE whse_basemapping.fwa_assessment_watersheds_poly (
+CREATE TABLE IF NOT EXISTS whse_basemapping.fwa_assessment_watersheds_poly (
     watershed_feature_id integer PRIMARY KEY,
     watershed_group_id integer,
     watershed_type character varying(1),
