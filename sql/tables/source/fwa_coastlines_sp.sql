@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS whse_basemapping.fwa_coastlines_sp;
+
 CREATE TABLE IF NOT EXISTS whse_basemapping.fwa_coastlines_sp (
     linear_feature_id integer PRIMARY KEY,
     watershed_group_id integer,

@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS whse_basemapping.fwa_named_point_features_sp;
+
 CREATE TABLE whse_basemapping.fwa_named_point_features_sp (
     named_point_feature_id integer PRIMARY KEY,
     gnis_id integer,

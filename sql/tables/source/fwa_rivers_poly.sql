@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS whse_basemapping.fwa_rivers_poly;
+
 CREATE TABLE whse_basemapping.fwa_rivers_poly (
     waterbody_poly_id integer PRIMARY KEY,
     watershed_group_id integer,

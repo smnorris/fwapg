@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies_20k_50k;
+
 CREATE TABLE whse_basemapping.fwa_waterbodies_20k_50k (
     waterbody_20k_50k_id integer PRIMARY KEY,
     watershed_group_id_20k integer,

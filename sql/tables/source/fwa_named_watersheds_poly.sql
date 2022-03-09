@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS whse_basemapping.fwa_named_watersheds_poly;
+
+
 CREATE TABLE whse_basemapping.fwa_named_watersheds_poly (
     named_watershed_id integer PRIMARY KEY,
     gnis_id integer,

@@ -1,4 +1,6 @@
 -- load all the stream data, populating ltree codes etc
+DROP TABLE IF EXISTS whse_basemapping.fwa_stream_networks_sp;
+
 CREATE TABLE whse_basemapping.fwa_stream_networks_sp (
     linear_feature_id bigint PRIMARY KEY,
   watershed_group_id integer NOT NULL,

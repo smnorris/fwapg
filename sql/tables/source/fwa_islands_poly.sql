@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS whse_basemapping.fwa_islands_poly;
+
 CREATE TABLE whse_basemapping.fwa_islands_poly (
     island_id integer PRIMARY KEY,
     island_type character varying(12),

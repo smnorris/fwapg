@@ -1,6 +1,7 @@
 -- create a table of named streams (for labelling purposes)
 -- filter out lakes by joining to lakes/manmade wb tables
 -- (edge type doesn't work because we want to retain rivers, wetlands)
+DROP TABLE IF EXISTS whse_basemapping.fwa_named_streams;
 
 CREATE TABLE whse_basemapping.fwa_named_streams
 (named_streams_id SERIAL PRIMARY KEY,

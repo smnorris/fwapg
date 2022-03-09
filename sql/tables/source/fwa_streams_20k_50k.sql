@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS whse_basemapping.fwa_streams_20k_50k;
+
 CREATE TABLE whse_basemapping.fwa_streams_20k_50k (
     stream_20k_50k_id bigint PRIMARY KEY,
     watershed_group_id_20k integer,

@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS whse_basemapping.fwa_obstructions_sp;
+
 CREATE TABLE whse_basemapping.fwa_obstructions_sp (
     obstruction_id integer PRIMARY KEY,
     watershed_group_id integer,
