@@ -51,18 +51,32 @@ jobs:
         echo ::set-output name=DATESTAMP::${DATESTAMP}
         echo
         echo ::set-output name=IMAGE_REPOSITORY::$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
-    - name: Log in to GitHub Docker Registry
+    # - name: Log in to GitHub Docker Registry
+    #   uses: docker/login-action@v1
+    #   with:
+    #     registry: ghcr.io
+    #     username: ${{ github.actor }}
+    #     password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Log in to Docker hub Registry
       uses: docker/login-action@v1
       with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        #username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        #registry: ghcr.io
+        username: ${{ secrets.DOCKER_HUB_USERNAME  }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    # - name: Build and Push Client Docker Image
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     push: true # Will only build if this is not here
+    #     tags: |
+    #       ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/gdal-util:latest
+    #       ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/gdal-util:${{ steps.calculateImageTag.outputs.DATESTAMP }}
 
     - name: Build and Push Client Docker Image
       uses: docker/build-push-action@v2
       with:
         push: true # Will only build if this is not here
         tags: |
-          ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/gdal-util:latest
-          ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/gdal-util:${{ steps.calculateImageTag.outputs.DATESTAMP }}
+          ${{ secrets.DOCKER_HUB_USERNAME  }}/gdal-util:latest
+          ${{ secrets.DOCKER_HUB_USERNAME  }}/gdal-util:${{ steps.calculateImageTag.outputs.DATESTAMP }}
