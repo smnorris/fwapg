@@ -83,8 +83,7 @@ clean_db:
 # get the latest FWA archive from hillcrestgeo.ca
 data/FWA.gpkg:
 	mkdir -p data
-	wget --trust-server-names -qN https://nrs.objectstore.gov.bc.ca/dzzrch/FWA.zip -P data
-	unzip -qun data/FWA.zip -d data
+	wget -O - --trust-server-names -qN https://nrs.objectstore.gov.bc.ca/dzzrch/fwa.gpkg.gz | gunzip > ./data/FWA.gpkg
 
 
 # load basic/smaller tables from FWA.gpkg to whse_basemapping schema
