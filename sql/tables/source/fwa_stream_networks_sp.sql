@@ -82,8 +82,10 @@ CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING GIST (localcode_lt
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING BTREE (localcode_ltree);
 CREATE INDEX ON whse_basemapping.fwa_stream_networks_sp USING GIST (geom);
 
--- once indexes are created, clustering on disk by wscode may speed us/ds queries slightly
-CLUSTER whse_basemapping.fwa_stream_networks_sp USING fwa_stream_networks_sp_wscode_ltree_gist_idx;
+-- once indexes are created, we could cluster on disk by wscode. This may speed us/ds queries slightly
+-- (no performance testing has been done)
+-- note that this resource intensive operation with dubious payoff is currently commented out while we work in container land
+-- CLUSTER whse_basemapping.fwa_stream_networks_sp USING fwa_stream_networks_sp_wscode_ltree_gist_idx;
 
 -- drop the load table
 DROP TABLE whse_basemapping.fwa_stream_networks_sp_load;
