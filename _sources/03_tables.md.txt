@@ -10,6 +10,28 @@ Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for f
 | `border` | `text` | A code identifying the border (USA49, YTNWT_60, AB_120) |
 | `geom` | `geometry(LineString,3005)` | Geometry of the border line |
 
+## fwa_assessment_watersheds_lut
+
+Some workflows require relating `fwa_assessment_watersheds_poly` to fundamental watersheds. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| watershed_feature_id | integer |           |
+| assmnt_watershed_id  | integer |           |
+| watershed_group_code | text    |           |
+| watershed_group_id   | integer |           |
+
+## fwa_assessment_watersheds_streams_lut
+
+Some workflows require relating `fwa_assessment_watersheds_poly` to stream segments. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| linear_feature_id | integer |           |
+| assmnt_watershed_id  | integer |           |
+| watershed_group_code | text    |           |
+| watershed_group_id   | integer |           |
+
 ## fwa_basins_poly
 
 Large BC watersheds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation
@@ -53,6 +75,18 @@ A convenience lookup for quickly relating streams and fundamental watersheds
 | `linear_feature_id` | `bigint` | FWA stream segment unique identifier |
 | `watershed_feature_id` | `integer` | FWA fundamental watershed unique identifer |
 
+## fwa_stream_order_parent
+
+A convenince table, holding parent `stream_order` values for each stream in BC (as defined by `blue_line_key`).
+'Parent' stream order is the order of the `blue_line_key` stream into which the given stream drains.
+For side channels, `stream_order_parent` is the order of the main channel at the location of the downstream tributary with the side channel.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `blue_line_key`       | `integer` | See FWA documentation for blue_line_key description |
+| `stream_order_parent` | `integer` | The stream_order of the stream the blue_line_key flows into |
+
+
 ## fwa_waterbodies
 
 All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions.
@@ -66,6 +100,20 @@ All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manma
 | `wscode_ltree` | `ltree` |  |
 | `localcode_ltree` | `ltree` |  |
 
+
+## fwa_waterbodies_upstream_area
+
+A lookup storing area of lake/reservoir/wetland upstream of individual stream segments.
+Note that this table differs from `fwa_watersheds_upstream_area` noted above - we use streams as the lookup base rather than watersheds because waterbodies can be nested within fundamental watersheds.
+
+**NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
+
+| Column | Type | Description |
+|--------|------|-------------|
+| linear_feature_id     | bigint           |           |
+| upstream_lake_ha      | double precision |           |
+| upstream_reservoir_ha | double precision |           |
+| upstream_wetland_ha   | double precision |           |
 
 ## fwa_watersheds_upstream_area
 
@@ -89,28 +137,3 @@ When working with streams, relate the streams to watersheds via the lookup `fwa_
 |--------|------|-------------|
 | watershed_feature_id | integer          | |
 | upstream_area_ha     | double precision | |
-
-## fwa_waterbodies_upstream_area
-
-A lookup storing area of lake/reservoir/wetland upstream of individual stream segments.
-Note that this table differs from `fwa_watersheds_upstream_area` noted above - we use streams as the lookup base rather than watersheds because waterbodies can be nested within fundamental watersheds.
-
-**NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
-
-| Column | Type | Description |
-|--------|------|-------------|
-| linear_feature_id     | bigint           |           |
-| upstream_lake_ha      | double precision |           |
-| upstream_reservoir_ha | double precision |           |
-| upstream_wetland_ha   | double precision |           |
-
-## Assessment watersheds lookups
-
-Some workflows require relating `fwa_assessment_watersheds_poly` to stream segments and fundamental watersheds. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.
-
-| Column | Type | Description |
-|--------|------|-------------|
-| watershed_feature_id | integer |           |
-| assmnt_watershed_id  | integer |           |
-| watershed_group_code | text    |           |
-| watershed_group_id   | integer |           |
