@@ -46,6 +46,7 @@ ALL_TARGETS = .db \
 	.fwa_watersheds_upstream_area \
 	.fwa_assessment_watersheds_lut \
 	.fwa_assessment_watersheds_streams_lut \
+	.fwa_stream_order_parent \
 	.fwa_functions
 
 # provide db connection param to psql and ensure scripts stop on error
@@ -280,6 +281,19 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 
 	touch $@
 
+# create a table holding the parent stream order of all streams (where possible)
+.fwa_stream_order_parent: .fwa_stream_networks_sp
+	# create table
+	$(PSQL_CMD) -c "create table if not exists whse_basemapping.fwa_stream_order_parent \
+    	(blue_line_key integer primary key, stream_order_parent integer);"
+	# load data per group so inserts are in managable chunks
+	for wsg in $(GROUPS) ; do \
+		$(PSQL_CMD) -v wsg=$$wsg -f sql/tables/value_added/fwa_stream_order_parent.sql ; \
+	done
+	# comment and index after load
+	$(PSQL_CMD) -c "COMMENT ON TABLE whse_basemapping.fwa_stream_order_parent IS 'Streams (as blue_line_key) and the stream order of the stream they flow into';"
+	$(PSQL_CMD) -c "COMMENT ON COLUMN whse_basemapping.fwa_stream_order_parent.blue_line_key IS 'FWA blue_line_key';"
+	$(PSQL_CMD) -c "COMMENT ON COLUMN whse_basemapping.fwa_stream_order_parent.stream_order_parent IS 'The stream_order of the stream the blue_line_key flows into';"
 
 # load FWA functions
 .fwa_functions: $(TABLES_SOURCE_TARGETS) $(TABLES_VALUEADDED_TARGETS) \
@@ -347,10 +361,10 @@ $(TABLES_VALUEADDED_TARGETS): $(TABLES_SOURCE_TARGETS)
 	wget https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip -P data
 	unzip -qun data/fwa_assessment_watersheds_streams_lut.csv.zip -d data
 	$(PSQL_CMD) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut \
-	(watershed_feature_id integer PRIMARY KEY, \
+	(linear_feature_id integer PRIMARY KEY, \
 	assmnt_watershed_id integer, \
 	watershed_group_code text, \
 	watershed_group_id integer)"
 	$(PSQL_CMD) -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut FROM 'data/fwa_assessment_watersheds_streams_lut.csv' delimiter ',' csv header"
-	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_streams_lut (watershed_feature_id)"
+	$(PSQL_CMD) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_streams_lut (linear_feature_id)"
 	touch $@
