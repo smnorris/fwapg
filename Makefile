@@ -31,7 +31,7 @@ TABLES_SOURCE_TARGETS := $(addprefix .,$(TABLES_SOURCE))
 TABLES_VALUEADDED_TARGETS := $(addprefix .,$(TABLES_VALUEADDED))
 
 ALL_TARGETS = .db \
-	data/FWA.gpkg \
+	data/fwa.gpkg \
 	$(TABLES_SOURCE_TARGETS) \
 	.fwa_stream_networks_sp \
 	.fwa_watersheds_poly \
@@ -85,19 +85,12 @@ clean_db:
 	$(PSQL_CMD) -c "CREATE SCHEMA IF NOT EXISTS postgisftw"       # for fwapg featureserv functions
 	touch $@
 
+data/fwa.gpkg:
+    mkdir -p data
+    wget -O - --trust-server-names -qN https://nrs.objectstore.gov.bc.ca/dzzrch/fwa.gpkg.gz | gunzip > ./data/fwa.gpkg
 
-# get the latest FWA archive from hillcrestgeo.ca
-# should calculate an md5/sha1 when data is dumped to object store... then
-# check to see if a cached version in .data is the same, and if so then
-# don't re-download the data.
-data/FWA.gpkg:
-	if [ ! -f ./data/FWA.gpkg ]; then
-	    mkdir -p data
-	    wget -O - --trust-server-names -qN https://nrs.objectstore.gov.bc.ca/dzzrch/fwa.gpkg.gz | gunzip > ./data/FWA.gpkg
-	fi
-
-# load basic/smaller tables from FWA.gpkg to whse_basemapping schema
-$(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
+# load basic/smaller tables from fwa.gpkg to whse_basemapping schema
+$(TABLES_SOURCE_TARGETS): .db data/fwa.gpkg
 	$(PSQL_CMD) -f sql/tables/source/$(subst .,,$@).sql
 	ogr2ogr \
 		-f PostgreSQL \
@@ -109,7 +102,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-preserve_fid \
 		-dialect SQLITE \
 		-sql "SELECT * FROM $(subst .,,$@) ORDER BY RANDOM()" \
-		data/FWA.gpkg
+		data/fwa.gpkg
 	touch $@
 
 
@@ -117,7 +110,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 # - load to temp table
 # - add measure to geom when copying data to output table
 # - create indexes after load
-.fwa_stream_networks_sp: .db data/FWA.gpkg
+.fwa_stream_networks_sp: .db data/fwa.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL_OGR)  \
@@ -129,7 +122,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-lco FID=LINEAR_FEATURE_ID \
 		-lco FID64=TRUE \
 		-preserve_fid \
-		data/FWA.gpkg \
+		data/fwa.gpkg \
 		FWA_STREAM_NETWORKS_SP
 	$(PSQL_CMD) -f sql/tables/source/fwa_stream_networks_sp.sql
 	touch $@
@@ -138,7 +131,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 # watersheds - for faster load of large table:
 # - promote to multi on load
 # - create indexes after load
-.fwa_watersheds_poly: .db data/FWA.gpkg
+.fwa_watersheds_poly: .db data/fwa.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL_OGR)  \
@@ -151,7 +144,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-preserve_fid \
 		-dialect SQLITE \
 		-sql "SELECT * FROM FWA_WATERSHEDS_POLY ORDER BY RANDOM()"
-		data/FWA.gpkg \
+		data/fwa.gpkg \
 	$(PSQL_CMD) -f sql/tables/source/fwa_watersheds_poly.sql
 	touch $@
 
@@ -159,7 +152,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 # linear boundaries - for faster load of large table:
 # - promote to multi on load
 # - create indexes after load
-.fwa_linear_boundaries_sp: .db data/FWA.gpkg
+.fwa_linear_boundaries_sp: .db data/fwa.gpkg
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL_OGR)  \
@@ -172,7 +165,7 @@ $(TABLES_SOURCE_TARGETS): .db data/FWA.gpkg
 		-preserve_fid \
 		-dialect SQLITE \
 		-sql "SELECT * FROM FWA_LINEAR_BOUNDARIES_SP ORDER BY RANDOM()"
-		data/FWA.gpkg \
+		data/fwa.gpkg \
 	$(PSQL_CMD) -f sql/tables/source/fwa_linear_boundaries_sp.sql
 	touch $@
 
