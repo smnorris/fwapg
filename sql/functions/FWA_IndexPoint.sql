@@ -92,9 +92,8 @@ FROM
                 pt.bc_ind
             FROM whse_basemapping.fwa_stream_networks_sp AS str,
             pt
-            WHERE NOT wscode_ltree <@ '999'
             -- do not use 6010 lines, only return nearest stream inside BC
-            AND edge_type != 6010
+            WHERE edge_type != 6010
             ORDER BY str.geom <-> (select geom from pt)
             LIMIT 100
         ) AS f

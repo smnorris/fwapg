@@ -23,3 +23,8 @@ FROM postgisftw.FWA_IndexPoint(1179988, 407541, 3005);
 -- try a UTMZ10 point
 SELECT gnis_name = 'Shawnigan Creek' as result
 FROM postgisftw.FWA_IndexPoint(458696, 5389371, 26910);
+
+-- Teanook Lake is disconnected, ensure it is returned
+SELECT blue_line_key = 354094227 as result
+FROM postgisftw.FWA_IndexPoint(1184392,389012, 3005, 300, 3)
+limit 1;
