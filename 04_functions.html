@@ -50,6 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#fwa-indexpoint">FWA_IndexPoint</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Synopsis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#options">Options</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">Examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#web-service">Web service</a></li>
 </ul>
@@ -250,7 +251,7 @@
 </div>
 <div class="section" id="id2">
 <h3>Description<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
-<p>Snaps a point to the stream network. Provided a point (as either a BC Albers point geometry or (<code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">srid</span></code>), return a table containing the point geometry of the closest point on the FWA stream network to the given point, plus additional attributes from the matched stream:</p>
+<p>Snaps a point to the stream network. Provided a point (as either a BC Albers point geometry or (<code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">srid</span></code>), return a table containing the point geometry/geometries of the closest point(s) on the FWA stream network to the given point, plus additional attributes from the matched stream(s).</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="text-left head"><p>field</p></th>
@@ -297,6 +298,11 @@
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section" id="options">
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">tolerance</span></code> - Return only stream feature(s) within this distance (metres) (default = <code class="docutils literal notranslate"><span class="pre">5000</span></code>)<br />
+<code class="docutils literal notranslate"><span class="pre">num_features</span></code> - Number of features to be returned (default = <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p>
 </div>
 <div class="section" id="id3">
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
