@@ -18,13 +18,13 @@ DECLARE
 BEGIN
 
 RETURN QUERY
-SELECT
+SELECT distinct on (s.blue_line_key)
   (ST_Dump(ST_LocateAlong(s.geom, v_measure))).geom as geom
 FROM whse_basemapping.fwa_stream_networks_sp AS s
 WHERE s.blue_line_key = v_blkey
-AND s.downstream_route_measure <= v_measure
-AND s.upstream_route_measure > v_measure;
-
+AND round(s.downstream_route_measure::numeric, 4) <= round(v_measure::numeric, 4)
+AND round(s.upstream_route_measure::numeric, 4) > round(v_measure::numeric, 4)
+order by s.blue_line_key, s.downstream_route_measure desc;
 END
 
 $$
