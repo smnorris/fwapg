@@ -342,7 +342,7 @@ begin
         -- add watersheds outside of BC
         UNION ALL
           SELECT
-            ST_Safe_Difference(exbc.geom, bc.geom) as geom
+            ST_Difference(exbc.geom, bc.geom) as geom
           FROM exbc
           INNER JOIN whse_basemapping.fwa_bcboundary bc
           ON ST_Intersects(exbc.geom, bc.geom)
@@ -504,7 +504,7 @@ begin
           SELECT p.geom FROM prelim p
           UNION ALL
           SELECT
-            ST_Safe_Difference(exbc.geom, bc.geom) as geom
+            ST_Difference(exbc.geom, bc.geom) as geom
           FROM exbc
           INNER JOIN whse_basemapping.fwa_bcboundary bc
           ON ST_Intersects(exbc.geom, bc.geom)
