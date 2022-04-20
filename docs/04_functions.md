@@ -140,7 +140,7 @@ FWA_IndexPoint(
 
 ### Description
 
-Snaps a point to the stream network. Provided a point (as either a BC Albers point geometry or (`x, y, srid`), return a table containing the point geometry of the closest point on the FWA stream network to the given point, plus additional attributes from the matched stream:
+Snaps a point to the stream network. Provided a point (as either a BC Albers point geometry or (`x, y, srid`), return a table containing the point geometry/geometries of the closest point(s) on the FWA stream network to the given point, plus additional attributes from the matched stream(s). 
 
 | field                     | type                  | description                                 |
 | :-------------------------| --------------------- |-------------------------------------------- |
@@ -153,6 +153,11 @@ Snaps a point to the stream network. Provided a point (as either a BC Albers poi
 | `distance_to_stream`      | double precision      | distance from input point to output point   |
 | `bc_ind`                  | boolean               | Indicates if the source point is in BC      |
 | `geom`                    | geometry(Point, 3005) | The closest point on the FWA stream network |
+
+### Options
+
+`tolerance` - Return only stream feature(s) within this distance (metres) (default = `5000`)  
+`num_features` - Number of features to be returned (default = `1`)
 
 ### Examples
 
