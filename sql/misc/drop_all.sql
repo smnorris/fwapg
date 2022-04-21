@@ -40,13 +40,13 @@ DROP FUNCTION IF EXISTS FWA_huc12;
 DROP FUNCTION IF EXISTS FWA_hydroshed;
 DROP FUNCTION IF EXISTS FWA_IndexPoint;
 
-DROP FUNCTION FWA_Upstream(ltree,ltree,ltree,ltree);
-DROP FUNCTION FWA_Upstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
-DROP FUNCTION FWA_Upstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+DROP FUNCTION IF EXISTS FWA_Upstream(ltree,ltree,ltree,ltree);
+DROP FUNCTION IF EXISTS FWA_Upstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+DROP FUNCTION IF EXISTS FWA_Upstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
 
-DROP FUNCTION FWA_Downstream(ltree,ltree,ltree,ltree);
-DROP FUNCTION FWA_Downstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
-DROP FUNCTION FWA_Downstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+DROP FUNCTION IF EXISTS FWA_Downstream(ltree,ltree,ltree,ltree);
+DROP FUNCTION IF EXISTS FWA_Downstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+DROP FUNCTION IF EXISTS FWA_Downstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
 
 DROP FUNCTION IF EXISTS FWA_UpstreamBorderCrossings;
 DROP FUNCTION IF EXISTS FWA_SliceWatershedAtPoint;
