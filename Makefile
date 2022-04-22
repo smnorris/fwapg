@@ -201,7 +201,7 @@ data/WBD_National_GDB.gdb:
 		OR states LIKE '%%WA%%' \
 		OR states LIKE '%%AK%%' \
 		OR states LIKE '%%ID%%' \
-		OR states LIKE '%%MT%%' ORDER BY RANDOM()" \
+		OR states LIKE '%%MT%%'" \
 		data/WBD_National_GDB.gdb
 	# index the columns of interest
 	$(PSQL_CMD) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
