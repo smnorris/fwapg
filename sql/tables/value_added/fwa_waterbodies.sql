@@ -39,7 +39,7 @@ SELECT DISTINCT ON (waterbody_key)
 FROM whse_basemapping.fwa_stream_networks_sp s
 INNER JOIN whse_basemapping.fwa_lakes_poly wb
 ON s.waterbody_key = wb.waterbody_key
-WHERE s.fwa_watershed_code NOT LIKE '999-999999%'
+WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
 AND s.waterbody_key IS NOT NULL
 ORDER BY s.waterbody_key, s.wscode_ltree, s.localcode_ltree, s.downstream_route_measure;
@@ -67,7 +67,7 @@ SELECT DISTINCT ON (waterbody_key)
 FROM whse_basemapping.fwa_stream_networks_sp s
 INNER JOIN whse_basemapping.fwa_rivers_poly wb
 ON s.waterbody_key = wb.waterbody_key
-WHERE s.fwa_watershed_code NOT LIKE '999-999999%'
+WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
 AND s.waterbody_key IS NOT NULL
 ORDER BY s.waterbody_key, s.wscode_ltree, s.localcode_ltree, s.downstream_route_measure;
@@ -95,7 +95,7 @@ SELECT DISTINCT ON (waterbody_key)
 FROM whse_basemapping.fwa_stream_networks_sp s
 INNER JOIN whse_basemapping.fwa_wetlands_poly wb
 ON s.waterbody_key = wb.waterbody_key
-WHERE s.fwa_watershed_code NOT LIKE '999-999999%'
+WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
 AND s.waterbody_key IS NOT NULL
 ORDER BY s.waterbody_key, s.wscode_ltree, s.localcode_ltree, s.downstream_route_measure;
@@ -123,7 +123,7 @@ SELECT DISTINCT ON (waterbody_key)
 FROM whse_basemapping.fwa_stream_networks_sp s
 INNER JOIN whse_basemapping.fwa_manmade_waterbodies_poly wb
 ON s.waterbody_key = wb.waterbody_key
-WHERE s.fwa_watershed_code NOT LIKE '999-999999%'
+WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
 AND s.waterbody_key IS NOT NULL
 ORDER BY s.waterbody_key, s.wscode_ltree, s.localcode_ltree, s.downstream_route_measure;
@@ -152,12 +152,10 @@ SELECT DISTINCT ON (waterbody_key)
 FROM whse_basemapping.fwa_stream_networks_sp s
 INNER JOIN whse_basemapping.fwa_glaciers_poly wb
 ON s.waterbody_key = wb.waterbody_key
-WHERE s.fwa_watershed_code NOT LIKE '999-999999%'
+WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
 AND s.waterbody_key IS NOT NULL
 ORDER BY s.waterbody_key, s.wscode_ltree, s.localcode_ltree, s.downstream_route_measure;
-
-
 
 
 CREATE INDEX ON whse_basemapping.fwa_waterbodies (blue_line_key);
