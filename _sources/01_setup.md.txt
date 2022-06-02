@@ -1,14 +1,15 @@
 # Setup and data load
 
-## Requirements
+## Dependencies
 
 - [PostgreSQL](https://www.postgresql.org) (>=13)
 - [PostGIS](https://postgis.net/) (>=v3.1 with GEOS >=3.9)
-- [GDAL](https://gdal.org/index.html) (tested with v3.3.0)
+- Python 3 and [`bcdata`](https://github.com/smnorris/bcdata)
+- [GDAL](https://gdal.org/index.html) (tested with v3.5)
 - [GNU parallel](https://www.gnu.org/software/parallel/)
 - [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
 
-The instructions below presume postgres is set up and accepting connections.
+The instructions below presume above requirements are installed and postgres is accepting connections.
 
 
 ## Create the database
@@ -51,6 +52,6 @@ Get the `fwapg` scripts by either:
 Load and optimize the data:
 
     cd fwapg
-    make all
+    make
 
 Once scripts are complete you have a FWA database ready for speedy queries.

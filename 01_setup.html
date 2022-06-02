@@ -39,7 +39,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setup and data load</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-the-database">Create the database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment variables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-load-and-optimization">Data load and optimization</a></li>
@@ -76,16 +76,17 @@
              
   <div class="section" id="setup-and-data-load">
 <h1>Setup and data load<a class="headerlink" href="#setup-and-data-load" title="Permalink to this headline"></a></h1>
-<div class="section" id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.postgresql.org">PostgreSQL</a> (&gt;=13)</p></li>
 <li><p><a class="reference external" href="https://postgis.net/">PostGIS</a> (&gt;=v3.1 with GEOS &gt;=3.9)</p></li>
-<li><p><a class="reference external" href="https://gdal.org/index.html">GDAL</a> (tested with v3.3.0)</p></li>
+<li><p>Python 3 and <a class="reference external" href="https://github.com/smnorris/bcdata"><code class="docutils literal notranslate"><span class="pre">bcdata</span></code></a></p></li>
+<li><p><a class="reference external" href="https://gdal.org/index.html">GDAL</a> (tested with v3.5)</p></li>
 <li><p><a class="reference external" href="https://www.gnu.org/software/parallel/">GNU parallel</a></p></li>
 <li><p><a class="reference external" href="https://www.gnu.org/software/make/"><code class="docutils literal notranslate"><span class="pre">make</span></code></a>/<code class="docutils literal notranslate"><span class="pre">unzip</span></code>/<code class="docutils literal notranslate"><span class="pre">wget</span></code>/etc</p></li>
 </ul>
-<p>The instructions below presume postgres is set up and accepting connections.</p>
+<p>The instructions below presume above requirements are installed and postgres is accepting connections.</p>
 </div>
 <div class="section" id="create-the-database">
 <h2>Create the database<a class="headerlink" href="#create-the-database" title="Permalink to this headline"></a></h2>
@@ -123,7 +124,7 @@ Type <span class="s2">&quot;help&quot;</span> <span class="k">for</span> help.
 </ul>
 <p>Load and optimize the data:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd fwapg
-make all
+make
 </pre></div>
 </div>
 <p>Once scripts are complete you have a FWA database ready for speedy queries.</p>
