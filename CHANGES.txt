@@ -3,17 +3,17 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.2.0 ()
+0.2.0 (2022-06-)
 ------------------
 - add documentation
-- require PostgreSQL >= 13, PostGIS >= 3.1 (GEOS 3.9)
-- require GDAL >= 3.4
+- require PostgreSQL >= 13, PostGIS >= 3.1 (GEOS 3.9), GDAL >= 3.4
+- use makefile for db load
 - load features from WFS to ensure the latest is present (#91)
 - fix bug in sequence of data load (#54)
-- use makefile for db load
 - tidy hydrosheds polygon aggregation
 - removed unused and obsolete functions (#48)
-[ ] do not use watershed groups as pre-aggregations for FWA_WatershedAtMeasure (#52)
+- functional Docker file provided
+- add parent order table (#84)
 
 0.1.1 (2020-10-28)
 ------------------
