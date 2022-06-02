@@ -21,6 +21,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
     - GDAL >=3.4
     - [GNU parallel](https://www.gnu.org/software/parallel/)
     - [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
+    - Python and [`bcdata`](https://github.com/smnorris/bcdata)
 
 2. Ensure you have a `DATABASE_URL` environment variable set to point to your database, for example:
 

@@ -15,7 +15,7 @@ RUN apt-get -qq install -y --no-install-recommends postgresql-common \
 &&  apt-get -qq install -y --no-install-recommends python3-pip python3-psycopg2 \
 && apt-get -qq install -y --no-install-recommends git \
 && pip3 install --upgrade numpy \
-&&  pip3 install bcdata minio
+&& pip3 install bcdata minio
 
 # install bcdata, its such a fat image already don't see point in
 # breaking up into two step build

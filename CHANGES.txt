@@ -8,7 +8,7 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 - add documentation
 - require PostgreSQL >= 13, PostGIS >= 3.1 (GEOS 3.9)
 - require GDAL >= 3.4
-- update FWA.gpkg: latest data, assign primary keys, host at https://nrs.objectstore.gov.bc.ca
+- load features from WFS to ensure the latest is present (#91)
 - fix bug in sequence of data load (#54)
 - use makefile for db load
 - tidy hydrosheds polygon aggregation

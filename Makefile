@@ -53,6 +53,7 @@ ALL_TARGETS = .make/db \
 	.make/whse_basemapping.fwa_watersheds_poly \
 	.make/whse_basemapping.fwa_linear_boundaries_sp \
 	$(NON_SPATIAL_TARGETS) \
+	.make/fwa_fixdata \
 	.make/fwa_wbdhu12 \
 	.make/fwa_hydrosheds \
 	$(VALUEADDED_TARGETS) \
@@ -88,6 +89,10 @@ clean_db:
 	$(PSQL) -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'
 	$(PSQL) -c "CREATE SCHEMA IF NOT EXISTS postgisftw"	  # for fwapg featureserv functions
 	$(PSQL) -c "CREATE SCHEMA IF NOT EXISTS fwapg"	      # for temp load tables, should be empty on completion of load
+	$(PSQL) -f sql/functions/CDB_MakeHexagon.sql
+	$(PSQL) -f sql/functions/ST_Safe_Repair.sql
+	$(PSQL) -f sql/functions/FWA_Downstream.sql
+	$(PSQL) -f sql/functions/FWA_Upstream.sql
 	touch $@
 
 # --
@@ -129,6 +134,10 @@ $(STREAM_TARGETS): .make/fwapg.fwa_stream_networks_sp .make/whse_basemapping.fwa
 	$(PSQL) -f $<
 	# drop the load table
 	$(PSQL) -c "drop table fwapg."$(subst .make/whse_basemapping.,,$@)
+	# load stream based functions
+	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
+	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
+	$(PSQL) -f sql/functions/FWA_LocateAlongInterval.sql
 	touch $@
 
 # --
@@ -252,6 +261,7 @@ data/WBD_National_GDB.gdb:
 	$(PSQL) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	$(PSQL) -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
 	$(PSQL) -c "COMMENT ON TABLE usgs.wbdhu12 IS 'USGS National Watershed Boundary Dataset, HUC12 level. See https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml';"
+	$(PSQL) -f sql/functions/FWA_huc12.sql
 	touch $@
 
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
@@ -290,6 +300,7 @@ data/hybas_ar_lev12_v1c:
 	$(PSQL) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	$(PSQL) -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
 	$(PSQL) -c "COMMENT ON TABLE hydrosheds.hybas_lev12_v1c IS 'HydroBasins for North America from https://www.hydrosheds.org. See source for column documentation';"
+	$(PSQL) -f sql/functions/FWA_hydroshed.sql
 	touch $@
 
 # create value added tables that require just single .sql script
@@ -331,28 +342,19 @@ $(VALUEADDED_TARGETS): $(BASIC_TARGETS)
 	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_stream_order_parent.stream_order_parent IS 'The stream_order of the stream the blue_line_key flows into';"
 	touch $@
 
-# load FWA functions
-.make/fwa_functions: $(BASIC_TARGETS) $(VALUEADDED_TARGETS) \
-	.make/whse_basemapping.fwa_stream_networks_sp \
+# additional FWA functions
+.make/fwa_functions: .make/whse_basemapping.fwa_stream_networks_sp \
 	.make/whse_basemapping.fwa_watersheds_poly \
-	.make/whse_basemapping.fwa_linear_boundaries_sp \
+	$(BASIC_TARGETS) \
+	$(VALUEADDED_TARGETS) \
 	.make/fwa_fixdata \
 	.make/fwa_hydrosheds \
 	.make/fwa_wbdhu12
-	$(PSQL) -f sql/functions/CDB_MakeHexagon.sql
-	$(PSQL) -f sql/functions/ST_Safe_Repair.sql
-	$(PSQL) -f sql/functions/FWA_Downstream.sql
-	$(PSQL) -f sql/functions/FWA_huc12.sql
-	$(PSQL) -f sql/functions/FWA_hydroshed.sql
-	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
-	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
-	$(PSQL) -f sql/functions/FWA_LocateAlongInterval.sql
 	$(PSQL) -f sql/functions/FWA_SliceWatershedAtPoint.sql
-	$(PSQL) -f sql/functions/FWA_Upstream.sql
-	$(PSQL) -f sql/functions/FWA_UpstreamBorderCrossings.sql
 	$(PSQL) -f sql/functions/FWA_WatershedAtMeasure.sql
 	$(PSQL) -f sql/functions/FWA_WatershedHex.sql
 	$(PSQL) -f sql/functions/FWA_WatershedStream.sql
+	$(PSQL) -f sql/functions/FWA_UpstreamBorderCrossings.sql
 	touch $@
 
 # rather than generating these lookups (slow), download pre-generated data
