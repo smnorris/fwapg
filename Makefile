@@ -103,7 +103,7 @@ $(BASIC_TARGETS): .make/db
 	bcdata bc2pg $(subst .make/,,$@) --schema fwapg
 	# create and load target table, drop load table
 	$(PSQL) -f sql/tables/source/$(subst .make/whse_basemapping.,,$@).sql
-	$(PSQL) -c "drop table fwapg."$(subst .make/whse_basemapping.,,$@)
+	$(PSQL) -c "drop table fwapg.$(subst .make/whse_basemapping.,,$@)"
 	touch $@
 
 # --
@@ -133,7 +133,7 @@ $(STREAM_TARGETS): .make/fwapg.fwa_stream_networks_sp .make/whse_basemapping.fwa
 .make/whse_basemapping.fwa_stream_networks_sp: sql/tables/source/fwa_stream_networks_sp.sql $(STREAM_TARGETS)
 	$(PSQL) -f $<
 	# drop the load table
-	$(PSQL) -c "drop table fwapg."$(subst .make/whse_basemapping.,,$@)
+	$(PSQL) -c "drop table fwapg.$(subst .make/whse_basemapping.,,$@)"
 	# load stream based functions
 	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
@@ -169,7 +169,7 @@ $(WSD_TARGETS): .make/fwapg.fwa_watersheds_poly .make/whse_basemapping.fwa_water
 .make/whse_basemapping.fwa_watersheds_poly: sql/tables/source/fwa_watersheds_poly.sql $(WSD_TARGETS)
 	$(PSQL) -f $<
 	# drop the load table
-	$(PSQL) -c "drop table fwapg."$(subst .make/whse_basemapping.,,$@)
+	$(PSQL) -c "drop table fwapg.$(subst .make/whse_basemapping.,,$@)"
 	touch $@
 
 # --
@@ -201,7 +201,7 @@ $(LINBND_TARGETS): .make/fwapg.fwa_linear_boundaries_sp .make/whse_basemapping.f
 .make/whse_basemapping.fwa_linear_boundaries_sp: sql/tables/source/fwa_linear_boundaries_sp.sql $(LINBND_TARGETS)
 	$(PSQL) -f $<
 	# drop the load table
-	$(PSQL) -c "drop table fwapg."$(subst .make/whse_basemapping.,,$@)
+	$(PSQL) -c "drop table fwapg.$(subst .make/whse_basemapping.,,$@)"
 	touch $@
 
 # --
