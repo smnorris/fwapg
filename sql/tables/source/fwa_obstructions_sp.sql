@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS whse_basemapping.fwa_obstructions_sp;
+drop table if exists whse_basemapping.fwa_obstructions_sp;
 
-CREATE TABLE whse_basemapping.fwa_obstructions_sp (
-    obstruction_id integer PRIMARY KEY,
+create table whse_basemapping.fwa_obstructions_sp (
+    obstruction_id integer primary key,
     watershed_group_id integer,
     linear_feature_id integer,
     gnis_id integer,
@@ -15,19 +15,54 @@ CREATE TABLE whse_basemapping.fwa_obstructions_sp (
     route_measure double precision,
     feature_source character varying(15),
     feature_code character varying(10),
-    geom public.geometry(Point,3005),
-    wscode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED,
-    localcode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED
+    wscode_ltree public.ltree generated always as ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    geom public.geometry(point,3005)
 );
 
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp (linear_feature_id);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp (blue_line_key);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp (watershed_key);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp (obstruction_type);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp (watershed_group_code);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp (gnis_name);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp USING GIST (wscode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp USING BTREE (wscode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp USING GIST (localcode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp USING BTREE (localcode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_obstructions_sp USING GIST (geom);
+insert into whse_basemapping.fwa_obstructions_sp (
+  obstruction_id,
+  watershed_group_id,
+  linear_feature_id,
+  gnis_id,
+  gnis_name,
+  obstruction_type,
+  blue_line_key,
+  watershed_key,
+  fwa_watershed_code,
+  local_watershed_code,
+  watershed_group_code,
+  route_measure,
+  feature_source,
+  feature_code,
+  geom
+)
+select
+  obstruction_id,
+  watershed_group_id::integer,
+  linear_feature_id::integer,
+  gnis_id::integer,
+  gnis_name,
+  obstruction_type,
+  blue_line_key::integer,
+  watershed_key::integer,
+  fwa_watershed_code,
+  local_watershed_code,
+  watershed_group_code,
+  route_measure,
+  feature_source,
+  feature_code,
+  geom
+from fwapg.fwa_obstructions_sp;
+
+create index on whse_basemapping.fwa_obstructions_sp (linear_feature_id);
+create index on whse_basemapping.fwa_obstructions_sp (blue_line_key);
+create index on whse_basemapping.fwa_obstructions_sp (watershed_key);
+create index on whse_basemapping.fwa_obstructions_sp (obstruction_type);
+create index on whse_basemapping.fwa_obstructions_sp (watershed_group_code);
+create index on whse_basemapping.fwa_obstructions_sp (gnis_name);
+create index on whse_basemapping.fwa_obstructions_sp using gist (wscode_ltree);
+create index on whse_basemapping.fwa_obstructions_sp using btree (wscode_ltree);
+create index on whse_basemapping.fwa_obstructions_sp using gist (localcode_ltree);
+create index on whse_basemapping.fwa_obstructions_sp using btree (localcode_ltree);
+create index on whse_basemapping.fwa_obstructions_sp using gist (geom);

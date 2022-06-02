@@ -1,20 +1,30 @@
-DROP TABLE IF EXISTS whse_basemapping.fwa_watershed_groups_poly;
+drop table if exists whse_basemapping.fwa_watershed_groups_poly;
 
-CREATE TABLE whse_basemapping.fwa_watershed_groups_poly (
-    watershed_group_id integer PRIMARY KEY,
+create table whse_basemapping.fwa_watershed_groups_poly (
+    watershed_group_id integer primary key,
     watershed_group_code character varying(4),
     watershed_group_name character varying(80),
     area_ha double precision,
     feature_code character varying(10),
-    geom public.geometry
+    geom public.geometry(multipolygon,3005)
 );
 
-CREATE INDEX ON whse_basemapping.fwa_watershed_groups_poly (watershed_group_code);
-CREATE INDEX ON whse_basemapping.fwa_watershed_groups_poly USING GIST (geom);
+insert into whse_basemapping.fwa_watershed_groups_poly (
+  watershed_group_id,
+  watershed_group_code,
+  watershed_group_name,
+  area_ha,
+  feature_code,
+  geom
+)
+select
+  watershed_group_id,
+  watershed_group_code,
+  watershed_group_name,
+  area_ha,
+  feature_code,
+  st_multi(geom) as geom
+from fwapg.fwa_watershed_groups_poly;
 
--- For faster point in poly queries, ensure big geoms are not compressed
--- http://blog.cleverelephant.ca/2018/09/postgis-external-storage.html
--- (note that with pg14/postgis 3.2 this shouldn't be necessary)
-ALTER TABLE whse_basemapping.fwa_watershed_groups_poly
-ALTER COLUMN geom SET STORAGE EXTERNAL;
-
+create index on whse_basemapping.fwa_watershed_groups_poly (watershed_group_code);
+create index on whse_basemapping.fwa_watershed_groups_poly using gist (geom);

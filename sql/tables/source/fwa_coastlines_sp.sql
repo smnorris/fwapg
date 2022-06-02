@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS whse_basemapping.fwa_coastlines_sp;
+drop table if exists whse_basemapping.fwa_coastlines_sp;
 
-CREATE TABLE IF NOT EXISTS whse_basemapping.fwa_coastlines_sp (
-    linear_feature_id integer PRIMARY KEY,
+create table if not exists whse_basemapping.fwa_coastlines_sp (
+    linear_feature_id integer primary key,
     watershed_group_id integer,
     edge_type integer,
     blue_line_key integer,
@@ -13,18 +13,48 @@ CREATE TABLE IF NOT EXISTS whse_basemapping.fwa_coastlines_sp (
     length_metre double precision,
     feature_source character varying(15),
     feature_code character varying(10),
-    geom public.geometry(LineString,3005),
-    wscode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED,
-    localcode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED
+    wscode_ltree public.ltree generated always as ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    geom public.geometry(linestring,3005)
 );
 
+insert into whse_basemapping.fwa_coastlines_sp (
+  linear_feature_id,
+  watershed_group_id,
+  edge_type,
+  blue_line_key,
+  watershed_key,
+  fwa_watershed_code,
+  local_watershed_code,
+  watershed_group_code,
+  downstream_route_measure,
+  length_metre,
+  feature_source,
+  feature_code,
+  geom
+)
+select
+  linear_feature_id,
+  watershed_group_id,
+  edge_type,
+  blue_line_key,
+  watershed_key,
+  fwa_watershed_code,
+  local_watershed_code,
+  watershed_group_code,
+  downstream_route_measure,
+  length_metre,
+  feature_source,
+  feature_code,
+  geom
+from fwapg.fwa_coastlines_sp;
 
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp (edge_type);
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp (blue_line_key);
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp (watershed_key);
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp (watershed_group_code);
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp USING GIST (wscode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp USING BTREE (wscode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp USING GIST (localcode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp USING BTREE (localcode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_coastlines_sp USING GIST (geom);
+create index on whse_basemapping.fwa_coastlines_sp (edge_type);
+create index on whse_basemapping.fwa_coastlines_sp (blue_line_key);
+create index on whse_basemapping.fwa_coastlines_sp (watershed_key);
+create index on whse_basemapping.fwa_coastlines_sp (watershed_group_code);
+create index on whse_basemapping.fwa_coastlines_sp using gist (wscode_ltree);
+create index on whse_basemapping.fwa_coastlines_sp using btree (wscode_ltree);
+create index on whse_basemapping.fwa_coastlines_sp using gist (localcode_ltree);
+create index on whse_basemapping.fwa_coastlines_sp using btree (localcode_ltree);
+create index on whse_basemapping.fwa_coastlines_sp using gist (geom);
