@@ -130,7 +130,7 @@ make
 <div class="section" id="partial-loads">
 <h2>Partial loads<a class="headerlink" href="#partial-loads" title="Permalink to this headline"></a></h2>
 <p>Partial loads are possible. If you only require certain FWA tables, load them individually like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make .make/whse_basemapping.fwa_stream_networks_sp
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make .make/fwa_stream_networks_sp
 </pre></div>
 </div>
 </div>
@@ -145,7 +145,7 @@ make
 </div>
 <p>To refresh a specific table, remove the <code class="docutils literal notranslate"><span class="pre">make</span></code> created placeholder files for the given table and re-load:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rm .make/*.fwa_stream_networks_sp
-make .make/whse_basemapping.fwa_stream_networks_sp
+make .make/fwa_stream_networks_sp
 </pre></div>
 </div>
 <p>Note that while downloading large tables from WFS is very slow, downtime from applying single-table updates is minimal.</p>
