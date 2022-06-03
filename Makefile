@@ -207,7 +207,7 @@ $(LINBND_TARGETS): .make/fwa_linear_boundaries_sp_load .make/fwa_watershed_group
 	bcdata bc2pg whse_basemapping.fwa_linear_boundaries_sp \
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
-		--table fwa_linear_boundaries_sp_load
+		--table fwa_linear_boundaries_sp_load \
 		--append \
 		--promote_to_multi \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/linbnd_,,$@)'"

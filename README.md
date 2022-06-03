@@ -28,11 +28,13 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
         export DATABASE_URL=postgres://username:password@localhost:5432/fwapg
 
-3. Get scripts, load and optimize the data (this takes some time):
+3. Get scripts, load and optimize the data:
 
         git clone https://github.com/smnorris/fwapg.git
         cd fwapg
         make
+
+The download is extremely slow, this will take several hours (spatial data is downloaded via WFS to ensure it is current).
 
 4. Run `fwapg` enabled queries with your favorite sql client. For example:
 

@@ -57,7 +57,7 @@ Once scripts are complete you have a FWA database ready for speedy queries.
 
 Partial loads are possible. If you only require certain FWA tables, load them individually like this:
 
-    make .make/whse_basemapping.fwa_stream_networks_sp
+    make .make/fwa_stream_networks_sp
 
 ## Updates
 
@@ -72,7 +72,7 @@ To drop all `fwapg` managed data and functions and re-load:
 To refresh a specific table, remove the `make` created placeholder files for the given table and re-load:
 
     rm .make/*.fwa_stream_networks_sp
-    make .make/whse_basemapping.fwa_stream_networks_sp
+    make .make/fwa_stream_networks_sp
 
 Note that while downloading large tables from WFS is very slow, downtime from applying single-table updates is minimal.
 
