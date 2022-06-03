@@ -1,5 +1,5 @@
-drop table if exists whse_basemapping.fwa_linear_boundaries_sp;
-create table whse_basemapping.fwa_linear_boundaries_sp (
+drop table if exists fwapg.fwa_linear_boundaries_sp;
+create table fwapg.fwa_linear_boundaries_sp (
   linear_feature_id        integer primary key       ,
   watershed_group_id       integer not null          ,
   edge_type                integer                   ,
@@ -20,7 +20,7 @@ create table whse_basemapping.fwa_linear_boundaries_sp (
   geom                     public.geometry(MultiLineString,3005)
 );
 
-insert into whse_basemapping.fwa_linear_boundaries_sp (
+insert into fwapg.fwa_linear_boundaries_sp (
   linear_feature_id,
   watershed_group_id,
   edge_type,
@@ -51,16 +51,16 @@ select
   feature_source,
   feature_code,
   st_multi(geom) as geom
-from fwapg.fwa_linear_boundaries_sp;
+from fwapg.fwa_linear_boundaries_sp_load;
 
 -- index
-create index on whse_basemapping.fwa_linear_boundaries_sp (edge_type);
-create index on whse_basemapping.fwa_linear_boundaries_sp (blue_line_key);
-create index on whse_basemapping.fwa_linear_boundaries_sp (watershed_key);
-create index on whse_basemapping.fwa_linear_boundaries_sp (waterbody_key);
-create index on whse_basemapping.fwa_linear_boundaries_sp (watershed_group_code);
-create index on whse_basemapping.fwa_linear_boundaries_sp using gist (wscode_ltree);
-create index on whse_basemapping.fwa_linear_boundaries_sp using btree (wscode_ltree);
-create index on whse_basemapping.fwa_linear_boundaries_sp using gist (localcode_ltree);
-create index on whse_basemapping.fwa_linear_boundaries_sp using btree (localcode_ltree);
-create index on whse_basemapping.fwa_linear_boundaries_sp using gist (geom);
+create index on fwapg.fwa_linear_boundaries_sp (edge_type);
+create index on fwapg.fwa_linear_boundaries_sp (blue_line_key);
+create index on fwapg.fwa_linear_boundaries_sp (watershed_key);
+create index on fwapg.fwa_linear_boundaries_sp (waterbody_key);
+create index on fwapg.fwa_linear_boundaries_sp (watershed_group_code);
+create index on fwapg.fwa_linear_boundaries_sp using gist (wscode_ltree);
+create index on fwapg.fwa_linear_boundaries_sp using btree (wscode_ltree);
+create index on fwapg.fwa_linear_boundaries_sp using gist (localcode_ltree);
+create index on fwapg.fwa_linear_boundaries_sp using btree (localcode_ltree);
+create index on fwapg.fwa_linear_boundaries_sp using gist (geom);

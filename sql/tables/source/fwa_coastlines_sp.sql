@@ -1,6 +1,6 @@
-drop table if exists whse_basemapping.fwa_coastlines_sp;
+drop table if exists fwapg.fwa_coastlines_sp;
 
-create table if not exists whse_basemapping.fwa_coastlines_sp (
+create table if not exists fwapg.fwa_coastlines_sp (
     linear_feature_id integer primary key,
     watershed_group_id integer,
     edge_type integer,
@@ -18,7 +18,7 @@ create table if not exists whse_basemapping.fwa_coastlines_sp (
     geom public.geometry(linestring,3005)
 );
 
-insert into whse_basemapping.fwa_coastlines_sp (
+insert into fwapg.fwa_coastlines_sp (
   linear_feature_id,
   watershed_group_id,
   edge_type,
@@ -47,14 +47,14 @@ select
   feature_source,
   feature_code,
   geom
-from fwapg.fwa_coastlines_sp;
+from fwapg.fwa_coastlines_sp_load;
 
-create index on whse_basemapping.fwa_coastlines_sp (edge_type);
-create index on whse_basemapping.fwa_coastlines_sp (blue_line_key);
-create index on whse_basemapping.fwa_coastlines_sp (watershed_key);
-create index on whse_basemapping.fwa_coastlines_sp (watershed_group_code);
-create index on whse_basemapping.fwa_coastlines_sp using gist (wscode_ltree);
-create index on whse_basemapping.fwa_coastlines_sp using btree (wscode_ltree);
-create index on whse_basemapping.fwa_coastlines_sp using gist (localcode_ltree);
-create index on whse_basemapping.fwa_coastlines_sp using btree (localcode_ltree);
-create index on whse_basemapping.fwa_coastlines_sp using gist (geom);
+create index on fwapg.fwa_coastlines_sp (edge_type);
+create index on fwapg.fwa_coastlines_sp (blue_line_key);
+create index on fwapg.fwa_coastlines_sp (watershed_key);
+create index on fwapg.fwa_coastlines_sp (watershed_group_code);
+create index on fwapg.fwa_coastlines_sp using gist (wscode_ltree);
+create index on fwapg.fwa_coastlines_sp using btree (wscode_ltree);
+create index on fwapg.fwa_coastlines_sp using gist (localcode_ltree);
+create index on fwapg.fwa_coastlines_sp using btree (localcode_ltree);
+create index on fwapg.fwa_coastlines_sp using gist (geom);

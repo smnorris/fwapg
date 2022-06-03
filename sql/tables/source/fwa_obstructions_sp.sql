@@ -1,6 +1,6 @@
-drop table if exists whse_basemapping.fwa_obstructions_sp;
+drop table if exists fwapg.fwa_obstructions_sp;
 
-create table whse_basemapping.fwa_obstructions_sp (
+create table fwapg.fwa_obstructions_sp (
     obstruction_id integer primary key,
     watershed_group_id integer,
     linear_feature_id integer,
@@ -20,7 +20,7 @@ create table whse_basemapping.fwa_obstructions_sp (
     geom public.geometry(point,3005)
 );
 
-insert into whse_basemapping.fwa_obstructions_sp (
+insert into fwapg.fwa_obstructions_sp (
   obstruction_id,
   watershed_group_id,
   linear_feature_id,
@@ -53,16 +53,16 @@ select
   feature_source,
   feature_code,
   geom
-from fwapg.fwa_obstructions_sp;
+from fwapg.fwa_obstructions_sp_load;
 
-create index on whse_basemapping.fwa_obstructions_sp (linear_feature_id);
-create index on whse_basemapping.fwa_obstructions_sp (blue_line_key);
-create index on whse_basemapping.fwa_obstructions_sp (watershed_key);
-create index on whse_basemapping.fwa_obstructions_sp (obstruction_type);
-create index on whse_basemapping.fwa_obstructions_sp (watershed_group_code);
-create index on whse_basemapping.fwa_obstructions_sp (gnis_name);
-create index on whse_basemapping.fwa_obstructions_sp using gist (wscode_ltree);
-create index on whse_basemapping.fwa_obstructions_sp using btree (wscode_ltree);
-create index on whse_basemapping.fwa_obstructions_sp using gist (localcode_ltree);
-create index on whse_basemapping.fwa_obstructions_sp using btree (localcode_ltree);
-create index on whse_basemapping.fwa_obstructions_sp using gist (geom);
+create index on fwapg.fwa_obstructions_sp (linear_feature_id);
+create index on fwapg.fwa_obstructions_sp (blue_line_key);
+create index on fwapg.fwa_obstructions_sp (watershed_key);
+create index on fwapg.fwa_obstructions_sp (obstruction_type);
+create index on fwapg.fwa_obstructions_sp (watershed_group_code);
+create index on fwapg.fwa_obstructions_sp (gnis_name);
+create index on fwapg.fwa_obstructions_sp using gist (wscode_ltree);
+create index on fwapg.fwa_obstructions_sp using btree (wscode_ltree);
+create index on fwapg.fwa_obstructions_sp using gist (localcode_ltree);
+create index on fwapg.fwa_obstructions_sp using btree (localcode_ltree);
+create index on fwapg.fwa_obstructions_sp using gist (geom);

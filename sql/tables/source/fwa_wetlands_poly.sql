@@ -1,6 +1,6 @@
-drop table if exists whse_basemapping.fwa_wetlands_poly;
+drop table if exists fwapg.fwa_wetlands_poly;
 
-create table whse_basemapping.fwa_wetlands_poly (
+create table fwapg.fwa_wetlands_poly (
     waterbody_poly_id integer primary key,
     watershed_group_id integer,
     waterbody_type character varying(1),
@@ -28,7 +28,7 @@ create table whse_basemapping.fwa_wetlands_poly (
     geom public.geometry(multipolygon,3005)
 );
 
-insert into whse_basemapping.fwa_wetlands_poly (
+insert into fwapg.fwa_wetlands_poly (
   waterbody_poly_id,
   watershed_group_id,
   waterbody_type,
@@ -77,15 +77,15 @@ select
   watershed_code_50k,
   feature_code,
   st_multi(geom) as geom
-from fwapg.fwa_wetlands_poly;
+from fwapg.fwa_wetlands_poly_load;
 
-create index on whse_basemapping.fwa_wetlands_poly (blue_line_key);
-create index on whse_basemapping.fwa_wetlands_poly (watershed_key);
-create index on whse_basemapping.fwa_wetlands_poly (waterbody_key);
-create index on whse_basemapping.fwa_wetlands_poly (watershed_group_code);
-create index on whse_basemapping.fwa_wetlands_poly (gnis_name_1);
-create index on whse_basemapping.fwa_wetlands_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_wetlands_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_wetlands_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_wetlands_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_wetlands_poly using gist (geom);
+create index on fwapg.fwa_wetlands_poly (blue_line_key);
+create index on fwapg.fwa_wetlands_poly (watershed_key);
+create index on fwapg.fwa_wetlands_poly (waterbody_key);
+create index on fwapg.fwa_wetlands_poly (watershed_group_code);
+create index on fwapg.fwa_wetlands_poly (gnis_name_1);
+create index on fwapg.fwa_wetlands_poly using gist (wscode_ltree);
+create index on fwapg.fwa_wetlands_poly using btree (wscode_ltree);
+create index on fwapg.fwa_wetlands_poly using gist (localcode_ltree);
+create index on fwapg.fwa_wetlands_poly using btree (localcode_ltree);
+create index on fwapg.fwa_wetlands_poly using gist (geom);

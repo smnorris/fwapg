@@ -1,10 +1,10 @@
-DROP TABLE IF EXISTS whse_basemapping.fwa_edge_type_codes;
+DROP TABLE IF EXISTS fwapg.fwa_edge_type_codes;
 
-CREATE TABLE whse_basemapping.fwa_edge_type_codes (
+CREATE TABLE fwapg.fwa_edge_type_codes (
     edge_type bigint,
     edge_description character varying(100)
 );
 
-insert into whse_basemapping.fwa_edge_type_codes
+insert into fwapg.fwa_edge_type_codes
 select edge_type, edge_description
-from fwapg.fwa_edge_type_codes;
+from fwapg.fwa_edge_type_codes_load;

@@ -9,35 +9,35 @@ PSQL = psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 DATABASE_URL_OGR=$(DATABASE_URL)?application_name=foo
 
 # basic spatial tables that are easily downloadable via wfs
-BASIC_TABLES = whse_basemapping.fwa_assessment_watersheds_poly \
-	whse_basemapping.fwa_bays_and_channels_poly \
-	whse_basemapping.fwa_coastlines_sp \
-	whse_basemapping.fwa_glaciers_poly \
-	whse_basemapping.fwa_islands_poly \
-	whse_basemapping.fwa_lakes_poly \
-	whse_basemapping.fwa_manmade_waterbodies_poly \
-	whse_basemapping.fwa_named_point_features_sp \
-	whse_basemapping.fwa_named_watersheds_poly \
-	whse_basemapping.fwa_obstructions_sp \
-	whse_basemapping.fwa_rivers_poly \
-	whse_basemapping.fwa_watershed_groups_poly \
-	whse_basemapping.fwa_wetlands_poly
+BASIC_TABLES = fwa_assessment_watersheds_poly \
+	fwa_bays_and_channels_poly \
+	fwa_coastlines_sp \
+	fwa_glaciers_poly \
+	fwa_islands_poly \
+	fwa_lakes_poly \
+	fwa_manmade_waterbodies_poly \
+	fwa_named_point_features_sp \
+	fwa_named_watersheds_poly \
+	fwa_obstructions_sp \
+	fwa_rivers_poly \
+	fwa_watershed_groups_poly \
+	fwa_wetlands_poly
 BASIC_TARGETS = $(addprefix .make/, $(BASIC_TABLES))
 
 # code tables and 20k/50k lookup tables are not available via WFS
-NON_SPATIAL_TABLES = whse_basemapping.fwa_edge_type_codes \
-	whse_basemapping.fwa_streams_20k_50k \
-	whse_basemapping.fwa_waterbodies_20k_50k \
-	whse_basemapping.fwa_waterbody_type_codes \
-	whse_basemapping.fwa_watershed_type_codes
+NON_SPATIAL_TABLES = fwa_edge_type_codes \
+	fwa_streams_20k_50k \
+	fwa_waterbodies_20k_50k \
+	fwa_waterbody_type_codes \
+	fwa_watershed_type_codes
 NON_SPATIAL_TARGETS = $(addprefix .make/, $(NON_SPATIAL_TABLES))
 
 # custom fwapg tables
-VALUEADDED_TABLES = whse_basemapping.fwa_approx_borders \
-	whse_basemapping.fwa_basins_poly \
-	whse_basemapping.fwa_bcboundary \
-	whse_basemapping.fwa_named_streams \
-	whse_basemapping.fwa_waterbodies
+VALUEADDED_TABLES = fwa_approx_borders \
+	fwa_basins_poly \
+	fwa_bcboundary \
+	fwa_named_streams \
+	fwa_waterbodies
 VALUEADDED_TARGETS := $(addprefix .make/,$(VALUEADDED_TABLES))
 
 WSG = $(shell cat wsg.txt)
@@ -49,9 +49,9 @@ LINBND_TARGETS = $(addprefix .make/linbnd_, $(WSG))
 
 ALL_TARGETS = .make/db \
 	$(BASIC_TARGETS) \
-	.make/whse_basemapping.fwa_stream_networks_sp \
-	.make/whse_basemapping.fwa_watersheds_poly \
-	.make/whse_basemapping.fwa_linear_boundaries_sp \
+	.make/fwa_stream_networks_sp \
+	.make/fwa_watersheds_poly \
+	.make/fwa_linear_boundaries_sp \
 	$(NON_SPATIAL_TARGETS) \
 	.make/fwa_fixdata \
 	.make/fwa_wbdhu12 \
@@ -100,40 +100,49 @@ clean_db:
 # --
 $(BASIC_TARGETS): .make/db
 	# download to load table in fwapg schema
-	bcdata bc2pg $(subst .make/,,$@) --schema fwapg
-	# create and load target table, drop load table
-	$(PSQL) -f sql/tables/source/$(subst .make/whse_basemapping.,,$@).sql
-	$(PSQL) -c "drop table fwapg.$(subst .make/whse_basemapping.,,$@)"
+	bcdata bc2pg $(subst .make/,,whse_basemapping.$@) --schema fwapg --table $(subst .make/,,$@)_load
+	# create and load output table in fwapg staging schema
+	$(PSQL) -f sql/tables/source/$(subst .make/,,$@).sql
+	# drop temp load table
+	$(PSQL) -c "drop table fwapg.$(subst .make/,,$@_load)"
+	# do the switch - drop existing table if exists and move fresh table to whse_basemapping
+	$(PSQL) -c "drop table if exists $(subst .make/,,whse_basemapping.$@)"
+	$(PSQL) -c "alter table fwapg.$(subst .make/,,$@) set schema whse_basemapping"
 	touch $@
 
 # --
 # -- streams
 # --
 # for simplicity, create initial empty table by loading sample data then deleting
-.make/fwapg.fwa_stream_networks_sp: .make/db
+.make/fwa_stream_networks_sp_load: .make/db
 	bcdata bc2pg whse_basemapping.fwa_stream_networks_sp \
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
+		--table fwa_stream_networks_sp_load \
 		--query "LINEAR_FEATURE_ID = 710574042"
-	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp;"
+	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp_load;"
 	touch $@
 
 # load streams data per-wsg to load table
-$(STREAM_TARGETS): .make/fwapg.fwa_stream_networks_sp .make/whse_basemapping.fwa_watershed_groups_poly
+$(STREAM_TARGETS): .make/fwa_stream_networks_sp_load .make/fwa_watershed_groups_poly
 	# to handle interrupted downloads, delete any existing features for given tile
-	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp where watershed_group_code = '$(subst .make/streams_,,$@)'"
+	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp_load where watershed_group_code = '$(subst .make/streams_,,$@)'"
 	bcdata bc2pg whse_basemapping.fwa_stream_networks_sp \
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
+		--table fwa_stream_networks_sp_load \
 		--append \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/streams_,,$@)'"
 	touch $@
 
 # and load to whse_basemapping
-.make/whse_basemapping.fwa_stream_networks_sp: sql/tables/source/fwa_stream_networks_sp.sql $(STREAM_TARGETS)
+.make/fwa_stream_networks_sp: sql/tables/source/fwa_stream_networks_sp.sql $(STREAM_TARGETS)
 	$(PSQL) -f $<
 	# drop the load table
-	$(PSQL) -c "drop table fwapg.$(subst .make/whse_basemapping.,,$@)"
+	$(PSQL) -c "drop table fwapg.$(subst .make/,,$@)_load"
+	# do the switch - drop existing table if exists and move fresh table to whse_basemapping
+	$(PSQL) -c "drop table if exists $(subst .make/,,whse_basemapping.$@)"
+	$(PSQL) -c "alter table fwapg.$(subst .make/,,$@) set schema whse_basemapping"
 	# load stream based functions
 	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
@@ -144,64 +153,74 @@ $(STREAM_TARGETS): .make/fwapg.fwa_stream_networks_sp .make/whse_basemapping.fwa
 # -- watersheds
 # --
 # create empty watersheds load table
-.make/fwapg.fwa_watersheds_poly: .make/db
+.make/fwa_watersheds_poly_load: .make/db
 	bcdata bc2pg whse_basemapping.fwa_watersheds_poly \
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
+		--table fwa_watersheds_poly_load \
 		--promote_to_multi \
 		--query "WATERSHED_FEATURE_ID = 8814488"
-	$(PSQL) -c "delete from fwapg.fwa_watersheds_poly;"
+	$(PSQL) -c "delete from fwapg.fwa_watersheds_poly_load;"
 	touch $@
 
 # load watersheds data per-wsg to load table
-$(WSD_TARGETS): .make/fwapg.fwa_watersheds_poly .make/whse_basemapping.fwa_watershed_groups_poly
+$(WSD_TARGETS): .make/fwa_watersheds_poly_load .make/fwa_watershed_groups_poly
 	# to handle interrupted downloads, delete any existing features for given tile
-	$(PSQL) -c "delete from fwapg.fwa_watersheds_poly where watershed_group_code = '$(subst .make/wsd_,,$@)'"
+	$(PSQL) -c "delete from fwapg.fwa_watersheds_poly_load where watershed_group_code = '$(subst .make/wsd_,,$@)'"
 	bcdata bc2pg whse_basemapping.fwa_watersheds_poly \
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
+		--table fwa_watersheds_poly_load \
 	    --promote_to_multi \
 		--append \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/wsd_,,$@)'"
 	touch $@
 
 # and load to whse_basemapping
-.make/whse_basemapping.fwa_watersheds_poly: sql/tables/source/fwa_watersheds_poly.sql $(WSD_TARGETS)
+.make/fwa_watersheds_poly: sql/tables/source/fwa_watersheds_poly.sql $(WSD_TARGETS)
 	$(PSQL) -f $<
 	# drop the load table
-	$(PSQL) -c "drop table fwapg.$(subst .make/whse_basemapping.,,$@)"
+	$(PSQL) -c "drop table fwapg.$(subst .make/,,$@)_load"
+	# do the switch - drop existing table if exists and move fresh table to whse_basemapping
+	$(PSQL) -c "drop table if exists $(subst .make/,,whse_basemapping.$@)"
+	$(PSQL) -c "alter table fwapg.$(subst .make/,,$@) set schema whse_basemapping"
 	touch $@
 
 # --
 # -- linear_boundaries
 # --
 # create empty linear_boundaries load table
-.make/fwapg.fwa_linear_boundaries_sp: .make/db
+.make/fwa_linear_boundaries_sp_load: .make/db
 	bcdata bc2pg whse_basemapping.fwa_linear_boundaries_sp \
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
+		--table fwa_linear_boundaries_sp_load \
 		--promote_to_multi \
 		--query "LINEAR_FEATURE_ID = 710575463"
-	$(PSQL) -c "delete from fwapg.fwa_linear_boundaries_sp;"
+	$(PSQL) -c "delete from fwapg.fwa_linear_boundaries_sp_load;"
 	touch $@
 
 # load linear_boundaries data per-wsg directly to target table
-$(LINBND_TARGETS): .make/fwapg.fwa_linear_boundaries_sp .make/whse_basemapping.fwa_watershed_groups_poly
+$(LINBND_TARGETS): .make/fwa_linear_boundaries_sp_load .make/fwa_watershed_groups_poly
 	# to handle interrupted downloads, delete any existing features for given tile
-	$(PSQL) -c "delete from fwapg.fwa_linear_boundaries_sp where watershed_group_code = '$(subst .make/linbnd_,,$@)'"
+	$(PSQL) -c "delete from fwapg.fwa_linear_boundaries_sp_load where watershed_group_code = '$(subst .make/linbnd_,,$@)'"
 	bcdata bc2pg whse_basemapping.fwa_linear_boundaries_sp \
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
+		--table fwa_linear_boundaries_sp_load
 		--append \
 		--promote_to_multi \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/linbnd_,,$@)'"
 	touch $@
 
 # load to whse_basemapping
-.make/whse_basemapping.fwa_linear_boundaries_sp: sql/tables/source/fwa_linear_boundaries_sp.sql $(LINBND_TARGETS)
+.make/fwa_linear_boundaries_sp: sql/tables/source/fwa_linear_boundaries_sp.sql $(LINBND_TARGETS)
 	$(PSQL) -f $<
 	# drop the load table
-	$(PSQL) -c "drop table fwapg.$(subst .make/whse_basemapping.,,$@)"
+	$(PSQL) -c "drop table fwapg.$(subst .make/,,$@)_load"
+	# do the switch - drop existing table if exists and move fresh table to whse_basemapping
+	$(PSQL) -c "drop table if exists $(subst .make/,,whse_basemapping.$@)"
+	$(PSQL) -c "alter table fwapg.$(subst .make/,,$@) set schema whse_basemapping"
 	touch $@
 
 # --
@@ -218,18 +237,21 @@ $(NON_SPATIAL_TARGETS): data/FWA_BC.gdb .make/db
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL_OGR) \
-		-nln $(subst .make/whse_basemapping,fwapg,$@) \
+		-nln $(subst .make/,fwapg.,$@)_load \
 		data/FWA_BC.gdb \
-		$(shell echo $(subst .make/whse_basemapping.,,$@) | tr '[:lower:]' '[:upper:]')
+		$(shell echo $(subst .make/,,$@) | tr '[:lower:]' '[:upper:]')
 	# create the target table
-	$(PSQL) -f sql/tables/source/$(subst .make/whse_basemapping.,,$@).sql
-	# drop temp table
-	$(PSQL) -c "drop table fwapg."$(subst .make/whse_basemapping.,,$@)
+	$(PSQL) -f sql/tables/source/$(subst .make/,,$@).sql
+	# drop the load table
+	$(PSQL) -c "drop table fwapg.$(subst .make/,,$@)_load"
+	# do the switch - drop existing table if exists and move fresh table to whse_basemapping
+	$(PSQL) -c "drop table if exists $(subst .make/,,whse_basemapping.$@)"
+	$(PSQL) -c "alter table fwapg.$(subst .make/,,$@) set schema whse_basemapping"
 	touch $@
 
 # apply fixes
-.make/fwa_fixdata: .make/whse_basemapping.fwa_stream_networks_sp .make/whse_basemapping.fwa_obstructions_sp
-	$(PSQL) -f sql/fixes/data.sql  # known errors that may not yet be fixed in source
+.make/datafixes: .make/fwa_stream_networks_sp .make/fwa_obstructions_sp
+	$(PSQL) -f sql/misc/datafixes.sql  # known FWA errors that may not yet be fixed in source
 	touch $@
 
 # USA (lower 48) watersheds - USGS HU12 polygons
@@ -305,11 +327,11 @@ data/hybas_ar_lev12_v1c:
 
 # create value added tables that require just single .sql script
 $(VALUEADDED_TARGETS): $(BASIC_TARGETS)
-	$(PSQL) -f sql/tables/value_added/$(subst .make/whse_basemapping.,,$@).sql
+	$(PSQL) -f sql/tables/value_added/$(subst .make/,,$@).sql
 	touch $@
 
 # create streams - watersheds lookup
-.make/fwa_streams_watersheds_lut: .make/whse_basemapping.fwa_stream_networks_sp .make/whse_basemapping.fwa_watersheds_poly .make/whse_basemapping.fwa_watershed_groups_poly
+.make/fwa_streams_watersheds_lut: .make/fwa_stream_networks_sp .make/fwa_watersheds_poly .make/fwa_watershed_groups_poly
 	# create table
 	$(PSQL) -c "drop table if exists whse_basemapping.fwa_streams_watersheds_lut"
 	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_streams_watersheds_lut \
@@ -327,7 +349,7 @@ $(VALUEADDED_TARGETS): $(BASIC_TARGETS)
 	touch $@
 
 # create a table holding the parent stream order of all streams (where possible)
-.make/fwa_stream_order_parent: .make/whse_basemapping.fwa_stream_networks_sp
+.make/fwa_stream_order_parent: .make/fwa_stream_networks_sp
 	# create table
 	$(PSQL) -c "drop table if exists whse_basemapping.fwa_stream_order_parent"
 	$(PSQL) -c "create table whse_basemapping.fwa_stream_order_parent \
@@ -343,8 +365,8 @@ $(VALUEADDED_TARGETS): $(BASIC_TARGETS)
 	touch $@
 
 # additional FWA functions
-.make/fwa_functions: .make/whse_basemapping.fwa_stream_networks_sp \
-	.make/whse_basemapping.fwa_watersheds_poly \
+.make/fwa_functions: .make/fwa_stream_networks_sp \
+	.make/fwa_watersheds_poly \
 	$(BASIC_TARGETS) \
 	$(VALUEADDED_TARGETS) \
 	.make/fwa_fixdata \

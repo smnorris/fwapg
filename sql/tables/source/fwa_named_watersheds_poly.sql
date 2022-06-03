@@ -1,6 +1,6 @@
-drop table if exists whse_basemapping.fwa_named_watersheds_poly;
+drop table if exists fwapg.fwa_named_watersheds_poly;
 
-create table whse_basemapping.fwa_named_watersheds_poly (
+create table fwapg.fwa_named_watersheds_poly (
   named_watershed_id integer primary key,
   gnis_id integer,
   gnis_name character varying(80),
@@ -16,7 +16,7 @@ create table whse_basemapping.fwa_named_watersheds_poly (
   geom public.geometry(multipolygon,3005)
 );
 
-insert into whse_basemapping.fwa_named_watersheds_poly (
+insert into fwapg.fwa_named_watersheds_poly (
   named_watershed_id,
   gnis_id,
   gnis_name,
@@ -41,11 +41,11 @@ select
   area_ha,
   feature_code,
   st_multi(geom) as geom
-from fwapg.fwa_named_watersheds_poly;
+from fwapg.fwa_named_watersheds_poly_load;
 
-create index on whse_basemapping.fwa_named_watersheds_poly (gnis_name);
-create index on whse_basemapping.fwa_named_watersheds_poly (blue_line_key);
-create index on whse_basemapping.fwa_named_watersheds_poly (fwa_watershed_code);
-create index on whse_basemapping.fwa_named_watersheds_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_named_watersheds_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_named_watersheds_poly using gist (geom);
+create index on fwapg.fwa_named_watersheds_poly (gnis_name);
+create index on fwapg.fwa_named_watersheds_poly (blue_line_key);
+create index on fwapg.fwa_named_watersheds_poly (fwa_watershed_code);
+create index on fwapg.fwa_named_watersheds_poly using gist (wscode_ltree);
+create index on fwapg.fwa_named_watersheds_poly using btree (wscode_ltree);
+create index on fwapg.fwa_named_watersheds_poly using gist (geom);

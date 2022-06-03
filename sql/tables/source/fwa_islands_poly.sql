@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS whse_basemapping.fwa_islands_poly;
+DROP TABLE IF EXISTS fwapg.fwa_islands_poly;
 
-CREATE TABLE whse_basemapping.fwa_islands_poly (
+CREATE TABLE fwapg.fwa_islands_poly (
     island_id integer PRIMARY KEY,
     island_type character varying(12),
     gnis_id_1 integer,
@@ -18,7 +18,7 @@ CREATE TABLE whse_basemapping.fwa_islands_poly (
     geom public.geometry(multipolygon,3005)
 );
 
-insert into whse_basemapping.fwa_islands_poly (
+insert into fwapg.fwa_islands_poly (
   island_id,
   island_type,
   gnis_id_1,
@@ -47,12 +47,12 @@ select
   area_ha,
   feature_code,
   st_multi(geom) as geom
-from fwapg.fwa_islands_poly;
+from fwapg.fwa_islands_poly_load;
 
-CREATE INDEX ON whse_basemapping.fwa_islands_poly (gnis_name_1);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly (gnis_name_2);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING GIST (wscode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING BTREE (wscode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING GIST (localcode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING BTREE (localcode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING GIST (geom);
+CREATE INDEX ON fwapg.fwa_islands_poly (gnis_name_1);
+CREATE INDEX ON fwapg.fwa_islands_poly (gnis_name_2);
+CREATE INDEX ON fwapg.fwa_islands_poly USING GIST (wscode_ltree);
+CREATE INDEX ON fwapg.fwa_islands_poly USING BTREE (wscode_ltree);
+CREATE INDEX ON fwapg.fwa_islands_poly USING GIST (localcode_ltree);
+CREATE INDEX ON fwapg.fwa_islands_poly USING BTREE (localcode_ltree);
+CREATE INDEX ON fwapg.fwa_islands_poly USING GIST (geom);

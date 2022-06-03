@@ -1,6 +1,6 @@
-drop table if exists whse_basemapping.fwa_stream_networks_sp;
+drop table if exists fwapg.fwa_stream_networks_sp;
 
-create table whse_basemapping.fwa_stream_networks_sp (
+create table fwapg.fwa_stream_networks_sp (
   linear_feature_id bigint primary key,
   watershed_group_id integer not null,
   edge_type integer not null,
@@ -34,7 +34,7 @@ create table whse_basemapping.fwa_stream_networks_sp (
   geom public.geometry(linestringzm, 3005)
 );
 
-insert into whse_basemapping.fwa_stream_networks_sp (linear_feature_id, watershed_group_id,
+insert into fwapg.fwa_stream_networks_sp (linear_feature_id, watershed_group_id,
   edge_type, blue_line_key, watershed_key, fwa_watershed_code, local_watershed_code,
   watershed_group_code, downstream_route_measure, length_metre, feature_source, gnis_id, gnis_name,
   left_right_tributary, stream_order, stream_magnitude, waterbody_key, blue_line_key_50k,
@@ -63,19 +63,19 @@ select
   watershed_group_code_50k,
   feature_code,
   st_addmeasure (geom, downstream_route_measure, downstream_route_measure + st_length (geom)) as geom
-from fwapg.fwa_stream_networks_sp
+from fwapg.fwa_stream_networks_sp_load
 order by random(); --https://blog.crunchydata.com/blog/tricks-for-faster-spatial-indexes
 
 -- create the necessary indices
-create index on whse_basemapping.fwa_stream_networks_sp (edge_type);
-create index on whse_basemapping.fwa_stream_networks_sp (blue_line_key);
-create index on whse_basemapping.fwa_stream_networks_sp (blue_line_key, downstream_route_measure);
-create index on whse_basemapping.fwa_stream_networks_sp (watershed_key);
-create index on whse_basemapping.fwa_stream_networks_sp (waterbody_key);
-create index on whse_basemapping.fwa_stream_networks_sp (watershed_group_code);
-create index on whse_basemapping.fwa_stream_networks_sp (gnis_name);
-create index fwa_stream_networks_sp_wscode_ltree_gist_idx on whse_basemapping.fwa_stream_networks_sp using gist (wscode_ltree);
-create index on whse_basemapping.fwa_stream_networks_sp using btree (wscode_ltree);
-create index on whse_basemapping.fwa_stream_networks_sp using gist (localcode_ltree);
-create index on whse_basemapping.fwa_stream_networks_sp using btree (localcode_ltree);
-create index on whse_basemapping.fwa_stream_networks_sp using gist (geom);
+create index on fwapg.fwa_stream_networks_sp (edge_type);
+create index on fwapg.fwa_stream_networks_sp (blue_line_key);
+create index on fwapg.fwa_stream_networks_sp (blue_line_key, downstream_route_measure);
+create index on fwapg.fwa_stream_networks_sp (watershed_key);
+create index on fwapg.fwa_stream_networks_sp (waterbody_key);
+create index on fwapg.fwa_stream_networks_sp (watershed_group_code);
+create index on fwapg.fwa_stream_networks_sp (gnis_name);
+create index fwa_stream_networks_sp_wscode_ltree_gist_idx on fwapg.fwa_stream_networks_sp using gist (wscode_ltree);
+create index on fwapg.fwa_stream_networks_sp using btree (wscode_ltree);
+create index on fwapg.fwa_stream_networks_sp using gist (localcode_ltree);
+create index on fwapg.fwa_stream_networks_sp using btree (localcode_ltree);
+create index on fwapg.fwa_stream_networks_sp using gist (geom);

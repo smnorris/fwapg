@@ -1,6 +1,6 @@
-drop table if exists whse_basemapping.fwa_assessment_watersheds_poly;
+drop table if exists fwapg.fwa_assessment_watersheds_poly;
 
-create table whse_basemapping.fwa_assessment_watersheds_poly (
+create table fwapg.fwa_assessment_watersheds_poly (
     watershed_feature_id integer primary key,
     watershed_group_id integer,
     watershed_type character varying(1),
@@ -29,7 +29,7 @@ create table whse_basemapping.fwa_assessment_watersheds_poly (
 );
 
 -- load the data
-insert into whse_basemapping.fwa_assessment_watersheds_poly
+insert into fwapg.fwa_assessment_watersheds_poly
   (
     watershed_feature_id,
     watershed_group_id,
@@ -77,15 +77,15 @@ select watershed_feature_id,
     area_ha,
     feature_code,
     st_multi(geom) as geom
-from fwapg.fwa_assessment_watersheds_poly;
+from fwapg.fwa_assessment_watersheds_poly_load;
 
-create index on whse_basemapping.fwa_assessment_watersheds_poly (watershed_group_code);
-create index on whse_basemapping.fwa_assessment_watersheds_poly (gnis_name_1);
-create index on whse_basemapping.fwa_assessment_watersheds_poly (waterbody_id);
-create index on whse_basemapping.fwa_assessment_watersheds_poly (waterbody_key);
-create index on whse_basemapping.fwa_assessment_watersheds_poly (watershed_key);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using gist(geom);
+create index on fwapg.fwa_assessment_watersheds_poly (watershed_group_code);
+create index on fwapg.fwa_assessment_watersheds_poly (gnis_name_1);
+create index on fwapg.fwa_assessment_watersheds_poly (waterbody_id);
+create index on fwapg.fwa_assessment_watersheds_poly (waterbody_key);
+create index on fwapg.fwa_assessment_watersheds_poly (watershed_key);
+create index on fwapg.fwa_assessment_watersheds_poly using gist (wscode_ltree);
+create index on fwapg.fwa_assessment_watersheds_poly using btree (wscode_ltree);
+create index on fwapg.fwa_assessment_watersheds_poly using gist (localcode_ltree);
+create index on fwapg.fwa_assessment_watersheds_poly using btree (localcode_ltree);
+create index on fwapg.fwa_assessment_watersheds_poly using gist(geom);

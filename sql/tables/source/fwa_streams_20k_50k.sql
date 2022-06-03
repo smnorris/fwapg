@@ -1,6 +1,6 @@
-drop table if exists whse_basemapping.fwa_streams_20k_50k;
+drop table if exists fwapg.fwa_streams_20k_50k;
 
-create table whse_basemapping.fwa_streams_20k_50k (
+create table fwapg.fwa_streams_20k_50k (
     stream_20k_50k_id bigint primary key,
     watershed_group_id_20k integer,
     linear_feature_id_20k bigint,
@@ -15,7 +15,7 @@ create table whse_basemapping.fwa_streams_20k_50k (
     match_type character varying(7)
 );
 
-insert into whse_basemapping.fwa_streams_20k_50k (
+insert into fwapg.fwa_streams_20k_50k (
   stream_20k_50k_id,
   watershed_group_id_20k,
   linear_feature_id_20k,
@@ -42,8 +42,8 @@ select
   watershed_code_50k,
   watershed_group_code_50k,
   match_type
-from fwapg.fwa_streams_20k_50k;
+from fwapg.fwa_streams_20k_50k_load;
 
-create index on whse_basemapping.fwa_streams_20k_50k (watershed_group_id_20k);
-create index on whse_basemapping.fwa_streams_20k_50k (linear_feature_id_20k);
-create index on whse_basemapping.fwa_streams_20k_50k (watershed_code_50k);
+create index on fwapg.fwa_streams_20k_50k (watershed_group_id_20k);
+create index on fwapg.fwa_streams_20k_50k (linear_feature_id_20k);
+create index on fwapg.fwa_streams_20k_50k (watershed_code_50k);

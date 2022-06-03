@@ -1,6 +1,6 @@
-drop table if exists whse_basemapping.fwa_named_point_features_sp;
+drop table if exists fwapg.fwa_named_point_features_sp;
 
-create table whse_basemapping.fwa_named_point_features_sp (
+create table fwapg.fwa_named_point_features_sp (
     named_point_feature_id integer primary key,
     gnis_id integer,
     gnis_name character varying(80),
@@ -9,7 +9,7 @@ create table whse_basemapping.fwa_named_point_features_sp (
     geom public.geometry(point, 3005)
 );
 
-insert into whse_basemapping.fwa_named_point_features_sp (
+insert into fwapg.fwa_named_point_features_sp (
   named_point_feature_id,
   gnis_id,
   gnis_name,
@@ -24,7 +24,7 @@ select
   named_feature_type,
   feature_code,
   geom
-from fwapg.fwa_named_point_features_sp;
+from fwapg.fwa_named_point_features_sp_load;
 
-create index on whse_basemapping.fwa_named_point_features_sp (gnis_name);
-create index on whse_basemapping.fwa_named_point_features_sp using gist (geom);
+create index on fwapg.fwa_named_point_features_sp (gnis_name);
+create index on fwapg.fwa_named_point_features_sp using gist (geom);
