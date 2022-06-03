@@ -10,6 +10,7 @@
 - provide `gradient` values for every FWA stream
 - enable quickly serving FWA features as vector tiles (MVT)
 - enable quickly serving FWA features and custom fwapg functions
+- using [`bcdata`](https://github.com/smnorris/bcdata), extract FWA data from DataBC WFS for easy data updates
 
 See [documentation](https://smnorris.github.io/fwapg/) for setup and usage details, plus table and function references.
 
