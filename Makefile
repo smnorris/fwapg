@@ -53,9 +53,9 @@ ALL_TARGETS = .make/db \
 	.make/fwa_watersheds_poly \
 	.make/fwa_linear_boundaries_sp \
 	$(NON_SPATIAL_TARGETS) \
-	.make/fwa_fixdata \
-	.make/fwa_wbdhu12 \
-	.make/fwa_hydrosheds \
+	.make/datafixes \
+	.make/wbdhu12 \
+	.make/hydrosheds \
 	$(VALUEADDED_TARGETS) \
 	.make/fwa_streams_watersheds_lut \
 	.make/fwa_stream_order_parent \
@@ -261,7 +261,7 @@ data/WBD_National_GDB.gdb:
 	unzip -qun data/WBD_National_GDB.zip -d data
 
 # load washington, idaho, montana and alaska
-.make/fwa_wbdhu12: .make/db data/WBD_National_GDB.gdb
+.make/wbdhu12: .make/db data/WBD_National_GDB.gdb
 	$(PSQL) -c "drop table if exists usgs.wbdhu12"
 	ogr2ogr \
 		-f PostgreSQL \
@@ -292,7 +292,7 @@ data/hybas_ar_lev12_v1c:
 	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip -P data
 	unzip -qun data/hydrosheds.zip -d data
 
-.make/fwa_hydrosheds: data/hybas_ar_lev12_v1c data/hybas_na_lev12_v1c .make/db
+.make/hydrosheds: data/hybas_ar_lev12_v1c data/hybas_na_lev12_v1c .make/db
 	# Load _ar_ and _na_ shapefiles
 	$(PSQL) -c "drop table if exists hydrosheds.hybas_ar_lev12_v1c"
 	ogr2ogr \
@@ -369,9 +369,9 @@ $(VALUEADDED_TARGETS): $(BASIC_TARGETS)
 	.make/fwa_watersheds_poly \
 	$(BASIC_TARGETS) \
 	$(VALUEADDED_TARGETS) \
-	.make/fwa_fixdata \
-	.make/fwa_hydrosheds \
-	.make/fwa_wbdhu12
+	.make/datafixes \
+	.make/hydrosheds \
+	.make/wbdhu12
 	$(PSQL) -f sql/functions/FWA_SliceWatershedAtPoint.sql
 	$(PSQL) -f sql/functions/FWA_WatershedAtMeasure.sql
 	$(PSQL) -f sql/functions/FWA_WatershedHex.sql
