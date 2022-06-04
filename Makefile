@@ -57,9 +57,9 @@ ALL_TARGETS = .make/db \
 	.make/wbdhu12 \
 	.make/hydrosheds \
 	$(VALUEADDED_TARGETS) \
+	.make/fwa_functions \
 	.make/fwa_streams_watersheds_lut \
 	.make/fwa_stream_order_parent \
-	.make/fwa_functions \
 	.make/fwa_waterbodies_upstream_area \
 	.make/fwa_watersheds_upstream_area \
 	.make/fwa_assessment_watersheds_lut \
@@ -227,18 +227,18 @@ $(LINBND_TARGETS): .make/fwa_linear_boundaries_sp_load .make/fwa_watershed_group
 # -- code tables
 # --
 # can't seem to download directly with ogr2ogr /vsizip/vsicurl, so download the entire file with wget
-data/FWA_BC.gdb:
+data/FWA_BC.gdb.zip:
 	mkdir -p data
 	wget --trust-server-names -qN ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip -P data
-	unzip -qun data/FWA_BC.zip -d data
+	mv data/FWA_BC.zip $@
 
-$(NON_SPATIAL_TARGETS): data/FWA_BC.gdb .make/db
+$(NON_SPATIAL_TARGETS): data/FWA_BC.gdb.zip .make/db
 	# load to temp fwapg schema
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL_OGR) \
 		-nln $(subst .make/,fwapg.,$@)_load \
-		data/FWA_BC.gdb \
+		data/FWA_BC.gdb.zip \
 		$(shell echo $(subst .make/,,$@) | tr '[:lower:]' '[:upper:]')
 	# create the target table
 	$(PSQL) -f sql/tables/source/$(subst .make/,,$@).sql
@@ -255,13 +255,13 @@ $(NON_SPATIAL_TARGETS): data/FWA_BC.gdb .make/db
 	touch $@
 
 # USA (lower 48) watersheds - USGS HU12 polygons
-data/WBD_National_GDB.gdb:
+# note that this is possbile to download via /vsizip/vsicurl but a direct download seems faster
+data/WBD_National_GDB.zip:
 	mkdir -p data
 	wget --trust-server-names -qN https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip -P data
-	unzip -qun data/WBD_National_GDB.zip -d data
 
 # load washington, idaho, montana and alaska
-.make/wbdhu12: .make/db data/WBD_National_GDB.gdb
+.make/wbdhu12: .make/db data/WBD_National_GDB.zip
 	$(PSQL) -c "drop table if exists usgs.wbdhu12"
 	ogr2ogr \
 		-f PostgreSQL \
@@ -278,7 +278,7 @@ data/WBD_National_GDB.gdb:
 		OR states LIKE '%%AK%%' \
 		OR states LIKE '%%ID%%' \
 		OR states LIKE '%%MT%%'" \
-		data/WBD_National_GDB.gdb
+		data/WBD_National_GDB.zip
 	# index the columns of interest
 	$(PSQL) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	$(PSQL) -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
@@ -287,12 +287,8 @@ data/WBD_National_GDB.gdb:
 	touch $@
 
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
-# Source shapefiles must be manually downloaded, so I've cached them here:
-data/hybas_ar_lev12_v1c:
-	wget --trust-server-names -qN https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip -P data
-	unzip -qun data/hydrosheds.zip -d data
-
-.make/hydrosheds: data/hybas_ar_lev12_v1c data/hybas_na_lev12_v1c .make/db
+# Source hydrosheds shapefiles must be manually downloaded, so I've cached them at hillcrestgeo
+.make/hydrosheds: .make/db
 	# Load _ar_ and _na_ shapefiles
 	$(PSQL) -c "drop table if exists hydrosheds.hybas_ar_lev12_v1c"
 	ogr2ogr \
@@ -302,7 +298,8 @@ data/hybas_ar_lev12_v1c:
 		-lco SCHEMA=hydrosheds \
 		-lco GEOMETRY_NAME=geom \
 		-nlt PROMOTE_TO_MULTI \
-		data/hybas_ar_lev12_v1c/hybas_ar_lev12_v1c.shp
+		/vsizip/vsicurl/https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip \
+		hybas_ar_lev12_v1c
 	$(PSQL) -c "drop table if exists hydrosheds.hybas_na_lev12_v1c"
 	ogr2ogr \
 		-f PostgreSQL \
@@ -311,7 +308,8 @@ data/hybas_ar_lev12_v1c:
 		-lco SCHEMA=hydrosheds \
 		-lco GEOMETRY_NAME=geom \
 		-nlt PROMOTE_TO_MULTI \
-		data/hybas_na_lev12_v1c/hybas_na_lev12_v1c.shp
+		/vsizip/vsicurl/https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip \
+		hybas_na_lev12_v1c
 	# combine _ar_ and _na_ into output table hybas_lev12_v1c
 	$(PSQL) -c "ALTER TABLE hydrosheds.hybas_na_lev12_v1c DROP COLUMN ogc_fid"
 	$(PSQL) -c "ALTER TABLE hydrosheds.hybas_ar_lev12_v1c DROP COLUMN ogc_fid"
