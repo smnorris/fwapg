@@ -119,8 +119,14 @@ $(BASIC_TARGETS): .make/db
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
 		--table fwa_stream_networks_sp_load \
-		--query "LINEAR_FEATURE_ID = 710574042"
+		--query "LINEAR_FEATURE_ID = 710574042" \
+		 -lco FID=LINEAR_FEATURE_ID \
+		 -preserve_fid \
 	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp_load;"
+	# drop ogr auto-created geometry index
+	$(PSQL) -c "drop index fwapg.fwa_stream_networks_sp_load_geom_idx"
+	# but create an index on wsg code
+	$(PSQL) -c "create index on fwapg.fwa_stream_networks_sp_load (watershed_group_code)"
 	touch $@
 
 # load streams data per-wsg to load table
