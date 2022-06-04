@@ -89,8 +89,7 @@ For side channels, `stream_order_parent` is the order of the main channel at the
 
 ## fwa_waterbodies
 
-All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). 
-Note that this table is meant for connectivity purposes only, only features connected to the network are included (waterbodies with watershed code  `999.999999` are excluded). For column descriptions see FWA docs for the various waterbody tables.
+All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions.
 
 | Column | Type | Description |
 |--------|------|-------------|

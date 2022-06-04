@@ -39,13 +39,10 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setup and data load</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-the-database">Create the database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#data-load">Data load</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#partial-loads">Partial loads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#updates">Updates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#data-currency">Data currency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-load-and-optimization">Data load and optimization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="02_usage.html">Usage</a></li>
@@ -79,17 +76,16 @@
              
   <div class="section" id="setup-and-data-load">
 <h1>Setup and data load<a class="headerlink" href="#setup-and-data-load" title="Permalink to this headline"></a></h1>
-<div class="section" id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline"></a></h2>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.postgresql.org">PostgreSQL</a> (&gt;=13)</p></li>
 <li><p><a class="reference external" href="https://postgis.net/">PostGIS</a> (&gt;=v3.1 with GEOS &gt;=3.9)</p></li>
-<li><p>Python 3 and <a class="reference external" href="https://github.com/smnorris/bcdata"><code class="docutils literal notranslate"><span class="pre">bcdata</span></code></a></p></li>
-<li><p><a class="reference external" href="https://gdal.org/index.html">GDAL</a> (tested with v3.5)</p></li>
+<li><p><a class="reference external" href="https://gdal.org/index.html">GDAL</a> (tested with v3.3.0)</p></li>
 <li><p><a class="reference external" href="https://www.gnu.org/software/parallel/">GNU parallel</a></p></li>
 <li><p><a class="reference external" href="https://www.gnu.org/software/make/"><code class="docutils literal notranslate"><span class="pre">make</span></code></a>/<code class="docutils literal notranslate"><span class="pre">unzip</span></code>/<code class="docutils literal notranslate"><span class="pre">wget</span></code>/etc</p></li>
 </ul>
-<p>The instructions below presume above requirements are installed and postgres is accepting connections.</p>
+<p>The instructions below presume postgres is set up and accepting connections.</p>
 </div>
 <div class="section" id="create-the-database">
 <h2>Create the database<a class="headerlink" href="#create-the-database" title="Permalink to this headline"></a></h2>
@@ -114,46 +110,23 @@ Type <span class="s2">&quot;help&quot;</span> <span class="k">for</span> help.
 </pre></div>
 </div>
 </div>
-<div class="section" id="data-load">
-<h2>Data load<a class="headerlink" href="#data-load" title="Permalink to this headline"></a></h2>
-<p>Get the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> scripts by either downloading and unzipping the <a class="reference external" href="https://github.com/smnorris/fwapg/releases">latest release</a>, or downloading the development version:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    git clone https://github.com/smnorris/fwapg.git
+<div class="section" id="data-load-and-optimization">
+<h2>Data load and optimization<a class="headerlink" href="#data-load-and-optimization" title="Permalink to this headline"></a></h2>
+<p>Get the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> scripts by either:</p>
+<ul>
+<li><p>manually downloading and unzipping the <a class="reference external" href="https://github.com/smnorris/fwapg/releases">latest fwapg release</a></p></li>
+<li><p>downloading the development version:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  git clone https://github.com/smnorris/fwapg.git
 </pre></div>
 </div>
+</li>
+</ul>
 <p>Load and optimize the data:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd fwapg
-make
+make all
 </pre></div>
 </div>
 <p>Once scripts are complete you have a FWA database ready for speedy queries.</p>
-</div>
-<div class="section" id="partial-loads">
-<h2>Partial loads<a class="headerlink" href="#partial-loads" title="Permalink to this headline"></a></h2>
-<p>Partial loads are possible. If you only require certain FWA tables, load them individually like this:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make .make/fwa_stream_networks_sp
-</pre></div>
-</div>
-</div>
-<div class="section" id="updates">
-<h2>Updates<a class="headerlink" href="#updates" title="Permalink to this headline"></a></h2>
-<p>No tracking of changes to source FWA data changes is available. To apply updates, full table refreshes are required.</p>
-<p>To drop all <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> managed data and functions and re-load:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make clean_targets
-make clean_db
-make
-</pre></div>
-</div>
-<p>To refresh a specific table, remove the <code class="docutils literal notranslate"><span class="pre">make</span></code> created placeholder files for the given table and re-load:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rm .make/*.fwa_stream_networks_sp
-make .make/fwa_stream_networks_sp
-</pre></div>
-</div>
-<p>Note that while downloading large tables from WFS is very slow, downtime from applying single-table updates is minimal.</p>
-</div>
-<div class="section" id="data-currency">
-<h2>Data currency<a class="headerlink" href="#data-currency" title="Permalink to this headline"></a></h2>
-<p>All tables containing geometries (ie spatial data) are downloaded from DataBC WFS server and are guaranteed to the be latest available.</p>
-<p>All tables without geometries (code tables, 20k-50k lookups) are downloaded from GeoBC FTP site and are thus only as current as the latest publication of the <code class="docutils literal notranslate"><span class="pre">FWA_BC.zip</span></code> file to FTP.</p>
 </div>
 </div>
 
