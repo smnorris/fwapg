@@ -136,6 +136,7 @@ $(STREAM_TARGETS): .make/fwa_stream_networks_sp_load .make/fwa_watershed_groups_
 		--db_url $(DATABASE_URL) \
 		--schema fwapg \
 		--table fwa_stream_networks_sp_load \
+		--fid LINEAR_FEATURE_ID \
 		--append \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/streams_,,$@)'"
 	touch $@
