@@ -120,8 +120,7 @@ $(BASIC_TARGETS): .make/db
 		--schema fwapg \
 		--table fwa_stream_networks_sp_load \
 		--query "LINEAR_FEATURE_ID = 710574042" \
-		 -lco FID=LINEAR_FEATURE_ID \
-		 -preserve_fid \
+		--fid LINEAR_FEATURE_ID \
 	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp_load;"
 	# drop ogr auto-created geometry index
 	$(PSQL) -c "drop index fwapg.fwa_stream_networks_sp_load_geom_idx"
