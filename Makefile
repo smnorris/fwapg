@@ -9,8 +9,7 @@ PSQL = psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 DATABASE_URL_OGR=$(DATABASE_URL)?application_name=foo
 
 # basic spatial tables that are easily downloadable via wfs
-BASIC_TABLES = fwa_assessment_watersheds_poly \
-	fwa_bays_and_channels_poly \
+BASIC_TABLES = fwa_bays_and_channels_poly \
 	fwa_coastlines_sp \
 	fwa_glaciers_poly \
 	fwa_islands_poly \
@@ -46,12 +45,14 @@ WSG = $(shell cat wsg.txt)
 STREAM_TARGETS = $(addprefix .make/streams_, $(WSG))
 WSD_TARGETS = $(addprefix .make/wsd_, $(WSG))
 LINBND_TARGETS = $(addprefix .make/linbnd_, $(WSG))
+ASSMNT_TARGETS = $(addprefix .make/assmnt_, $(WSG))
 
 ALL_TARGETS = .make/db \
 	$(BASIC_TARGETS) \
 	.make/fwa_stream_networks_sp \
 	.make/fwa_watersheds_poly \
 	.make/fwa_linear_boundaries_sp \
+	.make/fwa_assessment_watersheds_poly \
 	$(NON_SPATIAL_TARGETS) \
 	.make/datafixes \
 	.make/wbdhu12 \
@@ -153,6 +154,49 @@ $(STREAM_TARGETS): .make/fwa_stream_networks_sp_load .make/fwa_watershed_groups_
 	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlongInterval.sql
+	touch $@
+
+# --
+# -- assessment watersheds
+# --
+# create empty load table
+.make/fwa_assessment_watersheds_poly_load: .make/db
+	bcdata bc2pg whse_basemapping.fwa_assessment_watersheds_poly \
+		--db_url $(DATABASE_URL) \
+		--schema fwapg \
+		--table fwa_assessment_watersheds_poly_load \
+		--promote_to_multi \
+		--fid watershed_feature_id \
+		--query "WATERSHED_FEATURE_ID = 428"
+	$(PSQL) -c "delete from fwapg.fwa_assessment_watersheds_poly_load;"
+	# drop geom index created by bc2pg
+	$(PSQL) -c "drop index fwapg.fwa_assessment_watersheds_poly_load_geom_idx"
+	# but create an index on wsg code
+	$(PSQL) -c "create index on fwapg.fwa_assessment_watersheds_poly_load (watershed_group_code)"
+	touch $@
+
+# load watersheds data per-wsg to load table
+$(ASSMNT_TARGETS): .make/fwa_assessment_watersheds_poly_load .make/fwa_watershed_groups_poly
+	# to handle interrupted downloads, delete any existing features for given tile
+	$(PSQL) -c "delete from fwapg.fwa_assessment_watersheds_poly_load where watershed_group_code = '$(subst .make/assmnt_,,$@)'"
+	bcdata bc2pg whse_basemapping.fwa_assessment_watersheds_poly \
+		--db_url $(DATABASE_URL) \
+		--schema fwapg \
+		--table fwa_assessment_watersheds_poly_load \
+	    --promote_to_multi \
+		--append \
+		--fid watershed_feature_id \
+		--query "WATERSHED_GROUP_CODE = '$(subst .make/assmnt_,,$@)'"
+	touch $@
+
+# and load to whse_basemapping
+.make/fwa_assessment_watersheds_poly: sql/tables/source/fwa_assessment_watersheds_poly.sql $(ASSMNT_TARGETS)
+	$(PSQL) -f $<
+	# drop the load table
+	$(PSQL) -c "drop table fwapg.$(subst .make/,,$@)_load"
+	# do the switch - drop existing table if exists and move fresh table to whse_basemapping
+	$(PSQL) -c "drop table if exists $(subst .make/,,whse_basemapping.$@)"
+	$(PSQL) -c "alter table fwapg.$(subst .make/,,$@) set schema whse_basemapping"
 	touch $@
 
 # --
