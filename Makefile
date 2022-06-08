@@ -122,7 +122,7 @@ $(BASIC_TARGETS): .make/db
 		--query "LINEAR_FEATURE_ID = 710574042" \
 		--fid LINEAR_FEATURE_ID
 	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp_load;"
-	# drop ogr auto-created geometry index
+	# drop geom index created by bc2pg
 	$(PSQL) -c "drop index fwapg.fwa_stream_networks_sp_load_geom_idx"
 	# but create an index on wsg code
 	$(PSQL) -c "create index on fwapg.fwa_stream_networks_sp_load (watershed_group_code)"
@@ -165,8 +165,13 @@ $(STREAM_TARGETS): .make/fwa_stream_networks_sp_load .make/fwa_watershed_groups_
 		--schema fwapg \
 		--table fwa_watersheds_poly_load \
 		--promote_to_multi \
+		--fid watershed_feature_id \
 		--query "WATERSHED_FEATURE_ID = 8814488"
 	$(PSQL) -c "delete from fwapg.fwa_watersheds_poly_load;"
+	# drop geom index created by bc2pg
+	$(PSQL) -c "drop index fwapg.fwa_watersheds_poly_load_geom_idx"
+	# but create an index on wsg code
+	$(PSQL) -c "create index on fwapg.fwa_watersheds_poly_load (watershed_group_code)"
 	touch $@
 
 # load watersheds data per-wsg to load table
@@ -179,6 +184,7 @@ $(WSD_TARGETS): .make/fwa_watersheds_poly_load .make/fwa_watershed_groups_poly
 		--table fwa_watersheds_poly_load \
 	    --promote_to_multi \
 		--append \
+		--fid watershed_feature_id \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/wsd_,,$@)'"
 	touch $@
 
@@ -202,8 +208,13 @@ $(WSD_TARGETS): .make/fwa_watersheds_poly_load .make/fwa_watershed_groups_poly
 		--schema fwapg \
 		--table fwa_linear_boundaries_sp_load \
 		--promote_to_multi \
+		--fid linear_feature_id \
 		--query "LINEAR_FEATURE_ID = 710575463"
 	$(PSQL) -c "delete from fwapg.fwa_linear_boundaries_sp_load;"
+	# drop geom index created by bc2pg
+	$(PSQL) -c "drop index fwapg.fwa_linear_boundaries_sp_load_geom_idx"
+	# but create an index on wsg code
+	$(PSQL) -c "create index on fwapg.fwa_linear_boundaries_sp_load (watershed_group_code)"
 	touch $@
 
 # load linear_boundaries data per-wsg directly to target table
@@ -215,6 +226,7 @@ $(LINBND_TARGETS): .make/fwa_linear_boundaries_sp_load .make/fwa_watershed_group
 		--schema fwapg \
 		--table fwa_linear_boundaries_sp_load \
 		--append \
+		--fid linear_feature_id \
 		--promote_to_multi \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/linbnd_,,$@)'"
 	touch $@
