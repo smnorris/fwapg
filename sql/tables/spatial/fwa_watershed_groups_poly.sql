@@ -18,12 +18,12 @@ insert into fwapg.fwa_watershed_groups_poly (
   geom
 )
 select
-  watershed_group_id,
-  watershed_group_code,
-  watershed_group_name,
-  area_ha,
-  feature_code,
-  st_multi(geom) as geom
+  (data -> 'properties' ->> 'WATERSHED_GROUP_ID')::integer as watershed_group_id,
+  (data -> 'properties' ->> 'WATERSHED_GROUP_CODE') as watershed_group_code,
+  (data -> 'properties' ->> 'WATERSHED_GROUP_NAME') as watershed_group_name,
+  (data -> 'properties' ->> 'AREA_HA')::double precision as area_ha,
+  (data -> 'properties' ->> 'FEATURE_CODE') as feature_code,
+  st_multi(ST_SetSRID(ST_GeomFromGeoJSON(data -> 'geometry'), 3005)) as geom
 from fwapg.fwa_watershed_groups_poly_load;
 
 create index on fwapg.fwa_watershed_groups_poly (watershed_group_code);

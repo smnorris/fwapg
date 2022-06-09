@@ -8,52 +8,27 @@ PSQL = psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 # https://github.com/OSGeo/gdal/issues/4570
 DATABASE_URL_OGR=$(DATABASE_URL)?application_name=foo
 
-# basic spatial tables that are easily downloadable via wfs
-SPATIAL_TABLES = fwa_assessment_watersheds_poly \
-	fwa_bays_and_channels_poly \
-	fwa_coastlines_sp \
-	fwa_glaciers_poly \
-	fwa_islands_poly \
-	fwa_lakes_poly \
-	fwa_linear_boundaries_sp \
-	fwa_manmade_waterbodies_poly \
-	fwa_obstructions_sp \
-	fwa_stream_networks_sp \
-	fwa_rivers_poly \
-	fwa_watersheds_poly \
-	fwa_watershed_groups_poly \
-	fwa_wetlands_poly
-SPATIAL_TARGETS = $(addprefix .make/,$(SPATIAL_TABLES))
-SPATIAL_LOAD = $(patsubst %,%_load,$(SPATIAL_TARGETS))
+# tables downloadable via via wfs are defined in sql/tables/spatial
+SPATIAL_TARGETS=$(basename $(subst sql/tables/spatial/,.make/,$(wildcard sql/tables/spatial/*.sql)))
 
-# code tables and 20k/50k lookup tables are not available via WFS
-NON_SPATIAL_TABLES = fwa_edge_type_codes \
-	fwa_streams_20k_50k \
-	fwa_waterbodies_20k_50k \
-	fwa_waterbody_type_codes \
-	fwa_watershed_type_codes
-NON_SPATIAL_TARGETS = $(addprefix .make/, $(NON_SPATIAL_TABLES))
+# tables not downloadable via wfs are defined in sql/tables/non_spatial
+NON_SPATIAL_TARGETS=$(basename $(subst sql/tables/non_spatial/,.make/,$(wildcard sql/tables/non_spatial/*.sql)))
 
 # custom fwapg tables
-VALUEADDED_TABLES = fwa_approx_borders \
-	fwa_basins_poly \
-	fwa_bcboundary \
-	fwa_named_streams \
-	fwa_waterbodies
-VALUEADDED_TARGETS := $(addprefix .make/,$(VALUEADDED_TABLES))
+VALUE_ADDED_TARGETS=$(basename $(subst sql/tables/value_added/,.make/,$(wildcard sql/tables/value_added/*.sql)))
 
 WSG = $(shell cat wsg.txt)
 
 ALL_TARGETS = .make/db \
 	$(SPATIAL_TARGETS) \
 	$(NON_SPATIAL_TARGETS) \
-	.make/schema_swap \
 	.make/wbdhu12 \
 	.make/hydrosheds \
-	$(VALUEADDED_TARGETS) \
-	.make/fwa_functions \
-	.make/fwa_streams_watersheds_lut \
+	$(VALUE_ADDED_TARGETS) \
 	.make/fwa_stream_order_parent \
+	.make/fwa_streams_watersheds_lut \
+	.make/schema_swap \
+	.make/fwa_functions \
 	.make/fwa_waterbodies_upstream_area \
 	.make/fwa_watersheds_upstream_area \
 	.make/fwa_assessment_watersheds_lut \
@@ -73,7 +48,7 @@ clean_db:
 
 # Add required extensions, schemas to db
 # ** the database must already exist **
-.make/db:
+.make/db: sql/functions/FWA_Downstream.sql sql/functions/FWA_Upstream.sql
 	mkdir -p .make
 	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS postgis"
 	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS ltree"
@@ -89,31 +64,25 @@ clean_db:
 	$(PSQL) -f sql/functions/FWA_Upstream.sql
 	touch $@
 
-# get WFS data
-$(SPATIAL_LOAD): .make/db
-	echo $@
-	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
-	$(PSQL) -c "create unlogged table fwapg.$(subst .make/,,$@) (data jsonb not null)"
-	bcdata cat -p 5000 -v -w 1 $(subst .make/,,whse_basemapping.$(subst _load,,$@)) | \
-		$(PSQL) -c "COPY fwapg.$(subst .make/,,$@) (data) FROM STDIN;"
-	touch $@
-
-# load from jsonb to staging table and drop the load table
-$(SPATIAL_TARGETS): $(SPATIAL_LOAD)
-	$(PSQL) -f sql/tables/source/$(subst .make/,,$@).sql
+# load spatial tables to staging schema (fwapg) from WFS
+.make/%: sql/tables/spatial/%.sql .make/db
+	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@_load)"
+	$(PSQL) -c "create unlogged table fwapg.$(subst .make/,,$@_load) (data jsonb not null)"
+	bcdata cat -p 5000 -v -w 1 $(subst .make/,,whse_basemapping.$@) | \
+			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"
+	$(PSQL) -f $<
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)_load"
 	touch $@
 
-# --
-# -- code tables
-# --
+# get non spatial data from FTP
 # can't seem to download directly with ogr2ogr /vsizip/vsicurl, so download the entire file with wget
 data/FWA_BC.gdb.zip:
 	mkdir -p data
 	wget --trust-server-names -qN ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip -P data
 	mv data/FWA_BC.zip $@
 
-$(NON_SPATIAL_TARGETS): data/FWA_BC.gdb.zip .make/db
+# load non spatial tables from file to staging schema (fwapg)
+.make/%: sql/tables/non_spatial/%.sql data/FWA_BC.gdb.zip .make/db
 	# load to temp fwapg schema
 	ogr2ogr \
 		-f PostgreSQL \
@@ -122,18 +91,57 @@ $(NON_SPATIAL_TARGETS): data/FWA_BC.gdb.zip .make/db
 		data/FWA_BC.gdb.zip \
 		$(shell echo $(subst .make/,,$@) | tr '[:lower:]' '[:upper:]')
 	# create the target table
-	$(PSQL) -f sql/tables/source/$(subst .make/,,$@).sql
+	$(PSQL) -f $<
 	# drop the load table
 	$(PSQL) -c "drop table fwapg.$(subst .make/,,$@)_load"
 	touch $@
 
 # apply fixes
-.make/datafixes: .make/fwa_stream_networks_sp .make/fwa_obstructions_sp
-	$(PSQL) -f sql/misc/datafixes.sql  # known FWA errors that may not yet be fixed in source
+.make/datafixes: sql/misc/datafixes.sql $(SPATIAL_TARGETS)
+	$(PSQL) -f $<  # fix known FWA errors that may not yet be fixed in source
+	touch $@
+
+# create value added tables that require just a single .sql script
+.make/%: sql/tables/value_added/%.sql $(SPATIAL_TARGETS) $(NON_SPATIAL_TARGETS) .make/datafixes
+	$(PSQL) -f &<
+	touch $@
+
+# create streams - watersheds lookup
+.make/fwa_streams_watersheds_lut: sql/tables/value_added_chunked/fwa_streams_watersheds_lut.sql .make/fwa_stream_networks_sp .make/fwa_watersheds_poly .make/fwa_watershed_groups_poly
+	# create table
+	$(PSQL) -c "drop table if exists fwapg.fwa_streams_watersheds_lut"
+	$(PSQL) -c "CREATE TABLE fwapg.fwa_streams_watersheds_lut \
+					(linear_feature_id bigint, watershed_feature_id integer);"
+	# load data per group so inserts are in managable chunks
+	for wsg in $(GROUPS) ; do \
+		$(PSQL) -v wsg=$$wsg -f $< ; \
+	done
+	# comment and index after load
+	$(PSQL) -c "ALTER TABLE fwapg.fwa_streams_watersheds_lut ADD PRIMARY KEY (linear_feature_id);"
+	$(PSQL) -c "CREATE INDEX ON fwapg.fwa_streams_watersheds_lut (watershed_feature_id);"
+	$(PSQL) -c "COMMENT ON TABLE fwapg.fwa_streams_watersheds_lut IS 'A convenience lookup for quickly relating streams and fundamental watersheds';"
+	$(PSQL) -c "COMMENT ON COLUMN fwapg.fwa_streams_watersheds_lut.linear_feature_id IS 'FWA stream segment unique identifier';"
+	$(PSQL) -c "COMMENT ON COLUMN fwapg.fwa_streams_watersheds_lut.watershed_feature_id IS 'FWA fundamental watershed unique identifer';"
+	touch $@
+
+# create a table holding the parent stream order of all streams (where possible)
+.make/fwa_stream_order_parent: sql/tables/value_added_chunked/fwa_stream_order_parent.sql .make/fwa_stream_networks_sp
+	# create table
+	$(PSQL) -c "drop table if exists fwapg.fwa_stream_order_parent"
+	$(PSQL) -c "create table fwapg.fwa_stream_order_parent \
+		(blue_line_key integer primary key, stream_order_parent integer);"
+	# load data per group so inserts are in managable chunks
+	for wsg in $(GROUPS) ; do \
+		$(PSQL) -v wsg=$$wsg -f $< ; \
+	done
+	# comment and index after load
+	$(PSQL) -c "COMMENT ON TABLE fwapg.fwa_stream_order_parent IS 'Streams (as blue_line_key) and the stream order of the stream they flow into';"
+	$(PSQL) -c "COMMENT ON COLUMN fwapg.fwa_stream_order_parent.blue_line_key IS 'FWA blue_line_key';"
+	$(PSQL) -c "COMMENT ON COLUMN fwapg.fwa_stream_order_parent.stream_order_parent IS 'The stream_order of the stream the blue_line_key flows into';"
 	touch $@
 
 # go live by switching source fwa tables from staging fwapg schema to whse_basemapping
-.make/schema_swap: $(SPATIAL_TARGETS) $(NON_SPATIAL_TARGETS)
+.make/schema_swap: $(SPATIAL_TARGETS) $(NON_SPATIAL_TARGETS) $(VALUE_ADDED_TARGETS) .make/fwa_streams_watersheds_lut .make/fwa_stream_order_parent
 	$(foreach tbl,$(subst .make/,,$^), $(PSQL) -c "drop table if exists whse_basemapping.$(tbl)";)
 	$(foreach tbl,$(subst .make/,,$^), $(PSQL) -c "alter table fwapg.$(tbl) set schema whse_basemapping";)
 	touch $@
@@ -207,51 +215,8 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -f sql/functions/FWA_hydroshed.sql
 	touch $@
 
-# create value added tables that require just single .sql script
-$(VALUEADDED_TARGETS): $(BASIC_TARGETS)
-	$(PSQL) -f sql/tables/value_added/$(subst .make/,,$@).sql
-	touch $@
-
-# create streams - watersheds lookup
-.make/fwa_streams_watersheds_lut: .make/fwa_stream_networks_sp .make/fwa_watersheds_poly .make/fwa_watershed_groups_poly
-	# create table
-	$(PSQL) -c "drop table if exists whse_basemapping.fwa_streams_watersheds_lut"
-	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_streams_watersheds_lut \
-					(linear_feature_id bigint, watershed_feature_id integer);"
-	# load data per group so inserts are in managable chunks
-	for wsg in $(GROUPS) ; do \
-		$(PSQL) -v wsg=$$wsg -f sql/tables/value_added/fwa_streams_watersheds_lut.sql ; \
-	done
-	# comment and index after load
-	$(PSQL) -c "ALTER TABLE whse_basemapping.fwa_streams_watersheds_lut ADD PRIMARY KEY (linear_feature_id);"
-	$(PSQL) -c "CREATE INDEX ON whse_basemapping.fwa_streams_watersheds_lut (watershed_feature_id);"
-	$(PSQL) -c "COMMENT ON TABLE whse_basemapping.fwa_streams_watersheds_lut IS 'A convenience lookup for quickly relating streams and fundamental watersheds';"
-	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_streams_watersheds_lut.linear_feature_id IS 'FWA stream segment unique identifier';"
-	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_streams_watersheds_lut.watershed_feature_id IS 'FWA fundamental watershed unique identifer';"
-	touch $@
-
-# create a table holding the parent stream order of all streams (where possible)
-.make/fwa_stream_order_parent: .make/fwa_stream_networks_sp
-	# create table
-	$(PSQL) -c "drop table if exists whse_basemapping.fwa_stream_order_parent"
-	$(PSQL) -c "create table whse_basemapping.fwa_stream_order_parent \
-		(blue_line_key integer primary key, stream_order_parent integer);"
-	# load data per group so inserts are in managable chunks
-	for wsg in $(GROUPS) ; do \
-		$(PSQL) -v wsg=$$wsg -f sql/tables/value_added/fwa_stream_order_parent.sql ; \
-	done
-	# comment and index after load
-	$(PSQL) -c "COMMENT ON TABLE whse_basemapping.fwa_stream_order_parent IS 'Streams (as blue_line_key) and the stream order of the stream they flow into';"
-	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_stream_order_parent.blue_line_key IS 'FWA blue_line_key';"
-	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_stream_order_parent.stream_order_parent IS 'The stream_order of the stream the blue_line_key flows into';"
-	touch $@
-
 # additional FWA functions
-.make/fwa_functions: .make/fwa_stream_networks_sp \
-	.make/fwa_watersheds_poly \
-	$(BASIC_TARGETS) \
-	$(VALUEADDED_TARGETS) \
-	.make/datafixes \
+.make/fwa_functions: .make/schema_swap \
 	.make/hydrosheds \
 	.make/wbdhu12
 	$(PSQL) -f sql/functions/FWA_SliceWatershedAtPoint.sql
