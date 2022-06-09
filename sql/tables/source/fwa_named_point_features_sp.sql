@@ -18,12 +18,12 @@ insert into fwapg.fwa_named_point_features_sp (
   geom
 )
 select
-  named_point_feature_id,
-  gnis_id::integer,
-  gnis_name,
-  named_feature_type,
-  feature_code,
-  geom
+  (data -> 'properties' ->> 'NAMED_POINT_FEATURE_ID')::integer as named_point_feature_id,
+  (data -> 'properties' ->> 'GNIS_ID')::integer as gnis_id,
+  data -> 'properties' ->> 'GNIS_NAME' as gnis_name,
+  data -> 'properties' ->> 'NAMED_FEATURE_TYPE' as named_feature_type,
+  data -> 'properties' ->> 'FEATURE_CODE' as feature_code,
+  ST_SetSRID(ST_GeomFromGeoJSON(data -> 'geometry'), 3005) as geom
 from fwapg.fwa_named_point_features_sp_load;
 
 create index on fwapg.fwa_named_point_features_sp (gnis_name);

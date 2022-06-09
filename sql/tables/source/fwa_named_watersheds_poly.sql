@@ -30,17 +30,17 @@ insert into fwapg.fwa_named_watersheds_poly (
   geom
 )
 select
-  named_watershed_id,
-  gnis_id::integer,
-  gnis_name,
-  blue_line_key::integer,
-  watershed_key::integer,
-  fwa_watershed_code,
-  stream_order,
-  stream_magnitude,
-  area_ha,
-  feature_code,
-  st_multi(geom) as geom
+  (data -> 'properties' ->> 'NAMED_WATERSHED_ID')::integer as named_watershed_id,
+  (data -> 'properties' ->> 'GNIS_ID')::integer as gnis_id,
+  data -> 'properties' ->> 'GNIS_NAME' as gnis_name,
+  (data -> 'properties' ->> 'BLUE_LINE_KEY')::integer as blue_line_key,
+  (data -> 'properties' ->> 'WATERSHED_KEY')::integer as watershed_key,
+  data -> 'properties' ->> 'FWA_WATERSHED_CODE' as fwa_watershed_code,
+  (data -> 'properties' ->> 'STREAM_ORDER')::integer as stream_order,
+  (data -> 'properties' ->> 'STREAM_MAGNITUDE')::integer as stream_magnitude,
+  (data -> 'properties' ->> 'AREA_HA')::double precision as area_ha,
+  data -> 'properties' ->> 'FEATURE_CODE' as feature_code,
+  st_multi(ST_SetSRID(ST_GeomFromGeoJSON(data -> 'geometry'), 3005)) as geom
 from fwapg.fwa_named_watersheds_poly_load;
 
 create index on fwapg.fwa_named_watersheds_poly (gnis_name);

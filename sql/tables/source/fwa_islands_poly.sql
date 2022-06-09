@@ -34,19 +34,19 @@ insert into fwapg.fwa_islands_poly (
   geom
 )
 select
-  island_id::integer,
-  island_type,
-  gnis_id_1::integer,
-  gnis_name_1,
-  gnis_id_2::integer,
-  gnis_name_2,
-  gnis_id_3::integer,
-  gnis_name_3,
-  fwa_watershed_code,
-  local_watershed_code,
-  area_ha,
-  feature_code,
-  st_multi(geom) as geom
+  (data -> 'properties' ->> 'ISLAND_ID')::integer as island_id,
+  (data -> 'properties' ->> 'ISLAND_TYPE') as island_type,
+  (data -> 'properties' ->> 'GNIS_ID_1')::integer as gnis_id_1,
+  (data -> 'properties' ->> 'GNIS_NAME_1') as gnis_name_1,
+  (data -> 'properties' ->> 'GNIS_ID_2')::integer as gnis_id_2,
+  (data -> 'properties' ->> 'GNIS_NAME_2') as gnis_name_2,
+  (data -> 'properties' ->> 'GNIS_ID_3')::integer as gnis_id_3,
+  (data -> 'properties' ->> 'GNIS_NAME_3') as gnis_name_3,
+  (data -> 'properties' ->> 'FWA_WATERSHED_CODE') as fwa_watershed_code,
+  (data -> 'properties' ->> 'LOCAL_WATERSHED_CODE') as local_watershed_code,
+  (data -> 'properties' ->> 'AREA_HA')::double precision as area_ha,
+  (data -> 'properties' ->> 'FEATURE_CODE') as feature_code,
+  st_multi(ST_SetSRID(ST_GeomFromGeoJSON(data -> 'geometry'), 3005)) as geom
 from fwapg.fwa_islands_poly_load;
 
 CREATE INDEX ON fwapg.fwa_islands_poly (gnis_name_1);

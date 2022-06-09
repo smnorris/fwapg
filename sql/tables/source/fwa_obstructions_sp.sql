@@ -38,21 +38,21 @@ insert into fwapg.fwa_obstructions_sp (
   geom
 )
 select
-  obstruction_id,
-  watershed_group_id::integer,
-  linear_feature_id::integer,
-  gnis_id::integer,
-  gnis_name,
-  obstruction_type,
-  blue_line_key::integer,
-  watershed_key::integer,
-  fwa_watershed_code,
-  local_watershed_code,
-  watershed_group_code,
-  route_measure,
-  feature_source,
-  feature_code,
-  geom
+  (data -> 'properties' ->> 'OBSTRUCTION_ID')::integer as obstruction_id,
+  (data -> 'properties' ->> 'WATERSHED_GROUP_ID')::integer as watershed_group_id,
+  (data -> 'properties' ->> 'LINEAR_FEATURE_ID')::integer as linear_feature_id,
+  (data -> 'properties' ->> 'GNIS_ID')::integer as gnis_id,
+  (data -> 'properties' ->> 'GNIS_NAME') as gnis_name,
+  (data -> 'properties' ->> 'OBSTRUCTION_TYPE') as obstruction_type,
+  (data -> 'properties' ->> 'BLUE_LINE_KEY')::integer as blue_line_key,
+  (data -> 'properties' ->> 'WATERSHED_KEY')::integer as watershed_key,
+  (data -> 'properties' ->> 'FWA_WATERSHED_CODE') as fwa_watershed_code,
+  (data -> 'properties' ->> 'LOCAL_WATERSHED_CODE') as local_watershed_code,
+  (data -> 'properties' ->> 'WATERSHED_GROUP_CODE') as watershed_group_code,
+  (data -> 'properties' ->> 'ROUTE_MEASURE')::double precision as route_measure,
+  (data -> 'properties' ->> 'FEATURE_SOURCE') as feature_source,
+  (data -> 'properties' ->> 'FEATURE_CODE') as feature_code,
+  ST_SetSRID(ST_GeomFromGeoJSON(data -> 'geometry'), 3005) as geom
 from fwapg.fwa_obstructions_sp_load;
 
 create index on fwapg.fwa_obstructions_sp (linear_feature_id);
