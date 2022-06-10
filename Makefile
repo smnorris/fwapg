@@ -1,5 +1,8 @@
 .PHONY: all clean_targets clean_db
 
+
+SHELL=/bin/bash
+
 # provide db connection param to psql and ensure scripts stop on error
 PSQL = psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 
