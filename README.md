@@ -20,9 +20,10 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 1. Ensure all requirements/dependencies are met/installed:
     - access to a PostgreSQL (>=13) database with the PostGIS extension (>=3.1) installed
     - GDAL >=3.4
+    - Python 3
+    - [`bcdata`](https://github.com/smnorris/bcdata) >= 0.6.3
     - [GNU parallel](https://www.gnu.org/software/parallel/)
     - [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
-    - Python and [`bcdata`](https://github.com/smnorris/bcdata)
 
 2. Ensure you have a `DATABASE_URL` environment variable set to point to your database, for example:
 
@@ -34,11 +35,12 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
         cd fwapg
         make
 
-The download is extremely slow, this will take several hours (spatial data is downloaded via WFS to ensure it is current).
+Spatial data is downloaded via `openmaps.gov.bc.ca` WFS service (using `bcdata`) to ensure it is current.
+The download for the larger tables is *very* slow, the full load takes several hours. 
 
-4. Run `fwapg` enabled queries with your favorite sql client. For example:
+Once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
 
-    *Locate the nearest point on the FWA stream network to a X,Y location on Highway 14:*
+*Locate the nearest point on the FWA stream network to a X,Y location on Highway 14:*
 
         SELECT gnis_name, blue_line_key, downstream_route_measure
         FROM FWA_IndexPoint(-123.7028, 48.3858, 4326);
@@ -47,7 +49,7 @@ The download is extremely slow, this will take several hours (spatial data is do
         -------------+---------------+--------------------------
          Sooke River |     354153927 |        350.2530543284006
 
-    *Generate the watershed upstream of above location:*
+*Generate the watershed upstream of above location:*
 
         SELECT ST_ASText(geom) FROM FWA_WatershedAtMeasure(354153927, 350);
 
