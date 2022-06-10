@@ -71,7 +71,10 @@ clean_db:
 	# request tables with larger polygons in 5k chunks one at a time to avoid
 	# memory issues on resource-limited systems
 	# for other features, default to 10k chunks, 2 requests at a time
-	if [ $@ == 'fwa_assessment_watersheds_poly' ] || [ $@ == 'fwa_named_watersheds_poly' ] || [ $@ == 'fwa_watershed_groups_poly' ] || [ $@ == 'fwa_wetlands_poly' ] ; then \
+	if [ $@ == 'fwa_assessment_watersheds_poly' ] || \
+		[ $@ == 'fwa_named_watersheds_poly' ] || \
+		[ $@ == 'fwa_watershed_groups_poly' ] || \
+		[ $@ == 'fwa_wetlands_poly' ] ; then \
 		bcdata cat -p 5000 -v -w 1 $(subst .make/,,whse_basemapping.$@) | \
 			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
 	else \
