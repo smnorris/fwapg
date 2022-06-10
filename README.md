@@ -35,10 +35,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
         cd fwapg
         make
 
-Spatial data is downloaded via `openmaps.gov.bc.ca` WFS service (using `bcdata`) to ensure it is current.
-The download for the larger tables is *very* slow, the full load takes several hours. 
-
-Once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
+The full load takes several hours, but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
 
 *Locate the nearest point on the FWA stream network to a X,Y location on Highway 14:*
 
@@ -58,7 +55,7 @@ Once complete, you can run `fwapg` enabled queries with your favorite sql client
         POLYGON((...
 
 
-    See [Usage](https://smnorris.github.io/fwapg/02_usage.html) for more examples.
+See [Usage](https://smnorris.github.io/fwapg/02_usage.html) for more examples.
 
 
 ## Docker
