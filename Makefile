@@ -195,6 +195,8 @@ data/WBD_National_GDB.zip:
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
 # Source hydrosheds shapefiles must be manually downloaded, so I've cached them at hillcrestgeo
 .make/hydrosheds: .make/db
+	# drop existing merged table
+	$(PSQL) -c "drop table if exists hydrosheds.hybas_lev12_v1c"
 	# Load _ar_ and _na_ shapefiles
 	$(PSQL) -c "drop table if exists hydrosheds.hybas_ar_lev12_v1c"
 	ogr2ogr \
