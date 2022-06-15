@@ -117,7 +117,7 @@ data/FWA_BC.gdb.zip:
 
 # create value added tables that require just a single .sql script
 .make/%: sql/tables/value_added/%.sql $(SPATIAL_TARGETS) $(NON_SPATIAL_TARGETS) .make/datafixes
-	$(PSQL) -f &<
+	$(PSQL) -f $<
 	touch $@
 
 # create streams - watersheds lookup
