@@ -3,7 +3,7 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.2.0 ()
+0.1.2 (2022-06-23)
 ------------------
 - add documentation
 - require PostgreSQL >= 13, PostGIS >= 3.1 (GEOS 3.9)
@@ -13,7 +13,6 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 - use makefile for db load
 - tidy hydrosheds polygon aggregation
 - removed unused and obsolete functions (#48)
-[ ] do not use watershed groups as pre-aggregations for FWA_WatershedAtMeasure (#52)
 
 0.1.1 (2020-10-28)
 ------------------
