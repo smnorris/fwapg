@@ -13,6 +13,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -82,9 +83,9 @@
            <div itemprop="articleBody">
              
   <div class="section" id="table-reference">
-<h1>Table reference<a class="headerlink" href="#table-reference" title="Permalink to this headline"></a></h1>
+<h1>Table reference<a class="headerlink" href="#table-reference" title="Permalink to this heading"></a></h1>
 <div class="section" id="fwa-approx-borders">
-<h2>fwa_approx_borders<a class="headerlink" href="#fwa-approx-borders" title="Permalink to this headline"></a></h2>
+<h2>fwa_approx_borders<a class="headerlink" href="#fwa-approx-borders" title="Permalink to this heading"></a></h2>
 <p>Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for finding cross-border streams</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -110,7 +111,7 @@
 </table>
 </div>
 <div class="section" id="fwa-assessment-watersheds-lut">
-<h2>fwa_assessment_watersheds_lut<a class="headerlink" href="#fwa-assessment-watersheds-lut" title="Permalink to this headline"></a></h2>
+<h2>fwa_assessment_watersheds_lut<a class="headerlink" href="#fwa-assessment-watersheds-lut" title="Permalink to this heading"></a></h2>
 <p>Some workflows require relating <code class="docutils literal notranslate"><span class="pre">fwa_assessment_watersheds_poly</span></code> to fundamental watersheds. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -140,7 +141,7 @@
 </table>
 </div>
 <div class="section" id="fwa-assessment-watersheds-streams-lut">
-<h2>fwa_assessment_watersheds_streams_lut<a class="headerlink" href="#fwa-assessment-watersheds-streams-lut" title="Permalink to this headline"></a></h2>
+<h2>fwa_assessment_watersheds_streams_lut<a class="headerlink" href="#fwa-assessment-watersheds-streams-lut" title="Permalink to this heading"></a></h2>
 <p>Some workflows require relating <code class="docutils literal notranslate"><span class="pre">fwa_assessment_watersheds_poly</span></code> to stream segments. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -170,7 +171,7 @@
 </table>
 </div>
 <div class="section" id="fwa-basins-poly">
-<h2>fwa_basins_poly<a class="headerlink" href="#fwa-basins-poly" title="Permalink to this headline"></a></h2>
+<h2>fwa_basins_poly<a class="headerlink" href="#fwa-basins-poly" title="Permalink to this heading"></a></h2>
 <p>Large BC watersheds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -204,7 +205,7 @@
 </table>
 </div>
 <div class="section" id="fwa-bcboundary">
-<h2>fwa_bcboundary<a class="headerlink" href="#fwa-bcboundary" title="Permalink to this headline"></a></h2>
+<h2>fwa_bcboundary<a class="headerlink" href="#fwa-bcboundary" title="Permalink to this heading"></a></h2>
 <p>Boundary of BC as defined by FWA - used by FWA_WatershedAtMeasure()</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -226,7 +227,7 @@
 </table>
 </div>
 <div class="section" id="fwa-named-streams">
-<h2>fwa_named_streams<a class="headerlink" href="#fwa-named-streams" title="Permalink to this headline"></a></h2>
+<h2>fwa_named_streams<a class="headerlink" href="#fwa-named-streams" title="Permalink to this heading"></a></h2>
 <p>Named streams of BC, aggregated per watershed group and simplified using a 25m tolerance (primarily for mapping use)</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -264,7 +265,7 @@
 </table>
 </div>
 <div class="section" id="fwa-streams-watersheds-lut">
-<h2>fwa_streams_watersheds_lut<a class="headerlink" href="#fwa-streams-watersheds-lut" title="Permalink to this headline"></a></h2>
+<h2>fwa_streams_watersheds_lut<a class="headerlink" href="#fwa-streams-watersheds-lut" title="Permalink to this heading"></a></h2>
 <p>A convenience lookup for quickly relating streams and fundamental watersheds</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -286,7 +287,7 @@
 </table>
 </div>
 <div class="section" id="fwa-stream-order-parent">
-<h2>fwa_stream_order_parent<a class="headerlink" href="#fwa-stream-order-parent" title="Permalink to this headline"></a></h2>
+<h2>fwa_stream_order_parent<a class="headerlink" href="#fwa-stream-order-parent" title="Permalink to this heading"></a></h2>
 <p>A convenince table, holding parent <code class="docutils literal notranslate"><span class="pre">stream_order</span></code> values for each stream in BC (as defined by <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>).
 ‘Parent’ stream order is the order of the <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> stream into which the given stream drains.
 For side channels, <code class="docutils literal notranslate"><span class="pre">stream_order_parent</span></code> is the order of the main channel at the location of the downstream tributary with the side channel.</p>
@@ -310,7 +311,7 @@ For side channels, <code class="docutils literal notranslate"><span class="pre">
 </table>
 </div>
 <div class="section" id="fwa-waterbodies">
-<h2>fwa_waterbodies<a class="headerlink" href="#fwa-waterbodies" title="Permalink to this headline"></a></h2>
+<h2>fwa_waterbodies<a class="headerlink" href="#fwa-waterbodies" title="Permalink to this heading"></a></h2>
 <p>All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers). See FWA docs for column descriptions.</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -348,7 +349,7 @@ For side channels, <code class="docutils literal notranslate"><span class="pre">
 </table>
 </div>
 <div class="section" id="fwa-waterbodies-upstream-area">
-<h2>fwa_waterbodies_upstream_area<a class="headerlink" href="#fwa-waterbodies-upstream-area" title="Permalink to this headline"></a></h2>
+<h2>fwa_waterbodies_upstream_area<a class="headerlink" href="#fwa-waterbodies-upstream-area" title="Permalink to this heading"></a></h2>
 <p>A lookup storing area of lake/reservoir/wetland upstream of individual stream segments.
 Note that this table differs from <code class="docutils literal notranslate"><span class="pre">fwa_watersheds_upstream_area</span></code> noted above - we use streams as the lookup base rather than watersheds because waterbodies can be nested within fundamental watersheds.</p>
 <p><strong>NOTE</strong> - output currently includes area upstream <strong>WITHIN BC ONLY</strong>, this will not be accurate in watersheds that have contributing drainage outside of BC!</p>
@@ -380,7 +381,7 @@ Note that this table differs from <code class="docutils literal notranslate"><sp
 </table>
 </div>
 <div class="section" id="fwa-watersheds-upstream-area">
-<h2>fwa_watersheds_upstream_area<a class="headerlink" href="#fwa-watersheds-upstream-area" title="Permalink to this headline"></a></h2>
+<h2>fwa_watersheds_upstream_area<a class="headerlink" href="#fwa-watersheds-upstream-area" title="Permalink to this heading"></a></h2>
 <p>Area upstream (ha) for all fundamental watersheds as a lookup table. Area <em>includes</em> the area of the fundamental watershed indicated by the id.</p>
 <p><strong>NOTE</strong> - output currently includes area upstream <strong>WITHIN BC ONLY</strong>, this will not be accurate in watersheds that have contributing drainage outside of BC!</p>
 <p>When working with watersheds, join to this lookup directly via <code class="docutils literal notranslate"><span class="pre">watershed_feature_id</span></code>.

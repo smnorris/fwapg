@@ -13,6 +13,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -75,9 +76,9 @@
            <div itemprop="articleBody">
              
   <div class="section" id="setup-and-data-load">
-<h1>Setup and data load<a class="headerlink" href="#setup-and-data-load" title="Permalink to this headline"></a></h1>
+<h1>Setup and data load<a class="headerlink" href="#setup-and-data-load" title="Permalink to this heading"></a></h1>
 <div class="section" id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.postgresql.org">PostgreSQL</a> (&gt;=13)</p></li>
 <li><p><a class="reference external" href="https://postgis.net/">PostGIS</a> (&gt;=v3.1 with GEOS &gt;=3.9)</p></li>
@@ -88,14 +89,14 @@
 <p>The instructions below presume postgres is set up and accepting connections.</p>
 </div>
 <div class="section" id="create-the-database">
-<h2>Create the database<a class="headerlink" href="#create-the-database" title="Permalink to this headline"></a></h2>
+<h2>Create the database<a class="headerlink" href="#create-the-database" title="Permalink to this heading"></a></h2>
 <p>If you are not loading to an existing database, create a new one (adjusting the database name as required):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb fwapg
 </pre></div>
 </div>
 </div>
 <div class="section" id="environment-variables">
-<h2>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline"></a></h2>
+<h2>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading"></a></h2>
 <p>The data load script requires the environment variable <code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code> to be set in order to connect to the database.</p>
 <p>For example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://postgres:postgres@db:5432/fwapg
@@ -111,7 +112,7 @@ Type <span class="s2">&quot;help&quot;</span> <span class="k">for</span> help.
 </div>
 </div>
 <div class="section" id="data-load-and-optimization">
-<h2>Data load and optimization<a class="headerlink" href="#data-load-and-optimization" title="Permalink to this headline"></a></h2>
+<h2>Data load and optimization<a class="headerlink" href="#data-load-and-optimization" title="Permalink to this heading"></a></h2>
 <p>Get the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> scripts by either:</p>
 <ul>
 <li><p>manually downloading and unzipping the <a class="reference external" href="https://github.com/smnorris/fwapg/releases">latest fwapg release</a></p></li>

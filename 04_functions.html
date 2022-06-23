@@ -13,6 +13,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -111,11 +112,11 @@
            <div itemprop="articleBody">
              
   <div class="section" id="function-reference">
-<h1>Function reference<a class="headerlink" href="#function-reference" title="Permalink to this headline"></a></h1>
+<h1>Function reference<a class="headerlink" href="#function-reference" title="Permalink to this heading"></a></h1>
 <div class="section" id="fwa-downstream">
-<h2>FWA_Downstream<a class="headerlink" href="#fwa-downstream" title="Permalink to this headline"></a></h2>
+<h2>FWA_Downstream<a class="headerlink" href="#fwa-downstream" title="Permalink to this heading"></a></h2>
 <div class="section" id="synopsis">
-<h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline"></a></h3>
+<h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_Downstream</span><span class="p">(</span>
       <span class="n">wscode</span> <span class="n">A</span> <span class="n">ltree</span><span class="p">,</span>
       <span class="n">localcode</span> <span class="n">A</span> <span class="n">ltree</span><span class="p">,</span>
@@ -139,13 +140,13 @@
 </div>
 </div>
 <div class="section" id="description">
-<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline"></a></h3>
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h3>
 <p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the watershed codes / measures B are downstream of watershed codes / measure A.</p>
 <p>For polygonal features (where no <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code> is present), use the shorter form of the function.</p>
 <p>For point locations referenced to the stream network, use the form of the function with <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> and <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>.  Also, specify <code class="docutils literal notranslate"><span class="pre">True</span></code> for <code class="docutils literal notranslate"><span class="pre">include_equivalents</span></code> if you want to evaluate as true for features with exactly the same linear position.</p>
 </div>
 <div class="section" id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h3>
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>At its most basic, the function compares two watershed code / local code <code class="docutils literal notranslate"><span class="pre">ltree</span></code> pairs and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the second pair is a parent of the first set (ie, downstream).</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">FWA_Downstream</span><span class="p">(</span>
@@ -230,9 +231,9 @@
 </div>
 </div>
 <div class="section" id="fwa-indexpoint">
-<h2>FWA_IndexPoint<a class="headerlink" href="#fwa-indexpoint" title="Permalink to this headline"></a></h2>
+<h2>FWA_IndexPoint<a class="headerlink" href="#fwa-indexpoint" title="Permalink to this heading"></a></h2>
 <div class="section" id="id1">
-<h3>Synopsis<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<h3>Synopsis<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_IndexPoint</span><span class="p">(</span>
     <span class="n">point</span> <span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span> <span class="mi">3005</span><span class="p">),</span>
     <span class="n">tolerance</span> <span class="nb">float</span> <span class="k">DEFAULT</span> <span class="mi">5000</span><span class="p">,</span>
@@ -250,7 +251,7 @@
 </div>
 </div>
 <div class="section" id="id2">
-<h3>Description<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<h3>Description<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
 <p>Snaps a point to the stream network. Provided a point (as either a BC Albers point geometry or (<code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">srid</span></code>), return a table containing the point geometry/geometries of the closest point(s) on the FWA stream network to the given point, plus additional attributes from the matched stream(s).</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -300,12 +301,12 @@
 </table>
 </div>
 <div class="section" id="options">
-<h3>Options<a class="headerlink" href="#options" title="Permalink to this headline"></a></h3>
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">tolerance</span></code> - Return only stream feature(s) within this distance (metres) (default = <code class="docutils literal notranslate"><span class="pre">5000</span></code>)<br />
 <code class="docutils literal notranslate"><span class="pre">num_features</span></code> - Number of features to be returned (default = <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p>
 </div>
 <div class="section" id="id3">
-<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<h3>Examples<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>Return the closest point on FWA stream network to a point defined by a lat/lon (within default 5000m tolerance):</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">7028</span><span class="p">,</span> <span class="mi">48</span><span class="p">.</span><span class="mi">3858</span><span class="p">,</span> <span class="mi">4326</span><span class="p">);</span>
@@ -351,24 +352,24 @@
 </ol>
 </div>
 <div class="section" id="web-service">
-<h3>Web service<a class="headerlink" href="#web-service" title="Permalink to this headline"></a></h3>
+<h3>Web service<a class="headerlink" href="#web-service" title="Permalink to this heading"></a></h3>
 <p><a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_indexpoint.html">FWA_IndexPoint</a></p>
 </div>
 </div>
 <div class="section" id="fwa-locatealong">
-<h2>FWA_LocateAlong<a class="headerlink" href="#fwa-locatealong" title="Permalink to this headline"></a></h2>
+<h2>FWA_LocateAlong<a class="headerlink" href="#fwa-locatealong" title="Permalink to this heading"></a></h2>
 <div class="section" id="id4">
-<h3>Synopsis<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
+<h3>Synopsis<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_LocateAlong</span><span class="p">(</span><span class="n">blue_line_key</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">downstream_route_measure</span> <span class="nb">float</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id5">
-<h3>Description<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h3>
+<h3>Description<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
 <p>Return a table containing a single point geometry corresponding to the position on the FWA stream network of input <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>, <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>.</p>
 </div>
 <div class="section" id="example">
-<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h3>
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h3>
 <p>Create a point geometry at measure 25,000 on the Skeena River:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span>    <span class="k">SELECT</span> <span class="n">ST_AsText</span><span class="p">(</span>
         <span class="n">FWA_LocateAlong</span><span class="p">(</span>
@@ -390,14 +391,14 @@
 </div>
 </div>
 <div class="section" id="id6">
-<h3>Web service<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h3>
+<h3>Web service<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
 <p><a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealong.html">FWA_LocateAlong</a></p>
 </div>
 </div>
 <div class="section" id="fwa-locatealonginterval">
-<h2>FWA_LocateAlongInterval<a class="headerlink" href="#fwa-locatealonginterval" title="Permalink to this headline"></a></h2>
+<h2>FWA_LocateAlongInterval<a class="headerlink" href="#fwa-locatealonginterval" title="Permalink to this heading"></a></h2>
 <div class="section" id="id7">
-<h3>Synopsis<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h3>
+<h3>Synopsis<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_LocateAlongInterval</span><span class="p">(</span>
   <span class="n">blue_line_key</span> <span class="nb">integer</span><span class="p">,</span>
   <span class="n">start_measure</span> <span class="nb">integer</span> <span class="k">DEFAULT</span> <span class="mi">0</span><span class="p">,</span>
@@ -408,7 +409,7 @@
 </div>
 </div>
 <div class="section" id="id8">
-<h3>Description<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h3>
+<h3>Description<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <p>Return a table representing points along a stream between input locations at specified interval.</p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -434,7 +435,7 @@
 </table>
 </div>
 <div class="section" id="id9">
-<h3>Example<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h3>
+<h3>Example<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <p>Return points at a 1km interval along the Peace between Site C and Bennet dams:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span>  <span class="k">SELECT</span>
      <span class="k">index</span> <span class="k">as</span> <span class="n">id</span><span class="p">,</span>
@@ -461,16 +462,16 @@
 <p><img alt="watershed" src="_images/locatealonginterval.png" /></p>
 </div>
 <div class="section" id="id10">
-<h3>Web service<a class="headerlink" href="#id10" title="Permalink to this headline"></a></h3>
+<h3>Web service<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <p><a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval.html">FWA_LocateAlongInterval</a></p>
 <p>Make the same request as the example above, but
 <a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&amp;start_measure=1597489&amp;interval_length=10000&amp;end_measure=1706733&amp;limit=100">at 10km</a></p>
 </div>
 </div>
 <div class="section" id="fwa-upstream">
-<h2>FWA_Upstream<a class="headerlink" href="#fwa-upstream" title="Permalink to this headline"></a></h2>
+<h2>FWA_Upstream<a class="headerlink" href="#fwa-upstream" title="Permalink to this heading"></a></h2>
 <div class="section" id="id11">
-<h3>Synopsis<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h3>
+<h3>Synopsis<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- compare watershed codes only</span>
 <span class="n">FWA_Upstream</span><span class="p">(</span>
     <span class="n">wscode_ltree_a</span> <span class="n">ltree</span><span class="p">,</span>
@@ -511,7 +512,7 @@
 </div>
 </div>
 <div class="section" id="id12">
-<h3>Description<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h3>
+<h3>Description<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the watershed codes / measures B are upstream of watershed codes / measure A.</p>
 <p>For polygonal features (where no <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code> is present), use the shorter form of the function.</p>
 <p>For line features, use the form of the function with <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>, <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code> and <code class="docutils literal notranslate"><span class="pre">upstream_route_measure</span></code></p>
@@ -519,7 +520,7 @@
 <p>Specify <code class="docutils literal notranslate"><span class="pre">True</span></code> for <code class="docutils literal notranslate"><span class="pre">include_equivalents</span></code> if you want to evaluate as true for features with exactly the same linear position.</p>
 </div>
 <div class="section" id="id13">
-<h3>Examples<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h3>
+<h3>Examples<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>At its most basic, the function compares two watershed code / local code <code class="docutils literal notranslate"><span class="pre">ltree</span></code> pairs and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the second pair is upstream of the first pair.</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">FWA_Upstream</span><span class="p">(</span>
@@ -588,9 +589,9 @@
 </div>
 </div>
 <div class="section" id="fwa-watershedatmeasure">
-<h2>FWA_WatershedAtMeasure<a class="headerlink" href="#fwa-watershedatmeasure" title="Permalink to this headline"></a></h2>
+<h2>FWA_WatershedAtMeasure<a class="headerlink" href="#fwa-watershedatmeasure" title="Permalink to this heading"></a></h2>
 <div class="section" id="id14">
-<h3>Synopsis<a class="headerlink" href="#id14" title="Permalink to this headline"></a></h3>
+<h3>Synopsis<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span>
     <span class="n">blue_line_key</span> <span class="nb">integer</span><span class="p">,</span>
     <span class="n">downstream_route_measure</span> <span class="nb">float</span>
@@ -599,7 +600,7 @@
 </div>
 </div>
 <div class="section" id="id15">
-<h3>Description<a class="headerlink" href="#id15" title="Permalink to this headline"></a></h3>
+<h3>Description<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <p>Given a point defined by its position on the FWA stream network (<code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>,<code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>), return a table containing a polygon geometry that defines the point’s upstream watershed.</p>
 <p>Watershed delineation following this set of rules, in order of descending priority:</p>
 <ol class="arabic simple">
@@ -674,7 +675,7 @@ watershed in which it falls, then that watershed is included in the aggregation<
 </table>
 </div>
 <div class="section" id="id16">
-<h3>Examples<a class="headerlink" href="#id16" title="Permalink to this headline"></a></h3>
+<h3>Examples<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>Extract the geometry of the watershed upstream of the Cowichan River at Hwy 19:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="n">geom</span> <span class="k">FROM</span> <span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span> <span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">);</span>
@@ -720,7 +721,7 @@ watershed in which it falls, then that watershed is included in the aggregation<
 </ol>
 </div>
 <div class="section" id="id17">
-<h3>Web service<a class="headerlink" href="#id17" title="Permalink to this headline"></a></h3>
+<h3>Web service<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
 <p><a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_watershedatmeasure.html">FWA_WatershedAtMeasure</a></p>
 </div>
 </div>
