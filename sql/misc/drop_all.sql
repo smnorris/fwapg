@@ -1,58 +1,62 @@
 -- delete all data/functions created by fwapg 
 
--- source FWA tables
-DROP TABLE IF EXISTS whse_basemapping.fwa_assessment_watersheds_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_bays_and_channels_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_coastlines_sp;
-DROP TABLE IF EXISTS whse_basemapping.fwa_edge_type_codes;
-DROP TABLE IF EXISTS whse_basemapping.fwa_glaciers_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_islands_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_lakes_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_manmade_waterbodies_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_named_point_features_sp;
-DROP TABLE IF EXISTS whse_basemapping.fwa_named_watersheds_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_obstructions_sp;
-DROP TABLE IF EXISTS whse_basemapping.fwa_rivers_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_streams_20k_50k;
-DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies_20k_50k;
-DROP TABLE IF EXISTS whse_basemapping.fwa_waterbody_type_codes;
-DROP TABLE IF EXISTS whse_basemapping.fwa_watershed_groups_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_watershed_type_codes;
-DROP TABLE IF EXISTS whse_basemapping.fwa_wetlands_poly;
+-- source fwa tables
+drop table if exists whse_basemapping.fwa_assessment_watersheds_poly;
+drop table if exists whse_basemapping.fwa_bays_and_channels_poly;
+drop table if exists whse_basemapping.fwa_coastlines_sp;
+drop table if exists whse_basemapping.fwa_edge_type_codes;
+drop table if exists whse_basemapping.fwa_glaciers_poly;
+drop table if exists whse_basemapping.fwa_islands_poly;
+drop table if exists whse_basemapping.fwa_lakes_poly;
+drop table if exists whse_basemapping.fwa_manmade_waterbodies_poly;
+drop table if exists whse_basemapping.fwa_named_point_features_sp;
+drop table if exists whse_basemapping.fwa_named_watersheds_poly;
+drop table if exists whse_basemapping.fwa_obstructions_sp;
+drop table if exists whse_basemapping.fwa_rivers_poly;
+drop table if exists whse_basemapping.fwa_streams_20k_50k;
+drop table if exists whse_basemapping.fwa_stream_networks_sp;
+drop table if exists whse_basemapping.fwa_waterbodies_20k_50k;
+drop table if exists whse_basemapping.fwa_waterbody_type_codes;
+drop table if exists whse_basemapping.fwa_watersheds_poly;
+drop table if exists whse_basemapping.fwa_watershed_groups_poly;
+drop table if exists whse_basemapping.fwa_watershed_type_codes;
+drop table if exists whse_basemapping.fwa_wetlands_poly;
 
--- value added FWA tables
-DROP TABLE IF EXISTS whse_basemapping.fwa_approx_borders;
-DROP TABLE IF EXISTS whse_basemapping.fwa_basins_poly;
-DROP TABLE IF EXISTS whse_basemapping.fwa_bcboundary;
-DROP TABLE IF EXISTS whse_basemapping.fwa_named_streams;
-DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies;
-DROP TABLE IF EXISTS whse_basemapping.fwa_stream_order_parent;
+-- value added fwa tables
+drop table if exists whse_basemapping.fwa_approx_borders;
+drop table if exists whse_basemapping.fwa_basins_poly;
+drop table if exists whse_basemapping.fwa_bcboundary;
+drop table if exists whse_basemapping.fwa_named_streams;
+drop table if exists whse_basemapping.fwa_waterbodies;
+drop table if exists whse_basemapping.fwa_stream_order_parent;
 
 -- additional data
-DROP TABLE IF EXISTS usgs.wdbhu12;
-DROP TABLE IF EXISTS hydrosheds.hybas_lev12_v1c;
+drop table if exists usgs.wdbhu12;
+drop table if exists hydrosheds.hybas_lev12_v1c;
 
--- functions 
-DROP FUNCTION IF EXISTS CDB_MakeHexagon;
-DROP FUNCTION IF EXISTS ST_Safe_Repair;
+-- functions
+drop function if exists cdb_makehexagon;
+drop function if exists st_safe_repair;
 
-DROP FUNCTION IF EXISTS FWA_huc12;
-DROP FUNCTION IF EXISTS FWA_hydroshed;
-DROP FUNCTION IF EXISTS FWA_IndexPoint;
+drop function if exists fwa_huc12;
+drop function if exists fwa_hydroshed;
+drop function if exists fwa_indexpoint;
 
-DROP FUNCTION IF EXISTS FWA_Upstream(ltree,ltree,ltree,ltree);
-DROP FUNCTION IF EXISTS FWA_Upstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
-DROP FUNCTION IF EXISTS FWA_Upstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+drop function if exists fwa_upstream(ltree,ltree,ltree,ltree);
+drop function if exists fwa_upstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+drop function if exists fwa_upstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
 
-DROP FUNCTION IF EXISTS FWA_Downstream(ltree,ltree,ltree,ltree);
-DROP FUNCTION IF EXISTS FWA_Downstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
-DROP FUNCTION IF EXISTS FWA_Downstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+drop function if exists fwa_downstream(ltree,ltree,ltree,ltree);
+drop function if exists fwa_downstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
+drop function if exists fwa_downstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
 
-DROP FUNCTION IF EXISTS FWA_UpstreamBorderCrossings;
-DROP FUNCTION IF EXISTS FWA_SliceWatershedAtPoint;
-DROP FUNCTION IF EXISTS FWA_WatershedExBC;
-DROP FUNCTION IF EXISTS FWA_WatershedAtMeasure;
-DROP FUNCTION IF EXISTS FWA_WatershedHex;
-DROP FUNCTION IF EXISTS FWA_WatershedStream;
-DROP FUNCTION IF EXISTS FWA_LocateAlong;
-DROP FUNCTION IF EXISTS FWA_LocateAlongInterval;
+drop function if exists fwa_upstreambordercrossings;
+drop function if exists fwa_slicewatershedatpoint;
+drop function if exists fwa_watershedexbc;
+drop function if exists fwa_watershedatmeasure;
+drop function if exists fwa_watershedhex;
+drop function if exists fwa_watershedstream;
+drop function if exists fwa_locatealong;
+drop function if exists fwa_locatealonginterval;
+
+drop schema if exists fwapg cascade;
