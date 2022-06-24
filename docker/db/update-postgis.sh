@@ -14,15 +14,5 @@ for DB in template_postgis "$POSTGRES_DB" "${@}"; do
         -- Upgrade PostGIS (includes raster)
         CREATE EXTENSION IF NOT EXISTS postgis VERSION '$POSTGIS_VERSION';
         ALTER EXTENSION postgis  UPDATE TO '$POSTGIS_VERSION';
-
-        -- Upgrade Topology
-        CREATE EXTENSION IF NOT EXISTS postgis_topology VERSION '$POSTGIS_VERSION';
-        ALTER EXTENSION postgis_topology UPDATE TO '$POSTGIS_VERSION';
-
-        -- Install Tiger dependencies in case not already installed
-        CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
-        -- Upgrade US Tiger Geocoder
-        CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder VERSION '$POSTGIS_VERSION';
-        ALTER EXTENSION postgis_tiger_geocoder UPDATE TO '$POSTGIS_VERSION';
     "
 done
