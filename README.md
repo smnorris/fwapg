@@ -67,7 +67,7 @@ Download the repo, create containers, create database, load fwa data:
     docker-compose build
     docker-compose up -d
     docker-compose run --rm loader psql -c "CREATE DATABASE fwapg" postgres
-    docker-compose run --rm loader make
+    docker-compose run --rm loader make --debug=basic
 
 As long as you do not remove the container `fwapg-db`, it will retain all the data you put in it.
 If you have shut down Docker or the container, start it up again with this command:
@@ -76,7 +76,7 @@ If you have shut down Docker or the container, start it up again with this comma
 
 Connect to the db from your host OS via the port specified in `docker-compose.yml`:
 
-    psql -p 8002 -U postgres fwapg
+    psql -p 8000 -U postgres fwapg
 
 Or see the FWA data in the browser as vector tiles/geojson features:
 
