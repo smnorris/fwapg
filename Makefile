@@ -73,24 +73,22 @@ clean_db:
 	$(PSQL) -c "create unlogged table fwapg.$(subst .make/,,$@_load) (data jsonb not null)"
 	# request tables with larger polygons in 5k chunks one at a time to avoid
 	# memory issues on resource-limited systems
+	# for other features, default to 10k chunks, 2 requests at a time
 	if [ $@ == '.make/fwa_assessment_watersheds_poly' ] || \
 		[ $@ == '.make/fwa_named_watersheds_poly' ] || \
 		[ $@ == '.make/fwa_watershed_groups_poly' ] || \
 		[ $@ == '.make/fwa_wetlands_poly' ] ; then \
 		bcdata cat -p 5000 -v -w 1 $(subst .make/,,whse_basemapping.$@) | \
 			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
-	# request tables with lots of records per watershed group as the server
-	# responses really slow down with big offsets
-	elif [ $@ == '.make/fwa_stream_networks_sp' ] ||
+	elif [ $@ == '.make/fwa_stream_networks_sp' ] || \
 		[ $@ == '.make/fwa_linear_boundaries_sp' ] || \
 		[ $@ == '.make/fwa_watersheds_poly' ] ; then \
-		for grp in $(GROUPS) ; do \
+		for wsg in $(GROUPS) ; do \
 			bcdata cat -p 10000 -v -w 2 \
-				--query "WATERSHED_GROUP_CODE='"$${grp}"'" \
+				--query "WATERSHED_GROUP_CODE='"$${wsg}"'" \
 				$(subst .make/,,whse_basemapping.$@) \
 				| $(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
 		done \
-	# for everything else, default to 10k chunks, 2 requests at a time
 	else \
 		bcdata cat -p 10000 -v -w 2 $(subst .make/,,whse_basemapping.$@) | \
 			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
