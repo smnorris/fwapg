@@ -75,6 +75,7 @@ jobs:
     - name: Build and Push Client Docker Image
       uses: docker/build-push-action@v2
       with:
+        context: docker/loader
         push: true # Will only build if this is not here
         tags: |
           ${{ secrets.DOCKER_HUB_USERNAME  }}/fwapg-loader:latest
