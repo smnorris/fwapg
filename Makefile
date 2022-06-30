@@ -79,8 +79,6 @@ clean_db:
 		[ $@ == '.make/fwa_wetlands_poly' ] ; then \
 		bcdata cat -p 5000 -v -w 1 $(subst .make/,,whse_basemapping.$@) | \
 			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
-	# for tables with many records, request per watershed group as the server
-	# is slow to respond to requests with very large offsets (>1M or so)
 	elif [ $@ == '.make/fwa_stream_networks_sp' ] || \
 		[ $@ == '.make/fwa_linear_boundaries_sp' ] || \
 		[ $@ == '.make/fwa_watersheds_poly' ] ; then \
@@ -90,7 +88,6 @@ clean_db:
 				$(subst .make/,,whse_basemapping.$@) \
 				| $(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
 		done \
-	# for other features, default to 10k chunks, 2 requests at a time
 	else \
 		bcdata cat -p 10000 -v -w 2 $(subst .make/,,whse_basemapping.$@) | \
 			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
