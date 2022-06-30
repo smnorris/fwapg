@@ -3,6 +3,12 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.2.1 (2022- - )
+------------------
+- fix oversight where data for two value added tables was not being loaded (#100)
+- speed up large table loads (#98)
+- fix GHA to ensure loader image gets built
+
 0.2.0 (2022-06-23)
 ------------------
 - load via WFS (manually curated .gpkg no longer required)
