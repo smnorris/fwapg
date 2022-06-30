@@ -71,8 +71,11 @@ clean_db:
 .make/%: sql/tables/spatial/%.sql .make/db
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@_load)"
 	$(PSQL) -c "create unlogged table fwapg.$(subst .make/,,$@_load) (data jsonb not null)"
-	# request tables with larger polygons in 5k chunks one at a time to avoid
+	# Request tables with larger polygons in 5k chunks one at a time to avoid
 	# memory issues on resource-limited systems
+	# For tables with many records, request per watershed group as the server
+	# is slow to respond to requests with very large offsets (>1M or so)
+	# For other features, default to 10k chunks, 2 requests at a time
 	if [ $@ == '.make/fwa_assessment_watersheds_poly' ] || \
 		[ $@ == '.make/fwa_named_watersheds_poly' ] || \
 		[ $@ == '.make/fwa_watershed_groups_poly' ] || \
