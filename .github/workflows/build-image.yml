@@ -25,7 +25,7 @@ jobs:
       run:
         shell: bash
 
-    name: 'build gdal util image'
+    name: 'build fwapg-loader image'
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
     env:
@@ -69,13 +69,14 @@ jobs:
     #   with:
     #     push: true # Will only build if this is not here
     #     tags: |
-    #       ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/gdal-util:latest
-    #       ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/gdal-util:${{ steps.calculateImageTag.outputs.DATESTAMP }}
+    #       ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/feapg-loader:latest
+    #       ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/feapg-loader:${{ steps.calculateImageTag.outputs.DATESTAMP }}
 
     - name: Build and Push Client Docker Image
       uses: docker/build-push-action@v2
       with:
+        file: docker/loader/Dockerfile
         push: true # Will only build if this is not here
         tags: |
-          ${{ secrets.DOCKER_HUB_USERNAME  }}/gdal-util:latest
-          ${{ secrets.DOCKER_HUB_USERNAME  }}/gdal-util:${{ steps.calculateImageTag.outputs.DATESTAMP }}
+          ${{ secrets.DOCKER_HUB_USERNAME  }}/fwapg-loader:latest
+          ${{ secrets.DOCKER_HUB_USERNAME  }}/fwapg-loader:${{ steps.calculateImageTag.outputs.DATESTAMP }}
