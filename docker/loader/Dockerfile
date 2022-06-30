@@ -17,7 +17,7 @@ RUN apt-get update && apt-get --assume-yes upgrade \
     && apt-get -qq install -y --no-install-recommends python3-pip \
     && apt-get -qq install -y --no-install-recommends python3-psycopg2 \
     && pip3 install --upgrade numpy \
-    && pip3 install fiona rasterio geopandas bcdata minio \
+    && pip3 install fiona rasterio geopandas bcdata \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/fwapg
