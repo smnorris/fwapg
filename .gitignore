@@ -8,6 +8,8 @@
 
 # data files
 data/
+*.zip
+docs/hydro*.csv
 
 # docker postgres volume
 postgres-data
