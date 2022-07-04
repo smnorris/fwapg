@@ -251,6 +251,9 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -f sql/functions/FWA_WatershedHex.sql
 	$(PSQL) -f sql/functions/FWA_WatershedStream.sql
 	$(PSQL) -f sql/functions/FWA_UpstreamBorderCrossings.sql
+	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
+	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
+	$(PSQL) -f sql/functions/FWA_LocateAlongInterval.sql
 	touch $@
 
 # rather than generating these lookups (slow), download pre-generated data
