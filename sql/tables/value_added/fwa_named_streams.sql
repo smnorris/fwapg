@@ -27,6 +27,7 @@ SELECT
   WHERE gnis_name IS NOT NULL
   AND lk.waterbody_key IS NULL
   AND mmwb.waterbody_key IS NULL
+  AND str.edge_type != 1450
   GROUP BY str.gnis_name, str.blue_line_key, str.watershed_group_code;
 
 CREATE INDEX
