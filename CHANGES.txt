@@ -3,11 +3,13 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.2.1 (2022- - )
+0.2.1 (2022-07-06)
 ------------------
-- fix oversight where data for two value added tables was not being loaded (#100)
+- fix load errors (#100, #105)
 - speed up large table loads (#98)
 - fix GHA to ensure loader image gets built
+- fail correctly when data not available (#107)
+- tidy named streams (#109)
 
 0.2.0 (2022-06-23)
 ------------------
