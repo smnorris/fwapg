@@ -1,6 +1,11 @@
 CREATE OR REPLACE FUNCTION postgisftw.FWA_hydroshed(id bigint)
 
-RETURNS geometry AS
+RETURNS TABLE
+    (
+        geom geometry(Polygon, 3005)
+    )
+
+AS
 
 $$
 
