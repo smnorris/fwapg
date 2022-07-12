@@ -286,13 +286,13 @@ begin
         -- find any upstream contributing area outside of BC (but not including Alaska panhandle)
         exbc AS
          (
-          SELECT postgisftw.FWA_Hydroshed(h.hybas_id) AS geom
+          SELECT FWA_Hydroshed(h.hybas_id) AS geom
           FROM ref_point s
           INNER JOIN hydrosheds.hybas_lev12_v1c h
           ON ST_Intersects(h.geom, s.geom_pt)
           WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.measure_pt) IN ('AB_120','YTNWT_60')
           UNION ALL
-          SELECT postgisftw.FWA_Huc12(h.huc12) AS geom
+          SELECT FWA_Huc12(h.huc12) AS geom
           FROM ref_point s
           INNER JOIN usgs.wbdhu12 h
           ON ST_intersects(h.geom, s.geom_pt)
@@ -468,14 +468,14 @@ begin
         exbc AS
          (
           SELECT
-            postgisftw.FWA_Hydroshed(h.hybas_id) AS geom
+            FWA_Hydroshed(h.hybas_id) AS geom
           FROM outlet s
           INNER JOIN hydrosheds.hybas_lev12_v1c h
           ON ST_Intersects(h.geom, s.geom)
           WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.downstream_route_measure) IN ('AB_120','YTNWT_60')
           UNION ALL
           SELECT
-            postgisftw.FWA_Huc12(h.huc12) AS geom
+            FWA_Huc12(h.huc12) AS geom
           FROM outlet s
           INNER JOIN usgs.wbdhu12 h
           ON ST_intersects(h.geom, s.geom)
