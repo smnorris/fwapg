@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION postgisftw.FWA_huc12(id character varying)
+CREATE OR REPLACE FUNCTION FWA_huc12(id character varying)
 
 RETURNS TABLE
     (
@@ -30,4 +30,4 @@ $$
 language 'sql' immutable strict parallel safe;
 
 
-COMMENT ON FUNCTION postgisftw.FWA_huc12 IS 'Return geometry of aggregated watershed boundary for watershed upstream of provided huc12 id';
+COMMENT ON FUNCTION FWA_huc12 IS 'Return geometry of aggregated watershed boundary for watershed upstream of provided huc12 id';

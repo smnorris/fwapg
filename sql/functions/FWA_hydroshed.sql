@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION postgisftw.FWA_hydroshed(id bigint)
+CREATE OR REPLACE FUNCTION FWA_hydroshed(id bigint)
 
 RETURNS TABLE
     (
@@ -29,4 +29,4 @@ FROM walkup w;
 $$
 language 'sql' immutable strict parallel safe;
 
-COMMENT ON FUNCTION postgisftw.FWA_hydroshed IS 'Return geometry of aggregated watershed boundary for watershed upstream of provided hydroshed id';
+COMMENT ON FUNCTION FWA_hydroshed IS 'Return geometry of aggregated watershed boundary for watershed upstream of provided hydroshed id';
