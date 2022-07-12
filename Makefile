@@ -239,7 +239,8 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	$(PSQL) -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
 	$(PSQL) -c "COMMENT ON TABLE hydrosheds.hybas_lev12_v1c IS 'HydroBasins for North America from https://www.hydrosheds.org. See source for column documentation';"
-	$(PSQL) -f sql/functions/FWA_hydroshed.sql
+	$(PSQL) -f sql/functions/FWA_hydroshed.sql  # internal function, requires hydroshed id as input
+	$(PSQL) -f sql/functions/hydroshed.sql      # published function, point as (x, y, srid) as input
 	touch $@
 
 # additional FWA functions
