@@ -1,9 +1,6 @@
 CREATE OR REPLACE FUNCTION FWA_hydroshed(id bigint)
 
-RETURNS TABLE
-    (
-        geom geometry(Polygon, 3005)
-    )
+RETURNS geometry(polygon, 3005)
 
 AS
 
