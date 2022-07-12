@@ -1,6 +1,8 @@
 CREATE OR REPLACE FUNCTION FWA_huc12(id character varying)
 
-RETURNS geometry AS
+RETURNS geometry(polygon, 3005)
+
+AS
 
 $$
 
