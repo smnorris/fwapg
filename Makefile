@@ -80,19 +80,19 @@ clean_db:
 		[ $@ == '.make/fwa_named_watersheds_poly' ] || \
 		[ $@ == '.make/fwa_watershed_groups_poly' ] || \
 		[ $@ == '.make/fwa_wetlands_poly' ] ; then \
-		set -e; bcdata cat -p 5000 -v -w 1 $(subst .make/,,whse_basemapping.$@) | \
+		set -e; bcdata cat -p 5000 -v -w 1 --dst_crs EPSG:3005 $(subst .make/,,whse_basemapping.$@) | \
 			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
 	elif [ $@ == '.make/fwa_stream_networks_sp' ] || \
 		[ $@ == '.make/fwa_linear_boundaries_sp' ] || \
 		[ $@ == '.make/fwa_watersheds_poly' ] ; then \
 		for wsg in $(GROUPS) ; do \
-			set -e; bcdata cat -p 10000 -v -w 2 \
+			set -e; bcdata cat -p 10000 -v -w 2 --dst_crs EPSG:3005 \
 				--query "WATERSHED_GROUP_CODE='"$${wsg}"'" \
 				$(subst .make/,,whse_basemapping.$@) \
 				| $(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
 		done \
 	else \
-		set -e; bcdata cat -p 10000 -v -w 2 $(subst .make/,,whse_basemapping.$@) | \
+		set -e; bcdata cat -p 10000 -v -w 2 --dst_crs EPSG:3005 $(subst .make/,,whse_basemapping.$@) | \
 			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
 	fi
 	$(PSQL) -f $<
