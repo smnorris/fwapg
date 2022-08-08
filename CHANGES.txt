@@ -3,6 +3,10 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.2.3 (2022-)
+------------------
+- set stream_order_parent of streams draining to ocean to NULL (#115)
+
 0.2.2 (2022-08-01)
 ------------------
 - specify crs when requesting features, to work with bcdata v0.7.0 (#114)

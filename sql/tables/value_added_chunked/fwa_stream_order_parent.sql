@@ -7,8 +7,8 @@ insert into fwapg.fwa_stream_order_parent
   select distinct on (a.blue_line_key)
     a.blue_line_key,
     b.stream_order as stream_order_parent
-  from fwapg.fwa_stream_networks_sp a
-  left outer join fwapg.fwa_stream_networks_sp b
+  from whse_basemapping.fwa_stream_networks_sp a
+  left outer join whse_basemapping.fwa_stream_networks_sp b
   on a.wscode_ltree = b.localcode_ltree
   where
     a.watershed_group_code = :'wsg'
@@ -17,6 +17,7 @@ insert into fwapg.fwa_stream_order_parent
     and a.wscode_ltree <@ '999' is false
     and a.edge_type != 6010
     and a.localcode_ltree is not null
+    and a.blue_line_key != b.blue_line_key
   order by a.blue_line_key, b.stream_order desc
   on conflict do nothing;
 
@@ -32,8 +33,8 @@ insert into fwapg.fwa_stream_order_parent (
 select distinct on (a.blue_line_key)
   a.blue_line_key,
   b.stream_order as stream_order_parent
-from fwapg.fwa_stream_networks_sp a
-left outer join fwapg.fwa_stream_networks_sp b
+from whse_basemapping.fwa_stream_networks_sp a
+left outer join whse_basemapping.fwa_stream_networks_sp b
 on (a.wscode_ltree = b.wscode_ltree and
     a.localcode_ltree = b.localcode_ltree)
 where
@@ -43,5 +44,6 @@ where
   and a.wscode_ltree <@ '999' is false
   and a.edge_type != 6010
   and a.localcode_ltree is not null
+  and a.blue_line_key != b.blue_line_key
 order by a.blue_line_key, b.stream_order desc
 on conflict do nothing;
