@@ -28,6 +28,8 @@
 -- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 -- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+-- ensure the functions are created in the public schema
+set search_path to public;
 
 create or replace function ST_Safe_Repair(
     geom    geometry,

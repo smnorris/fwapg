@@ -57,6 +57,10 @@ in order to avoid returning records in b with equivalent bluelinekey/measure.
 Same as 2, but for comparing points only.
 */
 
+-- ensure the functions are created in the public schema
+set search_path to public;
+
+
 CREATE OR REPLACE FUNCTION FWA_Downstream(
     wscode_ltree_a ltree,
     localcode_ltree_a ltree,

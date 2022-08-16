@@ -53,9 +53,9 @@ clean_db:
 # ** the database must already exist **
 .make/db: sql/functions/FWA_Downstream.sql sql/functions/FWA_Upstream.sql
 	mkdir -p .make
-	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS postgis"
-	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS ltree"
-	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS intarray"
+	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS postgis with schema public"
+	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS ltree with schema public"
+	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS intarray with schema public"
 	$(PSQL) -c "CREATE SCHEMA IF NOT EXISTS whse_basemapping"
 	$(PSQL) -c 'CREATE SCHEMA IF NOT EXISTS usgs'
 	$(PSQL) -c 'CREATE SCHEMA IF NOT EXISTS hydrosheds'

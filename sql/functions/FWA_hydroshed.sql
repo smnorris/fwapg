@@ -1,3 +1,6 @@
+-- ensure the functions are created in the public schema
+set search_path to public;
+
 CREATE OR REPLACE FUNCTION FWA_hydroshed(id bigint)
 
 RETURNS geometry(polygon, 3005)
