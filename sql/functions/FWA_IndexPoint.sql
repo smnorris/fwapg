@@ -9,6 +9,9 @@
 -- - bc_ind                   - indicates if the stream is in BC
 -- - geom                     - point geometry of closest location on the stream (at downstream_route_measure)
 
+-- ensure the functions are created in the public schema
+set search_path to public;
+
 CREATE OR REPLACE FUNCTION FWA_IndexPoint(
     point geometry(Point, 3005),
     tolerance float DEFAULT 5000,

@@ -62,6 +62,9 @@ return TRUE when the values for b are upstream of the values for a.
 
 */
 
+-- ensure the functions are created in the public schema
+set search_path to public;
+
 -- watershed code comparison only
 CREATE OR REPLACE FUNCTION FWA_Upstream(
     wscode_ltree_a ltree,
