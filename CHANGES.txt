@@ -6,6 +6,7 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 0.2.3 (2022-)
 ------------------
 - set stream_order_parent of streams draining to ocean to NULL (#115)
+- ensure fwa functions not created in postgisftw are created in public schema (#117)
 
 0.2.2 (2022-08-01)
 ------------------
