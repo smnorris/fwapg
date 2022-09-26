@@ -1,3 +1,5 @@
+delete from whse_basemapping.fwa_coastlines_sp where watershed_group_code = :'wsg';
+
 insert into whse_basemapping.fwa_coastlines_sp (
   linear_feature_id,
   watershed_group_id,
@@ -26,6 +28,6 @@ select
   length_metre,
   feature_source,
   feature_code,
-  ST_SetSRID(geom, 3005) as geom
+  (st_dump(geom)).geom as geom
 from fwapg.fwa_coastlines_sp
 where watershed_group_code = :'wsg';

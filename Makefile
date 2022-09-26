@@ -74,17 +74,21 @@ clean_db:
 	set -e ;  $(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	# create empty load table
 	set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t $(subst .make/,,whse_basemapping.$@)
-	# load data from catalogue per watershed group
-	for wsg in $(GROUPS) ; do \
+	
+	if [ $@ == '.make/fwa_bays_and_channels_poly' ] ; then \
+		set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --append -p 5000 -t $(subst .make/,,whse_basemapping.$@) ; \
+		set -e ; $(PSQL) -f $< ; \
+	else \
+		for wsg in $(GROUPS) ; do \
 			set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg -t $(subst .make/,,whse_basemapping.$@) \
 			--query "WATERSHED_GROUP_CODE='"$${wsg}"'" \
 			--append ; \
-	done \
-	# load from staging schema to whse_basemapping per watershed group
-	for wsg in $(GROUPS) ; do \
-		set -e ; $(PSQL) -f $< -v wsg=$$wsg ; \
-	done \
-	
+		done; \
+		for wsg in $(GROUPS) ; do \
+			set -e ; $(PSQL) -f $< -v wsg=$$wsg ; \
+		done \
+	fi
+	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	touch $@
 
 # get non spatial data from FTP
