@@ -51,7 +51,7 @@ clean_db:
 
 # Add required extensions, schemas to db
 # ** the database must already exist **
-.make/db: sql/functions/FWA_Downstream.sql sql/functions/FWA_Upstream.sql
+.make/db: sql/functions/FWA_Downstream.sql sql/functions/FWA_Upstream.sql sql/tables/spatial/schema.sql
 	mkdir -p .make
 	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS postgis with schema public"
 	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS ltree with schema public"
@@ -65,38 +65,26 @@ clean_db:
 	$(PSQL) -f sql/functions/ST_Safe_Repair.sql
 	$(PSQL) -f sql/functions/FWA_Downstream.sql
 	$(PSQL) -f sql/functions/FWA_Upstream.sql
+	$(PSQL) -f sql/tables/spatial/schema.sql
 	touch $@
 
-# load spatial tables to staging schema (fwapg) from WFS
+# load spatial tables
 .make/%: sql/tables/spatial/%.sql .make/db
-	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@_load)"
-	$(PSQL) -c "create unlogged table fwapg.$(subst .make/,,$@_load) (data jsonb not null)"
-	# Request tables with larger polygons in 5k chunks one at a time to avoid
-	# memory issues on resource-limited systems
-	# For tables with many records, request per watershed group as the server
-	# is slow to respond to requests with very large offsets (>1M or so)
-	# For other features, default to 10k chunks, 2 requests at a time
-	if [ $@ == '.make/fwa_assessment_watersheds_poly' ] || \
-		[ $@ == '.make/fwa_named_watersheds_poly' ] || \
-		[ $@ == '.make/fwa_watershed_groups_poly' ] || \
-		[ $@ == '.make/fwa_wetlands_poly' ] ; then \
-		set -e; bcdata cat -p 5000 -v -w 1 --dst_crs EPSG:3005 $(subst .make/,,whse_basemapping.$@) | \
-			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
-	elif [ $@ == '.make/fwa_stream_networks_sp' ] || \
-		[ $@ == '.make/fwa_linear_boundaries_sp' ] || \
-		[ $@ == '.make/fwa_watersheds_poly' ] ; then \
-		for wsg in $(GROUPS) ; do \
-			set -e; bcdata cat -p 10000 -v -w 2 --dst_crs EPSG:3005 \
-				--query "WATERSHED_GROUP_CODE='"$${wsg}"'" \
-				$(subst .make/,,whse_basemapping.$@) \
-				| $(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
-		done \
-	else \
-		set -e; bcdata cat -p 10000 -v -w 2 --dst_crs EPSG:3005 $(subst .make/,,whse_basemapping.$@) | \
-			$(PSQL) -c "COPY fwapg.$(subst .make/,,$@_load) (data) FROM STDIN;"; \
-	fi
-	$(PSQL) -f $<
-	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)_load"
+	# delete existing load table
+	set -e ;  $(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
+	# create empty load table
+	set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t $(subst .make/,,whse_basemapping.$@)
+	# load data from catalogue per watershed group
+	for wsg in $(GROUPS) ; do \
+			set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg -t $(subst .make/,,whse_basemapping.$@) \
+			--query "WATERSHED_GROUP_CODE='"$${wsg}"'" \
+			--append ; \
+	done \
+	# load from staging schema to whse_basemapping per watershed group
+	for wsg in $(GROUPS) ; do \
+		set -e ; $(PSQL) -f $< -v wsg=$$wsg ; \
+	done \
+	
 	touch $@
 
 # get non spatial data from FTP
