@@ -21,7 +21,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
     - access to a PostgreSQL (>=13) database with the PostGIS extension (>=3.1) installed
     - GDAL >=3.4
     - Python 3
-    - [`bcdata`](https://github.com/smnorris/bcdata) >= 0.6.3
+    - [`bcdata`](https://github.com/smnorris/bcdata) >= 0.7.3
     - [GNU parallel](https://www.gnu.org/software/parallel/)
     - [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
 
