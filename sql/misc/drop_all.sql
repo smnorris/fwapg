@@ -14,7 +14,7 @@ drop table if exists whse_basemapping.fwa_named_watersheds_poly;
 drop table if exists whse_basemapping.fwa_obstructions_sp;
 drop table if exists whse_basemapping.fwa_rivers_poly;
 drop table if exists whse_basemapping.fwa_streams_20k_50k;
-drop table if exists whse_basemapping.fwa_stream_networks_sp;
+drop table if exists whse_basemapping.fwa_stream_networks_sp cascade;
 drop table if exists whse_basemapping.fwa_waterbodies_20k_50k;
 drop table if exists whse_basemapping.fwa_waterbody_type_codes;
 drop table if exists whse_basemapping.fwa_watersheds_poly;
