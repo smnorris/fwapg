@@ -6,13 +6,13 @@ SHELL=/bin/bash
 # provide db connection param to psql and ensure scripts stop on error
 PSQL = psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 
-# Kludge to get the OGR to work with the container that was built and being
-# run in openshift... To address this issue:
+# Kludge to get the OGR to work with openshift container 
+# To avoid this issue, use a newer gdal
 # https://github.com/OSGeo/gdal/issues/4570
 DATABASE_URL_OGR=$(DATABASE_URL)?application_name=foo
 
 # tables downloadable via via wfs are defined in sql/tables/spatial
-SPATIAL_TARGETS=$(basename $(subst sql/tables/spatial/,.make/,$(wildcard sql/tables/spatial/*.sql)))
+SPATIAL_TARGETS=$(basename $(subst sql/tables/spatial/,.make/,$(wildcard sql/tables/spatial/fwa_*.sql)))
 
 # tables not downloadable via wfs are defined in sql/tables/non_spatial
 NON_SPATIAL_TARGETS=$(basename $(subst sql/tables/non_spatial/,.make/,$(wildcard sql/tables/non_spatial/*.sql)))
@@ -69,13 +69,17 @@ clean_db:
 	touch $@
 
 # load spatial tables
-.make/%: sql/tables/spatial/%.sql .make/db
+.make/fwa_%: sql/tables/spatial/fwa_%.sql .make/db
 	# delete existing load table
 	set -e ;  $(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	# create empty load table
 	set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t $(subst .make/,,whse_basemapping.$@)
-	
-	if [ $@ == '.make/fwa_bays_and_channels_poly' ] ; then \
+	# these have no watershed group code to partition on, load them in one batch, but with smaller pagesize
+	# to avoid memory errors on low-memory systems
+	if [ $@ == '.make/fwa_bays_and_channels_poly' ] || \
+		[ $@ == '.make/fwa_islands_poly' ] || \
+		[ $@ == '.make/fwa_named_point_features_sp' ] || \
+		[ $@ == '.make/fwa_named_watersheds_poly' ] ; then \
 		set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --append -p 5000 -t $(subst .make/,,whse_basemapping.$@) ; \
 		set -e ; $(PSQL) -f $< ; \
 	else \

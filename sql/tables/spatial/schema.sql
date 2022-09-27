@@ -205,14 +205,207 @@ create index on whse_basemapping.fwa_lakes_poly using gist (localcode_ltree);
 create index on whse_basemapping.fwa_lakes_poly using btree (localcode_ltree);
 create index on whse_basemapping.fwa_lakes_poly using gist (geom);
 
+-- ---------------------------------------------------------------------------------------------------------------------
 
+drop table if exists whse_basemapping.fwa_linear_boundaries_sp;
+create table whse_basemapping.fwa_linear_boundaries_sp (
+  linear_feature_id        integer primary key       ,
+  watershed_group_id       integer not null          ,
+  edge_type                integer                   ,
+  waterbody_key            integer                   ,
+  blue_line_key            integer                   ,
+  watershed_key            integer                   ,
+  fwa_watershed_code       character varying(143)    ,
+  local_watershed_code     character varying(143)    ,
+  watershed_group_code     character varying(4)      ,
+  downstream_route_measure double precision          ,
+  length_metre             double precision          ,
+  feature_source           character varying         ,
+  feature_code             character varying(10)     ,
+  wscode_ltree ltree       generated always as
+    (replace(replace(fwa_watershed_code, '-000000', ''), '-', '.')::ltree) stored,
+  localcode_ltree ltree    generated always as
+    (replace(replace(local_watershed_code, '-000000', ''), '-', '.')::ltree) stored,
+  geom                     public.geometry(MultiLineString,3005)
+);
 
-
-
-
-
+create index on whse_basemapping.fwa_linear_boundaries_sp (edge_type);
+create index on whse_basemapping.fwa_linear_boundaries_sp (blue_line_key);
+create index on whse_basemapping.fwa_linear_boundaries_sp (watershed_key);
+create index on whse_basemapping.fwa_linear_boundaries_sp (waterbody_key);
+create index on whse_basemapping.fwa_linear_boundaries_sp (watershed_group_code);
+create index on whse_basemapping.fwa_linear_boundaries_sp using gist (wscode_ltree);
+create index on whse_basemapping.fwa_linear_boundaries_sp using btree (wscode_ltree);
+create index on whse_basemapping.fwa_linear_boundaries_sp using gist (localcode_ltree);
+create index on whse_basemapping.fwa_linear_boundaries_sp using btree (localcode_ltree);
+create index on whse_basemapping.fwa_linear_boundaries_sp using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
+
+
+drop table if exists whse_basemapping.fwa_manmade_waterbodies_poly;
+
+create table whse_basemapping.fwa_manmade_waterbodies_poly (
+    waterbody_poly_id integer primary key,
+    watershed_group_id integer,
+    waterbody_type character varying(1),
+    waterbody_key integer,
+    area_ha double precision,
+    gnis_id_1 integer,
+    gnis_name_1 character varying(80),
+    gnis_id_2 integer,
+    gnis_name_2 character varying(80),
+    gnis_id_3 integer,
+    gnis_name_3 character varying(80),
+    blue_line_key integer,
+    watershed_key integer,
+    fwa_watershed_code character varying(143),
+    local_watershed_code character varying(143),
+    watershed_group_code character varying(4),
+    left_right_tributary character varying(7),
+    waterbody_key_50k integer,
+    watershed_group_code_50k character varying(4),
+    waterbody_key_group_code_50k character varying(55),
+    watershed_code_50k character varying(45),
+    feature_code character varying(10),
+    wscode_ltree public.ltree generated always as ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    geom public.geometry(multipolygon,3005)
+);
+
+
+create index on whse_basemapping.fwa_manmade_waterbodies_poly (blue_line_key);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly (watershed_key);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly (waterbody_key);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly (watershed_group_code);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly (gnis_name_1);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly using gist (wscode_ltree);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly using btree (wscode_ltree);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly using gist (localcode_ltree);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly using btree (localcode_ltree);
+create index on whse_basemapping.fwa_manmade_waterbodies_poly using gist (geom);
+
+-- ---------------------------------------------------------------------------------------------------------------------
+
+drop table if exists whse_basemapping.fwa_named_point_features_sp;
+
+create table whse_basemapping.fwa_named_point_features_sp (
+    named_point_feature_id integer primary key,
+    gnis_id integer,
+    gnis_name character varying(80),
+    named_feature_type character varying(6),
+    feature_code character varying(10),
+    geom public.geometry(point, 3005)
+);
+
+create index on whse_basemapping.fwa_named_point_features_sp (gnis_name);
+create index on whse_basemapping.fwa_named_point_features_sp using gist (geom);
+
+-- ---------------------------------------------------------------------------------------------------------------------
+
+drop table if exists whse_basemapping.fwa_named_watersheds_poly;
+
+create table whse_basemapping.fwa_named_watersheds_poly (
+  named_watershed_id integer primary key,
+  gnis_id integer,
+  gnis_name character varying(80),
+  blue_line_key integer,
+  watershed_key integer,
+  fwa_watershed_code character varying(143),
+  stream_order integer,
+  stream_magnitude integer,
+  area_ha double precision,
+  feature_code character varying(10),
+  wscode_ltree public.ltree generated always as
+    ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+  geom public.geometry(multipolygon,3005)
+);
+
+
+create index on whse_basemapping.fwa_named_watersheds_poly (gnis_name);
+create index on whse_basemapping.fwa_named_watersheds_poly (blue_line_key);
+create index on whse_basemapping.fwa_named_watersheds_poly (fwa_watershed_code);
+create index on whse_basemapping.fwa_named_watersheds_poly using gist (wscode_ltree);
+create index on whse_basemapping.fwa_named_watersheds_poly using btree (wscode_ltree);
+create index on whse_basemapping.fwa_named_watersheds_poly using gist (geom);
+
+-- ---------------------------------------------------------------------------------------------------------------------
+drop table if exists whse_basemapping.fwa_obstructions_sp;
+
+create table whse_basemapping.fwa_obstructions_sp (
+    obstruction_id integer primary key,
+    watershed_group_id integer,
+    linear_feature_id integer,
+    gnis_id integer,
+    gnis_name character varying(80),
+    obstruction_type character varying(20),
+    blue_line_key integer,
+    watershed_key integer,
+    fwa_watershed_code character varying(143),
+    local_watershed_code character varying(143),
+    watershed_group_code character varying(4),
+    route_measure double precision,
+    feature_source character varying(15),
+    feature_code character varying(10),
+    wscode_ltree public.ltree generated always as ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    geom public.geometry(point,3005)
+);
+
+create index on whse_basemapping.fwa_obstructions_sp (linear_feature_id);
+create index on whse_basemapping.fwa_obstructions_sp (blue_line_key);
+create index on whse_basemapping.fwa_obstructions_sp (watershed_key);
+create index on whse_basemapping.fwa_obstructions_sp (obstruction_type);
+create index on whse_basemapping.fwa_obstructions_sp (watershed_group_code);
+create index on whse_basemapping.fwa_obstructions_sp (gnis_name);
+create index on whse_basemapping.fwa_obstructions_sp using gist (wscode_ltree);
+create index on whse_basemapping.fwa_obstructions_sp using btree (wscode_ltree);
+create index on whse_basemapping.fwa_obstructions_sp using gist (localcode_ltree);
+create index on whse_basemapping.fwa_obstructions_sp using btree (localcode_ltree);
+create index on whse_basemapping.fwa_obstructions_sp using gist (geom);
+-- ---------------------------------------------------------------------------------------------------------------------
+drop table if exists whse_basemapping.fwa_rivers_poly;
+
+create table whse_basemapping.fwa_rivers_poly (
+    waterbody_poly_id integer primary key,
+    watershed_group_id integer,
+    waterbody_type character varying(1),
+    waterbody_key integer,
+    area_ha double precision,
+    gnis_id_1 integer,
+    gnis_name_1 character varying(80),
+    gnis_id_2 integer,
+    gnis_name_2 character varying(80),
+    gnis_id_3 integer,
+    gnis_name_3 character varying(80),
+    blue_line_key integer,
+    watershed_key integer,
+    fwa_watershed_code character varying(143),
+    local_watershed_code character varying(143),
+    watershed_group_code character varying(4),
+    left_right_tributary character varying(7),
+    waterbody_key_50k integer,
+    watershed_group_code_50k character varying(4),
+    waterbody_key_group_code_50k character varying(55),
+    watershed_code_50k character varying(45),
+    feature_code character varying(10),
+    wscode_ltree public.ltree generated always as ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    geom public.geometry(multipolygon,3005)
+);
+create index on whse_basemapping.fwa_rivers_poly (blue_line_key);
+create index on whse_basemapping.fwa_rivers_poly (watershed_key);
+create index on whse_basemapping.fwa_rivers_poly (waterbody_key);
+create index on whse_basemapping.fwa_rivers_poly (watershed_group_code);
+create index on whse_basemapping.fwa_rivers_poly (gnis_name_1);
+create index on whse_basemapping.fwa_rivers_poly using gist (wscode_ltree);
+create index on whse_basemapping.fwa_rivers_poly using btree (wscode_ltree);
+create index on whse_basemapping.fwa_rivers_poly using gist (localcode_ltree);
+create index on whse_basemapping.fwa_rivers_poly using btree (localcode_ltree);
+create index on whse_basemapping.fwa_rivers_poly using gist (geom);
+
+-- ---------------------------------------------------------------------------------------------------------------------  
+
 drop table if exists whse_basemapping.fwa_stream_networks_sp;
 
 create table whse_basemapping.fwa_stream_networks_sp (
@@ -249,8 +442,6 @@ create table whse_basemapping.fwa_stream_networks_sp (
   geom public.geometry(linestringzm, 3005)
 );
 
-
--- create the necessary indices
 create index on whse_basemapping.fwa_stream_networks_sp (edge_type);
 create index on whse_basemapping.fwa_stream_networks_sp (blue_line_key);
 create index on whse_basemapping.fwa_stream_networks_sp (blue_line_key, downstream_route_measure);
@@ -263,3 +454,122 @@ create index on whse_basemapping.fwa_stream_networks_sp using btree (wscode_ltre
 create index on whse_basemapping.fwa_stream_networks_sp using gist (localcode_ltree);
 create index on whse_basemapping.fwa_stream_networks_sp using btree (localcode_ltree);
 create index on whse_basemapping.fwa_stream_networks_sp using gist (geom);
+
+
+-- ---------------------------------------------------------------------------------------------------------------------
+
+drop table if exists whse_basemapping.fwa_watershed_groups_poly;
+
+create table whse_basemapping.fwa_watershed_groups_poly (
+    watershed_group_id integer primary key,
+    watershed_group_code character varying(4),
+    watershed_group_name character varying(80),
+    area_ha double precision,
+    feature_code character varying(10),
+    geom public.geometry(multipolygon,3005)
+);
+
+create index on whse_basemapping.fwa_watershed_groups_poly (watershed_group_code);
+create index on whse_basemapping.fwa_watershed_groups_poly using gist (geom);
+
+
+-- ---------------------------------------------------------------------------------------------------------------------
+
+drop table if exists whse_basemapping.fwa_watersheds_poly;
+
+create table whse_basemapping.fwa_watersheds_poly (
+  watershed_feature_id       integer primary key     ,
+  watershed_group_id         integer not null        ,
+  watershed_type             character varying(1)    ,
+  gnis_id_1                  integer                 ,
+  gnis_name_1                character varying(80)   ,
+  gnis_id_2                  integer                 ,
+  gnis_name_2                character varying(80)   ,
+  gnis_id_3                  integer                 ,
+  gnis_name_3                character varying(80)   ,
+  waterbody_id               integer                 ,
+  waterbody_key              integer                 ,
+  watershed_key              integer not null        ,
+  fwa_watershed_code         character varying(143) not null,
+  local_watershed_code       character varying(143) not null,
+  watershed_group_code       character varying(4) not null,
+  left_right_tributary       character varying(7)    ,
+  watershed_order            integer                 ,
+  watershed_magnitude        integer                 ,
+  local_watershed_order      integer                 ,
+  local_watershed_magnitude  integer                 ,
+  area_ha                    double precision        ,
+  river_area                 double precision        ,
+  lake_area                  double precision        ,
+  wetland_area               double precision        ,
+  manmade_area               double precision        ,
+  glacier_area               double precision        ,
+  average_elevation          double precision        ,
+  average_slope              double precision        ,
+  aspect_north               double precision        ,
+  aspect_south               double precision        ,
+  aspect_west                double precision        ,
+  aspect_east                double precision        ,
+  aspect_flat                double precision        ,
+  feature_code               character varying(10)   ,
+  wscode_ltree ltree generated always as (replace(replace(fwa_watershed_code, '-000000', ''), '-', '.')::ltree) stored,
+  localcode_ltree ltree generated always as (replace(replace(local_watershed_code, '-000000', ''), '-', '.')::ltree) stored,
+  geom                       public.geometry(multipolygon,3005)
+ );
+
+create index on whse_basemapping.fwa_watersheds_poly (gnis_name_1);
+create index on whse_basemapping.fwa_watersheds_poly (waterbody_id);
+create index on whse_basemapping.fwa_watersheds_poly (waterbody_key);
+create index on whse_basemapping.fwa_watersheds_poly (watershed_key);
+create index on whse_basemapping.fwa_watersheds_poly (watershed_group_code);
+create index on whse_basemapping.fwa_watersheds_poly (watershed_group_id);
+create index fwa_watersheds_poly_wscode_ltree_gist_idx on whse_basemapping.fwa_watersheds_poly using gist (wscode_ltree);
+create index on whse_basemapping.fwa_watersheds_poly using btree (wscode_ltree);
+create index on whse_basemapping.fwa_watersheds_poly using gist (localcode_ltree);
+create index on whse_basemapping.fwa_watersheds_poly using btree (localcode_ltree);
+create index on whse_basemapping.fwa_watersheds_poly using gist (geom);
+
+
+-- ---------------------------------------------------------------------------------------------------------------------
+
+drop table if exists whse_basemapping.fwa_wetlands_poly;
+
+create table whse_basemapping.fwa_wetlands_poly (
+    waterbody_poly_id integer primary key,
+    watershed_group_id integer,
+    waterbody_type character varying(1),
+    waterbody_key integer,
+    area_ha double precision,
+    gnis_id_1 integer,
+    gnis_name_1 character varying(80),
+    gnis_id_2 integer,
+    gnis_name_2 character varying(80),
+    gnis_id_3 integer,
+    gnis_name_3 character varying(80),
+    blue_line_key integer,
+    watershed_key integer,
+    fwa_watershed_code character varying(143),
+    local_watershed_code character varying(143),
+    watershed_group_code character varying(4),
+    left_right_tributary character varying(7),
+    waterbody_key_50k integer,
+    watershed_group_code_50k character varying(4),
+    waterbody_key_group_code_50k character varying(55),
+    watershed_code_50k character varying(45),
+    feature_code character varying(10),
+    wscode_ltree public.ltree generated always as ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
+    geom public.geometry(multipolygon,3005)
+);
+
+create index on whse_basemapping.fwa_wetlands_poly (blue_line_key);
+create index on whse_basemapping.fwa_wetlands_poly (watershed_key);
+create index on whse_basemapping.fwa_wetlands_poly (waterbody_key);
+create index on whse_basemapping.fwa_wetlands_poly (watershed_group_code);
+create index on whse_basemapping.fwa_wetlands_poly (gnis_name_1);
+create index on whse_basemapping.fwa_wetlands_poly using gist (wscode_ltree);
+create index on whse_basemapping.fwa_wetlands_poly using btree (wscode_ltree);
+create index on whse_basemapping.fwa_wetlands_poly using gist (localcode_ltree);
+create index on whse_basemapping.fwa_wetlands_poly using btree (localcode_ltree);
+create index on whse_basemapping.fwa_wetlands_poly using gist (geom);
+

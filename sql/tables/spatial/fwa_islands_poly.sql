@@ -1,5 +1,5 @@
-delete from whse_basemapping.fwa_islands_poly where watershed_group_code = :'wsg';
-insert into fwapg.fwa_islands_poly (
+delete from whse_basemapping.fwa_islands_poly;
+insert into whse_basemapping.fwa_islands_poly (
   island_id,
   island_type,
   gnis_id_1,
@@ -25,9 +25,8 @@ select
   gnis_name_3,
   fwa_watershed_code,
   local_watershed_code,
-  ble precision as area_ha,
+  area_ha::double precision as area_ha,
   feature_code,
   st_multi(geom) as geom
-from fwapg.fwa_islands_poly
-watershed_group_code = :'wsg';
+from fwapg.fwa_islands_poly;
 
