@@ -13,8 +13,8 @@ INSERT INTO fwapg.fwa_streams_watersheds_lut
 SELECT DISTINCT ON (linear_feature_id)
   s.linear_feature_id,
   w.watershed_feature_id
-FROM fwapg.fwa_stream_networks_sp s
-INNER JOIN fwapg.fwa_watersheds_poly w
+FROM whse_basemapping.fwa_stream_networks_sp s
+INNER JOIN whse_basemapping.fwa_watersheds_poly w
 ON (s.wscode_ltree = w.wscode_ltree AND
     s.localcode_ltree = w.localcode_ltree AND
     s.watershed_group_code = w.watershed_group_code)
@@ -36,10 +36,10 @@ INSERT INTO fwapg.fwa_streams_watersheds_lut
 SELECT DISTINCT ON (linear_feature_id)
   s.linear_feature_id,
   w.watershed_feature_id
-FROM fwapg.fwa_stream_networks_sp s
+FROM whse_basemapping.fwa_stream_networks_sp s
 LEFT JOIN fwapg.fwa_streams_watersheds_lut l
 ON s.linear_feature_id = l.linear_feature_id
-INNER JOIN fwapg.fwa_watersheds_poly w
+INNER JOIN whse_basemapping.fwa_watersheds_poly w
 ON ST_Intersects(ST_LineInterpolatePoint(s.geom, .5), w.geom)
 WHERE l.watershed_feature_id IS NULL -- extract only streams that are not already matched
 AND s.watershed_group_code = :'wsg'

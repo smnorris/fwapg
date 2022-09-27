@@ -19,10 +19,10 @@ SELECT
   max(str.stream_order),
   str.watershed_group_code,
   ST_Multi(ST_Force2D(ST_Simplify(ST_Union(str.geom), 25))) AS geom
-  FROM fwapg.fwa_stream_networks_sp str
-  LEFT OUTER JOIN fwapg.fwa_lakes_poly lk
+  FROM whse_basemapping.fwa_stream_networks_sp str
+  LEFT OUTER JOIN whse_basemapping.fwa_lakes_poly lk
   ON str.waterbody_key = lk.waterbody_key
-  LEFT OUTER JOIN fwapg.fwa_manmade_waterbodies_poly mmwb
+  LEFT OUTER JOIN whse_basemapping.fwa_manmade_waterbodies_poly mmwb
   ON str.waterbody_key = mmwb.waterbody_key
   WHERE gnis_name IS NOT NULL
   AND lk.waterbody_key IS NULL

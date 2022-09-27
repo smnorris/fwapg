@@ -167,8 +167,8 @@ data/FWA_BC.gdb.zip:
 	$(PSQL) -c "COMMENT ON COLUMN fwapg.fwa_stream_order_parent.stream_order_parent IS 'The stream_order of the stream the blue_line_key flows into';"
 	touch $@
 
-# go live by switching source fwa tables from staging fwapg schema to whse_basemapping
-.make/schema_swap: $(SPATIAL_TARGETS) $(NON_SPATIAL_TARGETS) $(VALUE_ADDED_TARGETS) .make/fwa_streams_watersheds_lut .make/fwa_stream_order_parent
+# switch non-spatial/value added tables from staging fwapg schema to whse_basemapping
+.make/schema_swap: $(NON_SPATIAL_TARGETS) $(VALUE_ADDED_TARGETS) .make/fwa_streams_watersheds_lut .make/fwa_stream_order_parent
 	$(foreach tbl,$(subst .make/,,$^), $(PSQL) -c "drop table if exists whse_basemapping.$(tbl)";)
 	$(foreach tbl,$(subst .make/,,$^), $(PSQL) -c "alter table fwapg.$(tbl) set schema whse_basemapping";)
 	touch $@
@@ -190,14 +190,13 @@ data/WBD_National_GDB.zip:
 		-lco GEOMETRY_NAME=geom \
 		-nln wbdhu12 \
 		-nlt MULTIPOLYGON \
-		-dialect SQLITE \
-		-sql "SELECT * FROM WBDHU12 \
-		WHERE states LIKE '%%CN%%' \
+		-where "states LIKE '%%CN%%' \
 		OR states LIKE '%%WA%%' \
 		OR states LIKE '%%AK%%' \
 		OR states LIKE '%%ID%%' \
 		OR states LIKE '%%MT%%'" \
-		data/WBD_National_GDB.zip
+		data/WBD_National_GDB.zip \
+		WBDHU12
 	# index the columns of interest
 	$(PSQL) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	$(PSQL) -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"

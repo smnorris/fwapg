@@ -36,8 +36,8 @@ SELECT DISTINCT ON (waterbody_key)
   s.downstream_route_measure,
   s.wscode_ltree,
   s.localcode_ltree
-FROM fwapg.fwa_stream_networks_sp s
-INNER JOIN fwapg.fwa_lakes_poly wb
+FROM whse_basemapping.fwa_stream_networks_sp s
+INNER JOIN whse_basemapping.fwa_lakes_poly wb
 ON s.waterbody_key = wb.waterbody_key
 WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
@@ -64,8 +64,8 @@ SELECT DISTINCT ON (waterbody_key)
   s.downstream_route_measure,
   s.wscode_ltree,
   s.localcode_ltree
-FROM fwapg.fwa_stream_networks_sp s
-INNER JOIN fwapg.fwa_rivers_poly wb
+FROM whse_basemapping.fwa_stream_networks_sp s
+INNER JOIN whse_basemapping.fwa_rivers_poly wb
 ON s.waterbody_key = wb.waterbody_key
 WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
@@ -92,8 +92,8 @@ SELECT DISTINCT ON (waterbody_key)
   s.downstream_route_measure,
   s.wscode_ltree,
   s.localcode_ltree
-FROM fwapg.fwa_stream_networks_sp s
-INNER JOIN fwapg.fwa_wetlands_poly wb
+FROM whse_basemapping.fwa_stream_networks_sp s
+INNER JOIN whse_basemapping.fwa_wetlands_poly wb
 ON s.waterbody_key = wb.waterbody_key
 WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
@@ -120,8 +120,8 @@ SELECT DISTINCT ON (waterbody_key)
   s.downstream_route_measure,
   s.wscode_ltree,
   s.localcode_ltree
-FROM fwapg.fwa_stream_networks_sp s
-INNER JOIN fwapg.fwa_manmade_waterbodies_poly wb
+FROM whse_basemapping.fwa_stream_networks_sp s
+INNER JOIN whse_basemapping.fwa_manmade_waterbodies_poly wb
 ON s.waterbody_key = wb.waterbody_key
 WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL
@@ -149,8 +149,8 @@ SELECT DISTINCT ON (waterbody_key)
   s.downstream_route_measure,
   s.wscode_ltree,
   s.localcode_ltree
-FROM fwapg.fwa_stream_networks_sp s
-INNER JOIN fwapg.fwa_glaciers_poly wb
+FROM whse_basemapping.fwa_stream_networks_sp s
+INNER JOIN whse_basemapping.fwa_glaciers_poly wb
 ON s.waterbody_key = wb.waterbody_key
 WHERE s.wscode_ltree <@ '999.999999'::ltree is false
 AND s.localcode_ltree IS NOT NULL

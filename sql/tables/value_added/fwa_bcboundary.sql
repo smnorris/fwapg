@@ -12,7 +12,7 @@ CREATE TABLE fwapg.fwa_bcboundary
 INSERT INTO fwapg.fwa_bcboundary (geom)
 SELECT
   (ST_Dump(ST_Union(geom))).geom as geom
-FROM fwapg.fwa_watershed_groups_poly;
+FROM whse_basemapping.fwa_watershed_groups_poly;
 
 CREATE INDEX ON fwapg.fwa_bcboundary USING GIST (geom);
 
