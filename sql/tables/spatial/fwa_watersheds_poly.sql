@@ -1,4 +1,5 @@
 delete from whse_basemapping.fwa_watersheds_poly where watershed_group_code = :'wsg';
+
 insert into fwapg.fwa_watersheds_poly (
   watershed_feature_id,
   watershed_group_id,

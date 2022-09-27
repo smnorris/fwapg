@@ -74,15 +74,10 @@ clean_db:
 	set -e ;  $(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	# create empty load table
 	set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t $(subst .make/,,whse_basemapping.$@)
-	# these have no watershed group code to partition on, load them in one batch, but with smaller pagesize
-	# to avoid memory errors on low-memory systems
-	if [ $@ == '.make/fwa_bays_and_channels_poly' ] || \
-		[ $@ == '.make/fwa_islands_poly' ] || \
-		[ $@ == '.make/fwa_named_point_features_sp' ] || \
-		[ $@ == '.make/fwa_named_watersheds_poly' ] ; then \
-		set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --append -p 5000 -t $(subst .make/,,whse_basemapping.$@) ; \
-		set -e ; $(PSQL) -f $< ; \
-	else \
+	# load tables with many records per-watershed group, and use a 5k page for tables with large features 
+	if [ $@ == '.make/fwa_stream_networks_sp' ] || \
+		[ $@ == '.make/fwa_linear_boundaries_sp' ] || \
+		[ $@ == '.make/fwa_watersheds_poly' ] ; then \
 		for wsg in $(GROUPS) ; do \
 			set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg -t $(subst .make/,,whse_basemapping.$@) \
 			--query "WATERSHED_GROUP_CODE='"$${wsg}"'" \
@@ -91,6 +86,17 @@ clean_db:
 		for wsg in $(GROUPS) ; do \
 			set -e ; $(PSQL) -f $< -v wsg=$$wsg ; \
 		done \
+	elif [ $@ == '.make/fwa_assessment_watersheds_poly' ] || \
+		[ $@ == '.make/fwa_named_watersheds_poly' ] || \
+		[ $@ == '.make/fwa_watershed_groups_poly' ] || \
+		[ $@ == '.make/fwa_wetlands_poly' ] ; then \
+		set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --append -p 5000 -t $(subst .make/,,whse_basemapping.$@) ; \
+		$(PSQL) -c "truncate whse_basemapping.$(subst .make/,,$@)" ; \
+		set -e ; $(PSQL) -f $< ; \
+	else \
+		set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --append -t $(subst .make/,,whse_basemapping.$@) ; \
+		$(PSQL) -c "truncate whse_basemapping.$(subst .make/,,$@)" ; \
+		set -e ; $(PSQL) -f $< ; \
 	fi
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	touch $@

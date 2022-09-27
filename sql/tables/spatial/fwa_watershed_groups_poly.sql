@@ -1,4 +1,3 @@
-delete from whse_basemapping.fwa_watershed_groups_poly where watershed_group_code = :'wsg';
 insert into whse_basemapping.fwa_watershed_groups_poly (
   watershed_group_id,
   watershed_group_code,
@@ -14,6 +13,5 @@ select
   area_ha::double precision as area_ha,
   feature_code,
   geom
-from fwapg.fwa_watershed_groups_poly
-where watershed_group_code = :'wsg';
+from fwapg.fwa_watershed_groups_poly;
 

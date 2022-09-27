@@ -1,4 +1,3 @@
-delete from whse_basemapping.fwa_named_point_features_sp;
 insert into whse_basemapping.fwa_named_point_features_sp (
   named_point_feature_id,
   gnis_id,

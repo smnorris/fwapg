@@ -1,5 +1,3 @@
-delete from whse_basemapping.fwa_assessment_watersheds_poly where watershed_group_code = :'wsg';
-
 insert into whse_basemapping.fwa_assessment_watersheds_poly
   (
     watershed_feature_id,
@@ -49,6 +47,5 @@ select
     area_ha,
     feature_code,
     st_multi(ST_SetSRID(geom, 3005)) as geom
-from fwapg.fwa_assessment_watersheds_poly
-where watershed_group_code = :'wsg';
+from fwapg.fwa_assessment_watersheds_poly;
 

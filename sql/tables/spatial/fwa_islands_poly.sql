@@ -1,4 +1,3 @@
-delete from whse_basemapping.fwa_islands_poly;
 insert into whse_basemapping.fwa_islands_poly (
   island_id,
   island_type,

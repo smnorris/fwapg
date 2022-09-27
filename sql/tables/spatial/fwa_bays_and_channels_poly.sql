@@ -1,5 +1,3 @@
-delete from whse_basemapping.fwa_bays_and_channels_poly;
-
 insert into whse_basemapping.fwa_bays_and_channels_poly (
     bay_and_channel_id,
     bay_channel_type,

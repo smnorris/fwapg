@@ -1,5 +1,3 @@
-delete from whse_basemapping.fwa_obstructions_sp where watershed_group_code = :'wsg';
-
 insert into whse_basemapping.fwa_obstructions_sp (
   obstruction_id,
   watershed_group_id,
@@ -33,5 +31,4 @@ select
   feature_source,
   feature_code,
   (st_dump(geom)).geom as geom
-from fwapg.fwa_obstructions_sp
-where watershed_group_code = :'wsg';
+from fwapg.fwa_obstructions_sp;

@@ -1,5 +1,3 @@
-delete from whse_basemapping.fwa_glaciers_poly where watershed_group_code = :'wsg';
-
 insert into whse_basemapping.fwa_glaciers_poly (
   waterbody_poly_id,
   watershed_group_id,
@@ -49,6 +47,5 @@ select
   watershed_code_50k,
   feature_code,
   st_multi(geom) as geom
-from fwapg.fwa_glaciers_poly
-where watershed_group_code = :'wsg';
+from fwapg.fwa_glaciers_poly;
 

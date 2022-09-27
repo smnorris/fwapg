@@ -1,4 +1,4 @@
-delete from fwapg.fwa_linear_boundaries_sp where watershed_group_code = :'wsg';
+delete from whse_basemapping.fwa_linear_boundaries_sp where watershed_group_code = :'wsg';
 
 insert into whse_basemapping.fwa_linear_boundaries_sp (
   linear_feature_id,

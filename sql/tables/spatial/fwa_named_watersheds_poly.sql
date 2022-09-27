@@ -1,5 +1,3 @@
-delete from whse_basemapping.fwa_named_watersheds_poly;
-
 insert into whse_basemapping.fwa_named_watersheds_poly (
   named_watershed_id,
   gnis_id,
