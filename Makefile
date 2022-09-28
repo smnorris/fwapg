@@ -83,6 +83,7 @@ clean_db:
 			--query "WATERSHED_GROUP_CODE='"$${wsg}"'" \
 			--append ; \
 		done; \
+		$(PSQL) -c "create index on fwapg.$(subst .make/,,$@) (watershed_group_code)" ;\
 		for wsg in $(GROUPS) ; do \
 			set -e ; $(PSQL) -f $< -v wsg=$$wsg ; \
 		done \
