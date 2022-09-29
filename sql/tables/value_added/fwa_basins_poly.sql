@@ -49,16 +49,16 @@ ALTER TABLE whse_basemapping.fwa_watershed_groups_poly
 
 
 -- now create the basins table from above
-DROP TABLE IF EXISTS fwapg.fwa_basins_poly;
+DROP TABLE IF EXISTS whse_basemapping.fwa_basins_poly;
 
-CREATE TABLE fwapg.fwa_basins_poly
+CREATE TABLE whse_basemapping.fwa_basins_poly
 (basin_id integer primary key,
  basin_name text,
  wscode_ltree ltree,
  localcode_ltree ltree,
  geom Geometry(Polygon, 3005));
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  1 as basin_id,
@@ -72,7 +72,7 @@ WHERE
  localcode_ltree <@ '100.190442'::ltree
 GROUP BY basin_name, '100.190442'::ltree, '100.190442'::ltree;
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  2 as basin_id,
@@ -86,7 +86,7 @@ WHERE
  localcode_ltree <@ '100.342455'::ltree
  GROUP BY basin_name, '100.342455'::ltree, '100.342455'::ltree;
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  3 as basin_id,
@@ -100,7 +100,7 @@ WHERE
  localcode_ltree <@ '100.458399'::ltree
  GROUP BY basin_name, '100.458399'::ltree, '100.458399'::ltree;
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  4 as basin_id,
@@ -114,7 +114,7 @@ WHERE
  localcode_ltree <@ '100.500560'::ltree
  GROUP BY basin_name, '100.500560'::ltree, '100.500560'::ltree;
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  5 as basin_id,
@@ -128,7 +128,7 @@ WHERE
  localcode_ltree <@ '100.567134'::ltree
  GROUP BY basin_name, '100.567134'::ltree, '100.567134'::ltree;
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  6 as basin_id,
@@ -142,7 +142,7 @@ WHERE
  localcode_ltree <@ '100.591289'::ltree
  GROUP BY basin_name, '100.591289'::ltree, '100.591289'::ltree;
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  7 as basin_id,
@@ -156,7 +156,7 @@ WHERE
  localcode_ltree <@ '100.639480'::ltree
  GROUP BY basin_name, '100.639480'::ltree, '100.639480'::ltree;
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  8 as basin_id,
@@ -170,7 +170,7 @@ WHERE
  localcode_ltree <@ '300.625474'::ltree
 GROUP BY basin_name, '300.625474'::ltree, '300.625474'::ltree;
 
-INSERT INTO fwapg.fwa_basins_poly
+INSERT INTO whse_basemapping.fwa_basins_poly
 (basin_id, basin_name, wscode_ltree, localcode_ltree, geom)
 SELECT
  9 as basin_id,
@@ -246,15 +246,15 @@ WHERE wscode_ltree <@ '200.948755.796981'::ltree AND
 localcode_ltree <@ '200.948755.796981'::ltree;
 
 
-CREATE INDEX ON fwapg.fwa_basins_poly USING GIST (geom);
-CREATE INDEX ON fwapg.fwa_basins_poly USING GIST (wscode_ltree);
-CREATE INDEX ON fwapg.fwa_basins_poly USING BTREE (wscode_ltree);
-CREATE INDEX ON fwapg.fwa_basins_poly USING GIST (localcode_ltree);
-CREATE INDEX ON fwapg.fwa_basins_poly USING BTREE (localcode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (geom);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (wscode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING BTREE (wscode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING GIST (localcode_ltree);
+CREATE INDEX ON whse_basemapping.fwa_basins_poly USING BTREE (localcode_ltree);
 
-COMMENT ON TABLE fwapg.fwa_basins_poly IS 'Large BC waterhseds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation';
-COMMENT ON COLUMN fwapg.fwa_basins_poly.basin_id IS 'Basin unique identifier';
-COMMENT ON COLUMN fwapg.fwa_basins_poly.basin_name IS 'Basin name, eg Thompson River';
-COMMENT ON COLUMN fwapg.fwa_basins_poly.wscode_ltree IS 'The watershed code associated with the stream at the outlet of the basin';
-COMMENT ON COLUMN fwapg.fwa_basins_poly.localcode_ltree IS 'The local watershed code associated with the stream at the outlet of the basin';
-COMMENT ON COLUMN fwapg.fwa_basins_poly.geom IS 'Geometry of the basin';
+COMMENT ON TABLE whse_basemapping.fwa_basins_poly IS 'Large BC waterhseds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.basin_id IS 'Basin unique identifier';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.basin_name IS 'Basin name, eg Thompson River';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.wscode_ltree IS 'The watershed code associated with the stream at the outlet of the basin';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.localcode_ltree IS 'The local watershed code associated with the stream at the outlet of the basin';
+COMMENT ON COLUMN whse_basemapping.fwa_basins_poly.geom IS 'Geometry of the basin';

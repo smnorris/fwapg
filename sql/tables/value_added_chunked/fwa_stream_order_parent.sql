@@ -2,7 +2,7 @@
 -- (generally used for finding small channels that drain into major rivers)
 
 -- load primary channels
-insert into fwapg.fwa_stream_order_parent
+insert into whse_basemapping.fwa_stream_order_parent
     (blue_line_key, stream_order_parent)
   select distinct on (a.blue_line_key)
     a.blue_line_key,
@@ -26,7 +26,7 @@ insert into fwapg.fwa_stream_order_parent
 -- as the side channel)
 -- NOTE - this will not populate parent order for side channels that do not
 -- have local codes
-insert into fwapg.fwa_stream_order_parent (
+insert into whse_basemapping.fwa_stream_order_parent (
   blue_line_key,
   stream_order_parent
 )
