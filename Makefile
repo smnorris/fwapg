@@ -120,7 +120,7 @@ $(STREAM_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
 		--append \
 		whse_basemapping.fwa_stream_networks_sp
 	# and then copy to whse_basemapping
-	$(PSQL) -f $< -v wsg=$(subst .make/fwa_stream_networks_sp_,,$@)
+	$(PSQL) -f sql/tables/spatial/large/fwa_stream_networks_sp.sql -v wsg=$(subst .make/fwa_stream_networks_sp_,,$@)
 	touch $@
 
 $(LBD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
@@ -132,7 +132,7 @@ $(LBD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
 		--append \
 		whse_basemapping.fwa_linear_boundaries_sp
 	# and then copy to whse_basemapping
-	$(PSQL) -f $< -v wsg=$(subst .make/fwa_linear_boundaries_sp_,,$@)
+	$(PSQL) -f sql/tables/spatial/large/fwa_linear_boundaries_sp.sql -v wsg=$(subst .make/fwa_linear_boundaries_sp_,,$@)
 	touch $@
 
 $(WSD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
@@ -144,7 +144,7 @@ $(WSD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
 		--append \
 		whse_basemapping.fwa_watersheds_poly
 	# and then copy to whse_basemapping
-	$(PSQL) -f $< -v wsg=$(subst .make/fwa_watersheds_poly,,$@)
+	$(PSQL) -f sql/tablers/spatial/large/fwa_watersheds_poly.sql -v wsg=$(subst .make/fwa_watersheds_poly,,$@)
 	touch $@
 
 .make/fwa_stream_networks_sp: $(STREAM_TARGETS)
