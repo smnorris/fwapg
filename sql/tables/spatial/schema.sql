@@ -1,7 +1,4 @@
--- ---------------------------------------------------------------------------------------------------------------------
-drop table if exists whse_basemapping.fwa_assessment_watersheds_poly;
-
-create table whse_basemapping.fwa_assessment_watersheds_poly (
+create table if not exists whse_basemapping.fwa_assessment_watersheds_poly (
     watershed_feature_id integer primary key,
     watershed_group_id integer,
     watershed_type character varying(1),
@@ -28,22 +25,20 @@ create table whse_basemapping.fwa_assessment_watersheds_poly (
     localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
     geom public.geometry(multipolygon, 3005)
 );
-
-create index on whse_basemapping.fwa_assessment_watersheds_poly (watershed_group_code);
-create index on whse_basemapping.fwa_assessment_watersheds_poly (gnis_name_1);
-create index on whse_basemapping.fwa_assessment_watersheds_poly (waterbody_id);
-create index on whse_basemapping.fwa_assessment_watersheds_poly (waterbody_key);
-create index on whse_basemapping.fwa_assessment_watersheds_poly (watershed_key);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_assessment_watersheds_poly using gist(geom);
+create index if not exists fwa_assmnt_wshds_watershed_group_code_idx on whse_basemapping.fwa_assessment_watersheds_poly (watershed_group_code);
+create index if not exists fwa_assmnt_wshds_gnis_name_1_idx on whse_basemapping.fwa_assessment_watersheds_poly (gnis_name_1);
+create index if not exists fwa_assmnt_wshds_waterbody_id_idx on whse_basemapping.fwa_assessment_watersheds_poly (waterbody_id);
+create index if not exists fwa_assmnt_wshds_waterbody_key_idx on whse_basemapping.fwa_assessment_watersheds_poly (waterbody_key);
+create index if not exists fwa_assmnt_wshds_watershed_key_idx on whse_basemapping.fwa_assessment_watersheds_poly (watershed_key);
+create index if not exists fwa_assmnt_wshds_wsc_gist_idx on whse_basemapping.fwa_assessment_watersheds_poly using gist (wscode_ltree);
+create index if not exists fwa_assmnt_wshds_wsc_btree_idx on whse_basemapping.fwa_assessment_watersheds_poly using btree (wscode_ltree);
+create index if not exists fwa_assmnt_wshds_lc_gist_idx on whse_basemapping.fwa_assessment_watersheds_poly using gist (localcode_ltree);
+create index if not exists fwa_assmnt_wshds_lc_btree_idx on whse_basemapping.fwa_assessment_watersheds_poly using btree (localcode_ltree);
+create index if not exists fwa_assmnt_wshds_geom_idx on whse_basemapping.fwa_assessment_watersheds_poly using gist(geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
-drop table if exists whse_basemapping.fwa_bays_and_channels_poly;
 
-create table whse_basemapping.fwa_bays_and_channels_poly (
+create table if not exists whse_basemapping.fwa_bays_and_channels_poly (
     bay_and_channel_id integer primary key,
     bay_channel_type character varying(14),
     gnis_id integer,
@@ -52,13 +47,10 @@ create table whse_basemapping.fwa_bays_and_channels_poly (
     feature_code character varying(10),
     geom public.geometry(multipolygon,3005)
 );
-
-create index on whse_basemapping.fwa_bays_and_channels_poly (gnis_name);
-create index on whse_basemapping.fwa_bays_and_channels_poly using gist(geom);
-
+create index if not exists fwa_bays_channels_gnis_name_idx on whse_basemapping.fwa_bays_and_channels_poly (gnis_name);
+create index if not exists fwa_bays_channels_geom_idx on whse_basemapping.fwa_bays_and_channels_poly using gist(geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
-drop table if exists whse_basemapping.fwa_coastlines_sp;
 
 create table if not exists whse_basemapping.fwa_coastlines_sp (
     linear_feature_id integer primary key,
@@ -77,24 +69,15 @@ create table if not exists whse_basemapping.fwa_coastlines_sp (
     localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
     geom public.geometry(linestring,3005)
 );
-
-create index on whse_basemapping.fwa_coastlines_sp (edge_type);
-create index on whse_basemapping.fwa_coastlines_sp (blue_line_key);
-create index on whse_basemapping.fwa_coastlines_sp (watershed_key);
-create index on whse_basemapping.fwa_coastlines_sp (watershed_group_code);
-create index on whse_basemapping.fwa_coastlines_sp using gist (wscode_ltree);
-create index on whse_basemapping.fwa_coastlines_sp using btree (wscode_ltree);
-create index on whse_basemapping.fwa_coastlines_sp using gist (localcode_ltree);
-create index on whse_basemapping.fwa_coastlines_sp using btree (localcode_ltree);
-create index on whse_basemapping.fwa_coastlines_sp using gist (geom);
-
-
+create index if not exists fwa_coastlines_edge_type_idx on whse_basemapping.fwa_coastlines_sp (edge_type);
+create index if not exists fwa_coastlines_blue_line_key_idx on whse_basemapping.fwa_coastlines_sp (blue_line_key);
+create index if not exists fwa_coastlines_watershed_key_idx on whse_basemapping.fwa_coastlines_sp (watershed_key);
+create index if not exists fwa_coastlines_watershed_group_code_idx on whse_basemapping.fwa_coastlines_sp (watershed_group_code);
+create index if not exists fwa_coastlines_geom_idx on whse_basemapping.fwa_coastlines_sp using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-drop table if exists whse_basemapping.fwa_glaciers_poly;
-
-create table whse_basemapping.fwa_glaciers_poly (
+create table if not exists whse_basemapping.fwa_glaciers_poly (
     waterbody_poly_id integer primary key,
     watershed_group_id integer,
     waterbody_type character varying(1),
@@ -121,23 +104,20 @@ create table whse_basemapping.fwa_glaciers_poly (
     localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
     geom public.geometry(multipolygon,3005)
 );
-
-create index on whse_basemapping.fwa_glaciers_poly (blue_line_key);
-create index on whse_basemapping.fwa_glaciers_poly (watershed_key);
-create index on whse_basemapping.fwa_glaciers_poly (waterbody_key);
-create index on whse_basemapping.fwa_glaciers_poly (watershed_group_code);
-create index on whse_basemapping.fwa_glaciers_poly (gnis_name_1);
-create index on whse_basemapping.fwa_glaciers_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_glaciers_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_glaciers_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_glaciers_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_glaciers_poly using gist (geom);
-
+create index if not exists fwa_glaciers_blue_line_key_idx on whse_basemapping.fwa_glaciers_poly (blue_line_key);
+create index if not exists fwa_glaciers_watershed_key_idx on whse_basemapping.fwa_glaciers_poly (watershed_key);
+create index if not exists fwa_glaciers_waterbody_key_idx on whse_basemapping.fwa_glaciers_poly (waterbody_key);
+create index if not exists fwa_glaciers_watershed_group_code_idx on whse_basemapping.fwa_glaciers_poly (watershed_group_code);
+create index if not exists fwa_glaciers_gnis_name_1_idx on whse_basemapping.fwa_glaciers_poly (gnis_name_1);
+create index if not exists fwa_glaciers_wsc_gist_idx on whse_basemapping.fwa_glaciers_poly using gist (wscode_ltree);
+create index if not exists fwa_glaciers_wsc_btree_idx on whse_basemapping.fwa_glaciers_poly using btree (wscode_ltree);
+create index if not exists fwa_glaciers_lc_gist_idx on whse_basemapping.fwa_glaciers_poly using gist (localcode_ltree);
+create index if not exists fwa_glaciers_lc_btree_ltree_idx on whse_basemapping.fwa_glaciers_poly using btree (localcode_ltree);
+create index if not exists fwa_glaciers_geom_idx on whse_basemapping.fwa_glaciers_poly using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-DROP TABLE IF EXISTS whse_basemapping.fwa_islands_poly;
-CREATE TABLE whse_basemapping.fwa_islands_poly (
+CREATE TABLE if not exists whse_basemapping.fwa_islands_poly (
     island_id integer PRIMARY KEY,
     island_type character varying(12),
     gnis_id_1 integer,
@@ -154,20 +134,17 @@ CREATE TABLE whse_basemapping.fwa_islands_poly (
     localcode_ltree public.ltree GENERATED ALWAYS AS ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) STORED,
     geom public.geometry(multipolygon,3005)
 );
-
-CREATE INDEX ON whse_basemapping.fwa_islands_poly (gnis_name_1);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly (gnis_name_2);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING GIST (wscode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING BTREE (wscode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING GIST (localcode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING BTREE (localcode_ltree);
-CREATE INDEX ON whse_basemapping.fwa_islands_poly USING GIST (geom);
+CREATE INDEX if not exists fwa_islands_gnis_name_1_idx ON whse_basemapping.fwa_islands_poly (gnis_name_1);
+CREATE INDEX if not exists fwa_islands_gnis_name_2_idx ON whse_basemapping.fwa_islands_poly (gnis_name_2);
+CREATE INDEX if not exists fwa_islands_wsc_gist_idx ON whse_basemapping.fwa_islands_poly USING GIST (wscode_ltree);
+CREATE INDEX if not exists fwa_islands_wsc_btree_idx ON whse_basemapping.fwa_islands_poly USING BTREE (wscode_ltree);
+CREATE INDEX if not exists fwa_islands_lc_gist_idx ON whse_basemapping.fwa_islands_poly USING GIST (localcode_ltree);
+CREATE INDEX if not exists fwa_islands_lc_btree_idx ON whse_basemapping.fwa_islands_poly USING BTREE (localcode_ltree);
+CREATE INDEX if not exists fwa_islands_geom_idx ON whse_basemapping.fwa_islands_poly USING GIST (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-drop table if exists whse_basemapping.fwa_lakes_poly;
-
-create table whse_basemapping.fwa_lakes_poly (
+create table if not exists whse_basemapping.fwa_lakes_poly (
     waterbody_poly_id integer primary key,
     watershed_group_id integer,
     waterbody_type character varying(1),
@@ -194,21 +171,20 @@ create table whse_basemapping.fwa_lakes_poly (
     localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
     geom public.geometry(multipolygon,3005)
 );
-create index on whse_basemapping.fwa_lakes_poly (blue_line_key);
-create index on whse_basemapping.fwa_lakes_poly (watershed_key);
-create index on whse_basemapping.fwa_lakes_poly (waterbody_key);
-create index on whse_basemapping.fwa_lakes_poly (watershed_group_code);
-create index on whse_basemapping.fwa_lakes_poly (gnis_name_1);
-create index on whse_basemapping.fwa_lakes_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_lakes_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_lakes_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_lakes_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_lakes_poly using gist (geom);
+create index if not exists fwa_lakes_blue_line_key_idx on whse_basemapping.fwa_lakes_poly (blue_line_key);
+create index if not exists fwa_lakes_watershed_key_idx on whse_basemapping.fwa_lakes_poly (watershed_key);
+create index if not exists fwa_lakes_waterbody_key_idx on whse_basemapping.fwa_lakes_poly (waterbody_key);
+create index if not exists fwa_lakes_watershed_group_code_idx on whse_basemapping.fwa_lakes_poly (watershed_group_code);
+create index if not exists fwa_lakes_gnis_name_1_idx on whse_basemapping.fwa_lakes_poly (gnis_name_1);
+create index if not exists fwa_lakes_wsc_gist_idx on whse_basemapping.fwa_lakes_poly using gist (wscode_ltree);
+create index if not exists fwa_lakes_wsc_btree_idx on whse_basemapping.fwa_lakes_poly using btree (wscode_ltree);
+create index if not exists fwa_lakes_lc_gist_idx on whse_basemapping.fwa_lakes_poly using gist (localcode_ltree);
+create index if not exists fwa_lakes_lc_btree_idx on whse_basemapping.fwa_lakes_poly using btree (localcode_ltree);
+create index if not exists fwa_lakes_geom_idx on whse_basemapping.fwa_lakes_poly using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-drop table if exists whse_basemapping.fwa_linear_boundaries_sp;
-create table whse_basemapping.fwa_linear_boundaries_sp (
+create table if not exists whse_basemapping.fwa_linear_boundaries_sp (
   linear_feature_id        integer primary key       ,
   watershed_group_id       integer not null          ,
   edge_type                integer                   ,
@@ -228,24 +204,20 @@ create table whse_basemapping.fwa_linear_boundaries_sp (
     (replace(replace(local_watershed_code, '-000000', ''), '-', '.')::ltree) stored,
   geom                     public.geometry(MultiLineString,3005)
 );
-
-create index on whse_basemapping.fwa_linear_boundaries_sp (edge_type);
-create index on whse_basemapping.fwa_linear_boundaries_sp (blue_line_key);
-create index on whse_basemapping.fwa_linear_boundaries_sp (watershed_key);
-create index on whse_basemapping.fwa_linear_boundaries_sp (waterbody_key);
-create index on whse_basemapping.fwa_linear_boundaries_sp (watershed_group_code);
-create index on whse_basemapping.fwa_linear_boundaries_sp using gist (wscode_ltree);
-create index on whse_basemapping.fwa_linear_boundaries_sp using btree (wscode_ltree);
-create index on whse_basemapping.fwa_linear_boundaries_sp using gist (localcode_ltree);
-create index on whse_basemapping.fwa_linear_boundaries_sp using btree (localcode_ltree);
-create index on whse_basemapping.fwa_linear_boundaries_sp using gist (geom);
+create index if not exists fwa_linear_bnd_edge_type_idx on whse_basemapping.fwa_linear_boundaries_sp (edge_type);
+create index if not exists fwa_linear_bnd_blue_line_key_idx on whse_basemapping.fwa_linear_boundaries_sp (blue_line_key);
+create index if not exists fwa_linear_bnd_watershed_key_idx on whse_basemapping.fwa_linear_boundaries_sp (watershed_key);
+create index if not exists fwa_linear_bnd_waterbody_key_idx on whse_basemapping.fwa_linear_boundaries_sp (waterbody_key);
+create index if not exists fwa_linear_bnd_watershed_group_code_idx on whse_basemapping.fwa_linear_boundaries_sp (watershed_group_code);
+create index if not exists fwa_linear_bnd_wsc_gist_idx on whse_basemapping.fwa_linear_boundaries_sp using gist (wscode_ltree);
+create index if not exists fwa_linear_bnd_wsc_btree_idx on whse_basemapping.fwa_linear_boundaries_sp using btree (wscode_ltree);
+create index if not exists fwa_linear_bnd_lc_gist_idx on whse_basemapping.fwa_linear_boundaries_sp using gist (localcode_ltree);
+create index if not exists fwa_linear_bnd_lc_btree_idx on whse_basemapping.fwa_linear_boundaries_sp using btree (localcode_ltree);
+create index if not exists fwa_linear_bnd_geom_idx on whse_basemapping.fwa_linear_boundaries_sp using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-
-drop table if exists whse_basemapping.fwa_manmade_waterbodies_poly;
-
-create table whse_basemapping.fwa_manmade_waterbodies_poly (
+create table if not exists whse_basemapping.fwa_manmade_waterbodies_poly (
     waterbody_poly_id integer primary key,
     watershed_group_id integer,
     waterbody_type character varying(1),
@@ -272,24 +244,20 @@ create table whse_basemapping.fwa_manmade_waterbodies_poly (
     localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
     geom public.geometry(multipolygon,3005)
 );
-
-
-create index on whse_basemapping.fwa_manmade_waterbodies_poly (blue_line_key);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly (watershed_key);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly (waterbody_key);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly (watershed_group_code);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly (gnis_name_1);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_manmade_waterbodies_poly using gist (geom);
+create index if not exists fwa_mmdwbdy_blue_line_key_idx on whse_basemapping.fwa_manmade_waterbodies_poly (blue_line_key);
+create index if not exists fwa_mmdwbdy_watershed_key_idx on whse_basemapping.fwa_manmade_waterbodies_poly (watershed_key);
+create index if not exists fwa_mmdwbdy_waterbody_key_idx on whse_basemapping.fwa_manmade_waterbodies_poly (waterbody_key);
+create index if not exists fwa_mmdwbdy_watershed_group_code_idx on whse_basemapping.fwa_manmade_waterbodies_poly (watershed_group_code);
+create index if not exists fwa_mmdwbdy_gnis_name_1_idx on whse_basemapping.fwa_manmade_waterbodies_poly (gnis_name_1);
+create index if not exists fwa_mmdwbdy_wsc_gist_idx on whse_basemapping.fwa_manmade_waterbodies_poly using gist (wscode_ltree);
+create index if not exists fwa_mmdwbdy_wsc_btree_idx on whse_basemapping.fwa_manmade_waterbodies_poly using btree (wscode_ltree);
+create index if not exists fwa_mmdwbdy_lc_gist_idx on whse_basemapping.fwa_manmade_waterbodies_poly using gist (localcode_ltree);
+create index if not exists fwa_mmdwbdy_lc_btree_idx on whse_basemapping.fwa_manmade_waterbodies_poly using btree (localcode_ltree);
+create index if not exists fwa_mmdwbdy_geom_idx on whse_basemapping.fwa_manmade_waterbodies_poly using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-drop table if exists whse_basemapping.fwa_named_point_features_sp;
-
-create table whse_basemapping.fwa_named_point_features_sp (
+create table if not exists whse_basemapping.fwa_named_point_features_sp (
     named_point_feature_id integer primary key,
     gnis_id integer,
     gnis_name character varying(80),
@@ -298,14 +266,13 @@ create table whse_basemapping.fwa_named_point_features_sp (
     geom public.geometry(point, 3005)
 );
 
-create index on whse_basemapping.fwa_named_point_features_sp (gnis_name);
-create index on whse_basemapping.fwa_named_point_features_sp using gist (geom);
+create index if not exists fwa_namedpt_gnis_name_idx on whse_basemapping.fwa_named_point_features_sp (gnis_name);
+create index if not exists fwa_namedpt_geom_idx on whse_basemapping.fwa_named_point_features_sp using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-drop table if exists whse_basemapping.fwa_named_watersheds_poly;
 
-create table whse_basemapping.fwa_named_watersheds_poly (
+create table if not exists whse_basemapping.fwa_named_watersheds_poly (
   named_watershed_id integer primary key,
   gnis_id integer,
   gnis_name character varying(80),
@@ -320,19 +287,16 @@ create table whse_basemapping.fwa_named_watersheds_poly (
     ((replace(replace((fwa_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
   geom public.geometry(multipolygon,3005)
 );
-
-
-create index on whse_basemapping.fwa_named_watersheds_poly (gnis_name);
-create index on whse_basemapping.fwa_named_watersheds_poly (blue_line_key);
-create index on whse_basemapping.fwa_named_watersheds_poly (fwa_watershed_code);
-create index on whse_basemapping.fwa_named_watersheds_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_named_watersheds_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_named_watersheds_poly using gist (geom);
+create index if not exists fwa_named_wsds_gnis_name_idx on whse_basemapping.fwa_named_watersheds_poly (gnis_name);
+create index if not exists fwa_named_wsds_blue_line_key_idx on whse_basemapping.fwa_named_watersheds_poly (blue_line_key);
+create index if not exists fwa_named_wsds_fwa_watershed_code_idx on whse_basemapping.fwa_named_watersheds_poly (fwa_watershed_code);
+create index if not exists fwa_named_wsds_wsc_gist_idx on whse_basemapping.fwa_named_watersheds_poly using gist (wscode_ltree);
+create index if not exists fwa_named_wsds_wsc_btree_idx on whse_basemapping.fwa_named_watersheds_poly using btree (wscode_ltree);
+create index if not exists fwa_named_wsds_geom_idx on whse_basemapping.fwa_named_watersheds_poly using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
-drop table if exists whse_basemapping.fwa_obstructions_sp;
 
-create table whse_basemapping.fwa_obstructions_sp (
+create table if not exists whse_basemapping.fwa_obstructions_sp (
     obstruction_id integer primary key,
     watershed_group_id integer,
     linear_feature_id integer,
@@ -351,22 +315,21 @@ create table whse_basemapping.fwa_obstructions_sp (
     localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
     geom public.geometry(point,3005)
 );
+create index if not exists fwa_obstructions_linear_feature_id_idx on whse_basemapping.fwa_obstructions_sp (linear_feature_id);
+create index if not exists fwa_obstructions_blue_line_key_idx on whse_basemapping.fwa_obstructions_sp (blue_line_key);
+create index if not exists fwa_obstructions_watershed_key_idx on whse_basemapping.fwa_obstructions_sp (watershed_key);
+create index if not exists fwa_obstructions_obstruction_type_idx on whse_basemapping.fwa_obstructions_sp (obstruction_type);
+create index if not exists fwa_obstructions_watershed_group_code_idx on whse_basemapping.fwa_obstructions_sp (watershed_group_code);
+create index if not exists fwa_obstructions_gnis_name_idx on whse_basemapping.fwa_obstructions_sp (gnis_name);
+create index if not exists fwa_obstructions_wsc_gist_idx on whse_basemapping.fwa_obstructions_sp using gist (wscode_ltree);
+create index if not exists fwa_obstructions_wsc_btree_idx on whse_basemapping.fwa_obstructions_sp using btree (wscode_ltree);
+create index if not exists fwa_obstructions_lc_gist_idx on whse_basemapping.fwa_obstructions_sp using gist (localcode_ltree);
+create index if not exists fwa_obstructions_lc_btree_idx on whse_basemapping.fwa_obstructions_sp using btree (localcode_ltree);
+create index if not exists fwa_obstructions_geom_idx on whse_basemapping.fwa_obstructions_sp using gist (geom);
 
-create index on whse_basemapping.fwa_obstructions_sp (linear_feature_id);
-create index on whse_basemapping.fwa_obstructions_sp (blue_line_key);
-create index on whse_basemapping.fwa_obstructions_sp (watershed_key);
-create index on whse_basemapping.fwa_obstructions_sp (obstruction_type);
-create index on whse_basemapping.fwa_obstructions_sp (watershed_group_code);
-create index on whse_basemapping.fwa_obstructions_sp (gnis_name);
-create index on whse_basemapping.fwa_obstructions_sp using gist (wscode_ltree);
-create index on whse_basemapping.fwa_obstructions_sp using btree (wscode_ltree);
-create index on whse_basemapping.fwa_obstructions_sp using gist (localcode_ltree);
-create index on whse_basemapping.fwa_obstructions_sp using btree (localcode_ltree);
-create index on whse_basemapping.fwa_obstructions_sp using gist (geom);
 -- ---------------------------------------------------------------------------------------------------------------------
-drop table if exists whse_basemapping.fwa_rivers_poly;
 
-create table whse_basemapping.fwa_rivers_poly (
+create table if not exists whse_basemapping.fwa_rivers_poly (
     waterbody_poly_id integer primary key,
     watershed_group_id integer,
     waterbody_type character varying(1),
@@ -393,22 +356,20 @@ create table whse_basemapping.fwa_rivers_poly (
     localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
     geom public.geometry(multipolygon,3005)
 );
-create index on whse_basemapping.fwa_rivers_poly (blue_line_key);
-create index on whse_basemapping.fwa_rivers_poly (watershed_key);
-create index on whse_basemapping.fwa_rivers_poly (waterbody_key);
-create index on whse_basemapping.fwa_rivers_poly (watershed_group_code);
-create index on whse_basemapping.fwa_rivers_poly (gnis_name_1);
-create index on whse_basemapping.fwa_rivers_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_rivers_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_rivers_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_rivers_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_rivers_poly using gist (geom);
+create index if not exists fwa_rivers_blue_line_key_idx on whse_basemapping.fwa_rivers_poly (blue_line_key);
+create index if not exists fwa_rivers_watershed_key_idx on whse_basemapping.fwa_rivers_poly (watershed_key);
+create index if not exists fwa_rivers_waterbody_key_idx on whse_basemapping.fwa_rivers_poly (waterbody_key);
+create index if not exists fwa_rivers_watershed_group_code_idx on whse_basemapping.fwa_rivers_poly (watershed_group_code);
+create index if not exists fwa_rivers_gnis_name_1_idx on whse_basemapping.fwa_rivers_poly (gnis_name_1);
+create index if not exists fwa_rivers_wsc_gist_idx on whse_basemapping.fwa_rivers_poly using gist (wscode_ltree);
+create index if not exists fwa_rivers_wsc_btree_idx on whse_basemapping.fwa_rivers_poly using btree (wscode_ltree);
+create index if not exists fwa_rivers_lc_gist_idx on whse_basemapping.fwa_rivers_poly using gist (localcode_ltree);
+create index if not exists fwa_rivers_lc_btree_idx on whse_basemapping.fwa_rivers_poly using btree (localcode_ltree);
+create index if not exists fwa_rivers_geom_idx on whse_basemapping.fwa_rivers_poly using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------  
 
-drop table if exists whse_basemapping.fwa_stream_networks_sp;
-
-create table whse_basemapping.fwa_stream_networks_sp (
+create table if not exists whse_basemapping.fwa_stream_networks_sp (
   linear_feature_id bigint primary key,
   watershed_group_id integer not null,
   edge_type integer not null,
@@ -441,26 +402,22 @@ create table whse_basemapping.fwa_stream_networks_sp (
     st_length (geom)) stored,
   geom public.geometry(linestringzm, 3005)
 );
-
-create index on whse_basemapping.fwa_stream_networks_sp (edge_type);
-create index on whse_basemapping.fwa_stream_networks_sp (blue_line_key);
-create index on whse_basemapping.fwa_stream_networks_sp (blue_line_key, downstream_route_measure);
-create index on whse_basemapping.fwa_stream_networks_sp (watershed_key);
-create index on whse_basemapping.fwa_stream_networks_sp (waterbody_key);
-create index on whse_basemapping.fwa_stream_networks_sp (watershed_group_code);
-create index on whse_basemapping.fwa_stream_networks_sp (gnis_name);
-create index fwa_stream_networks_sp_wscode_ltree_gist_idx on whse_basemapping.fwa_stream_networks_sp using gist (wscode_ltree);
-create index on whse_basemapping.fwa_stream_networks_sp using btree (wscode_ltree);
-create index on whse_basemapping.fwa_stream_networks_sp using gist (localcode_ltree);
-create index on whse_basemapping.fwa_stream_networks_sp using btree (localcode_ltree);
-create index on whse_basemapping.fwa_stream_networks_sp using gist (geom);
-
+create index if not exists fwa_streamnetworks_edge_type_idx on whse_basemapping.fwa_stream_networks_sp (edge_type);
+create index if not exists fwa_streamnetworks_blue_line_key_idx on whse_basemapping.fwa_stream_networks_sp (blue_line_key);
+create index if not exists fwa_streamnetworks_blkey_measure_idx on whse_basemapping.fwa_stream_networks_sp (blue_line_key, downstream_route_measure);
+create index if not exists fwa_streamnetworks_watershed_key_idx on whse_basemapping.fwa_stream_networks_sp (watershed_key);
+create index if not exists fwa_streamnetworks_waterbody_key_idx on whse_basemapping.fwa_stream_networks_sp (waterbody_key);
+create index if not exists fwa_streamnetworks_watershed_group_code_idx on whse_basemapping.fwa_stream_networks_sp (watershed_group_code);
+create index if not exists fwa_streamnetworks_gnis_name_idx on whse_basemapping.fwa_stream_networks_sp (gnis_name);
+create index if not exists fwa_streamnetworks_wsc_gist_idx on whse_basemapping.fwa_stream_networks_sp using gist (wscode_ltree);
+create index if not exists fwa_streamnetworks_wsc_btree_idx on whse_basemapping.fwa_stream_networks_sp using btree (wscode_ltree);
+create index if not exists fwa_streamnetworks_lc_gist_idx on whse_basemapping.fwa_stream_networks_sp using gist (localcode_ltree);
+create index if not exists fwa_streamnetworks_lc_btree_idx on whse_basemapping.fwa_stream_networks_sp using btree (localcode_ltree);
+create index if not exists fwa_streamnetworks_geom_idx on whse_basemapping.fwa_stream_networks_sp using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-drop table if exists whse_basemapping.fwa_watershed_groups_poly;
-
-create table whse_basemapping.fwa_watershed_groups_poly (
+create table if not exists whse_basemapping.fwa_watershed_groups_poly (
     watershed_group_id integer primary key,
     watershed_group_code character varying(4),
     watershed_group_name character varying(80),
@@ -468,16 +425,13 @@ create table whse_basemapping.fwa_watershed_groups_poly (
     feature_code character varying(10),
     geom public.geometry(multipolygon,3005)
 );
-
-create index on whse_basemapping.fwa_watershed_groups_poly (watershed_group_code);
-create index on whse_basemapping.fwa_watershed_groups_poly using gist (geom);
+create index if not exists fwa_watershed_groups_watershed_group_code_idx on whse_basemapping.fwa_watershed_groups_poly (watershed_group_code);
+create index if not exists fwa_watershed_groups_geom_idx on whse_basemapping.fwa_watershed_groups_poly using gist (geom);
 
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-drop table if exists whse_basemapping.fwa_watersheds_poly;
-
-create table whse_basemapping.fwa_watersheds_poly (
+create table if not exists whse_basemapping.fwa_watersheds_poly (
   watershed_feature_id       integer primary key     ,
   watershed_group_id         integer not null        ,
   watershed_type             character varying(1)    ,
@@ -516,25 +470,21 @@ create table whse_basemapping.fwa_watersheds_poly (
   localcode_ltree ltree generated always as (replace(replace(local_watershed_code, '-000000', ''), '-', '.')::ltree) stored,
   geom                       public.geometry(multipolygon,3005)
  );
-
-create index on whse_basemapping.fwa_watersheds_poly (gnis_name_1);
-create index on whse_basemapping.fwa_watersheds_poly (waterbody_id);
-create index on whse_basemapping.fwa_watersheds_poly (waterbody_key);
-create index on whse_basemapping.fwa_watersheds_poly (watershed_key);
-create index on whse_basemapping.fwa_watersheds_poly (watershed_group_code);
-create index on whse_basemapping.fwa_watersheds_poly (watershed_group_id);
-create index fwa_watersheds_poly_wscode_ltree_gist_idx on whse_basemapping.fwa_watersheds_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_watersheds_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_watersheds_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_watersheds_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_watersheds_poly using gist (geom);
-
+create index if not exists fwa_watersheds_gnis_name_1_idx on whse_basemapping.fwa_watersheds_poly (gnis_name_1);
+create index if not exists fwa_watersheds_waterbody_id_idx on whse_basemapping.fwa_watersheds_poly (waterbody_id);
+create index if not exists fwa_watersheds_waterbody_key_idx on whse_basemapping.fwa_watersheds_poly (waterbody_key);
+create index if not exists fwa_watersheds_watershed_key_idx on whse_basemapping.fwa_watersheds_poly (watershed_key);
+create index if not exists fwa_watersheds_watershed_group_code_idx on whse_basemapping.fwa_watersheds_poly (watershed_group_code);
+create index if not exists fwa_watersheds_watershed_group_id_idx on whse_basemapping.fwa_watersheds_poly (watershed_group_id);
+create index if not exists fwa_watersheds_wsc_gist_idx on whse_basemapping.fwa_watersheds_poly using gist (wscode_ltree);
+create index if not exists fwa_watersheds_wsc_btree_idx on whse_basemapping.fwa_watersheds_poly using btree (wscode_ltree);
+create index if not exists fwa_watersheds_lc_gist_idx on whse_basemapping.fwa_watersheds_poly using gist (localcode_ltree);
+create index if not exists fwa_watersheds_lc_btree_idx on whse_basemapping.fwa_watersheds_poly using btree (localcode_ltree);
+create index if not exists fwa_watersheds_geom_idx on whse_basemapping.fwa_watersheds_poly using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
-drop table if exists whse_basemapping.fwa_wetlands_poly;
-
-create table whse_basemapping.fwa_wetlands_poly (
+create table if not exists whse_basemapping.fwa_wetlands_poly (
     waterbody_poly_id integer primary key,
     watershed_group_id integer,
     waterbody_type character varying(1),
@@ -561,15 +511,13 @@ create table whse_basemapping.fwa_wetlands_poly (
     localcode_ltree public.ltree generated always as ((replace(replace((local_watershed_code)::text, '-000000'::text, ''::text), '-'::text, '.'::text))::public.ltree) stored,
     geom public.geometry(multipolygon,3005)
 );
-
-create index on whse_basemapping.fwa_wetlands_poly (blue_line_key);
-create index on whse_basemapping.fwa_wetlands_poly (watershed_key);
-create index on whse_basemapping.fwa_wetlands_poly (waterbody_key);
-create index on whse_basemapping.fwa_wetlands_poly (watershed_group_code);
-create index on whse_basemapping.fwa_wetlands_poly (gnis_name_1);
-create index on whse_basemapping.fwa_wetlands_poly using gist (wscode_ltree);
-create index on whse_basemapping.fwa_wetlands_poly using btree (wscode_ltree);
-create index on whse_basemapping.fwa_wetlands_poly using gist (localcode_ltree);
-create index on whse_basemapping.fwa_wetlands_poly using btree (localcode_ltree);
-create index on whse_basemapping.fwa_wetlands_poly using gist (geom);
-
+create index if not exists fwa_wetlands_blue_line_key_idx on whse_basemapping.fwa_wetlands_poly (blue_line_key);
+create index if not exists fwa_wetlands_watershed_key_idx on whse_basemapping.fwa_wetlands_poly (watershed_key);
+create index if not exists fwa_wetlands_waterbody_key_idx on whse_basemapping.fwa_wetlands_poly (waterbody_key);
+create index if not exists fwa_wetlands_watershed_group_code_idx on whse_basemapping.fwa_wetlands_poly (watershed_group_code);
+create index if not exists fwa_wetlands_gnis_name_1_idx on whse_basemapping.fwa_wetlands_poly (gnis_name_1);
+create index if not exists fwa_wetlands_wsc_gist_idx on whse_basemapping.fwa_wetlands_poly using gist (wscode_ltree);
+create index if not exists fwa_wetlands_wsc_btree_idx on whse_basemapping.fwa_wetlands_poly using btree (wscode_ltree);
+create index if not exists fwa_wetlands_lc_gist_idx on whse_basemapping.fwa_wetlands_poly using gist (localcode_ltree);
+create index if not exists fwa_wetlands_lc_btree_idx on whse_basemapping.fwa_wetlands_poly using btree (localcode_ltree);
+create index if not exists fwa_wetlands_geom_idx on whse_basemapping.fwa_wetlands_poly using gist (geom);
