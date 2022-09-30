@@ -19,7 +19,7 @@ WSG = $(shell cat wsg.txt)
 
 STREAM_TARGETS = $(addprefix .make/fwa_stream_networks_sp_, $(WSG))
 WSD_TARGETS = $(addprefix .make/fwa_watersheds_poly_, $(WSG))
-LINBND_TARGETS = $(addprefix .make/fwa_linear_boundaries_sp_, $(WSG))
+LBD_TARGETS = $(addprefix .make/fwa_linear_boundaries_sp_, $(WSG))
 
 # tables not downloadable via wfs are defined in sql/tables/non_spatial
 NON_SPATIAL_TARGETS=$(basename $(subst sql/tables/non_spatial/,.make/,$(wildcard sql/tables/non_spatial/fwa_*.sql)))
@@ -144,7 +144,7 @@ $(WSD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
 		--append \
 		whse_basemapping.fwa_watersheds_poly
 	# and then copy to whse_basemapping
-	$(PSQL) -f sql/tablers/spatial/large/fwa_watersheds_poly.sql -v wsg=$(subst .make/fwa_watersheds_poly,,$@)
+	$(PSQL) -f sql/tables/spatial/large/fwa_watersheds_poly.sql -v wsg=$(subst .make/fwa_watersheds_poly_,,$@)
 	touch $@
 
 .make/fwa_stream_networks_sp: $(STREAM_TARGETS)
