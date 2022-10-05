@@ -146,21 +146,24 @@ $(WSD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
 	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
 	done
-	$(PSQL) -c "VACUUM ANALYZE whse_basemapping.fwa_stream_networks_sp"
+	$(PSQL) -c "drop table fwapg.fwa_stream_networks_sp"
+	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_stream_networks_sp"
 	touch $@
 
 .make/fwa_linear_boundaries_sp: $(LBD_TARGETS)
 	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_linear_boundaries_sp.sql -v wsg=$$wsg ; \
 	done
-	$(PSQL) -c "VACUUM ANALYZE whse_basemapping.fwa_linear_boundaries_sp"
+	$(PSQL) -c "drop table fwapg.fwa_linear_boundaries_sp"
+	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_linear_boundaries_sp"
 	touch $@
 
 .make/fwa_watersheds_poly: $(WSD_TARGETS)
 	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_watersheds_poly.sql -v wsg=$$wsg ; \
 	done
-	$(PSQL) -c "VACUUM ANALYZE whse_basemapping.fwa_watersheds_poly"
+	$(PSQL) -c "drop table fwapg.fwa_watersheds_poly"
+	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_watersheds_poly"
 	touch $@
 
 # get non spatial data from FTP
