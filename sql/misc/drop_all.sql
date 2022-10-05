@@ -8,6 +8,7 @@ drop table if exists whse_basemapping.fwa_edge_type_codes;
 drop table if exists whse_basemapping.fwa_glaciers_poly;
 drop table if exists whse_basemapping.fwa_islands_poly;
 drop table if exists whse_basemapping.fwa_lakes_poly;
+drop table if exists whse_basemapping.fwa_linear_boundaries_sp;
 drop table if exists whse_basemapping.fwa_manmade_waterbodies_poly;
 drop table if exists whse_basemapping.fwa_named_point_features_sp;
 drop table if exists whse_basemapping.fwa_named_watersheds_poly;
