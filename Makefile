@@ -112,50 +112,54 @@ clean_db:
 	touch $@
 
 $(STREAM_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
-	$(PSQL) -c "truncate fwapg.fwa_stream_networks_sp"
+	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp where watershed_group_code = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'"
 	# load to staging schema
 	bcdata bc2pg --db_url $(DATABASE_URL) -t \
 		--schema fwapg \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/fwa_stream_networks_sp_,,$@)'" \
 		--append \
 		whse_basemapping.fwa_stream_networks_sp
-	# and then copy to whse_basemapping
-	$(PSQL) -f sql/tables/spatial/large/fwa_stream_networks_sp.sql -v wsg=$(subst .make/fwa_stream_networks_sp_,,$@)
 	touch $@
 
 $(LBD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
-	$(PSQL) -c "truncate fwapg.fwa_linear_boundaries_sp"
+	$(PSQL) -c "delete from fwapg.fwa_linear_boundaries_sp where watershed_group_code = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'"
 	# load to staging schema
 	bcdata bc2pg --db_url $(DATABASE_URL) -t \
 		--schema fwapg \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'" \
 		--append \
 		whse_basemapping.fwa_linear_boundaries_sp
-	# and then copy to whse_basemapping
-	$(PSQL) -f sql/tables/spatial/large/fwa_linear_boundaries_sp.sql -v wsg=$(subst .make/fwa_linear_boundaries_sp_,,$@)
 	touch $@
 
 $(WSD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
-	$(PSQL) -c "truncate fwapg.fwa_watersheds_poly"
+	$(PSQL) -c "delete from fwapg.fwa_watersheds_poly where watershed_group_code = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'"
 	# load to staging schema
 	bcdata bc2pg --db_url $(DATABASE_URL) -t \
 		--schema fwapg \
 		--query "WATERSHED_GROUP_CODE = '$(subst .make/fwa_watersheds_poly_,,$@)'" \
 		--append \
 		whse_basemapping.fwa_watersheds_poly
-	# and then copy to whse_basemapping
-	$(PSQL) -f sql/tables/spatial/large/fwa_watersheds_poly.sql -v wsg=$(subst .make/fwa_watersheds_poly_,,$@)
 	touch $@
 
+# copy data from fwapg to whse_basemapping
 .make/fwa_stream_networks_sp: $(STREAM_TARGETS)
+	for wsg in $(GROUPS) ; do \
+		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
+	done
 	$(PSQL) -c "VACUUM ANALYZE whse_basemapping.fwa_stream_networks_sp"
 	touch $@
 
 .make/fwa_linear_boundaries_sp: $(LBD_TARGETS)
+	for wsg in $(GROUPS) ; do \
+		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_linear_boundaries_sp.sql -v wsg=$$wsg ; \
+	done
 	$(PSQL) -c "VACUUM ANALYZE whse_basemapping.fwa_linear_boundaries_sp"
 	touch $@
 
 .make/fwa_watersheds_poly: $(WSD_TARGETS)
+	for wsg in $(GROUPS) ; do \
+		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_watersheds_poly.sql -v wsg=$$wsg ; \
+	done
 	$(PSQL) -c "VACUUM ANALYZE whse_basemapping.fwa_watersheds_poly"
 	touch $@
 
