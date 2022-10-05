@@ -31,7 +31,7 @@ drop table if exists whse_basemapping.fwa_waterbodies;
 drop table if exists whse_basemapping.fwa_stream_order_parent;
 
 -- additional data
-drop table if exists usgs.wdbhu12;
+drop table if exists usgs.wbdhu12;
 drop table if exists hydrosheds.hybas_lev12_v1c;
 
 -- functions
@@ -40,7 +40,9 @@ drop function if exists st_safe_repair;
 
 drop function if exists fwa_huc12;
 drop function if exists fwa_hydroshed;
+drop function if exists postgisftw.fwa_hydroshed;
 drop function if exists fwa_indexpoint;
+drop function if exists postgisftw.fwa_indexpoint;
 
 drop function if exists fwa_upstream(ltree,ltree,ltree,ltree);
 drop function if exists fwa_upstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
@@ -53,10 +55,10 @@ drop function if exists fwa_downstream(integer,double precision,double precision
 drop function if exists fwa_upstreambordercrossings;
 drop function if exists fwa_slicewatershedatpoint;
 drop function if exists fwa_watershedexbc;
-drop function if exists fwa_watershedatmeasure;
-drop function if exists fwa_watershedhex;
-drop function if exists fwa_watershedstream;
-drop function if exists fwa_locatealong;
-drop function if exists fwa_locatealonginterval;
+drop function if exists postgisftw.fwa_watershedatmeasure;
+drop function if exists postgisftw.fwa_watershedhex;
+drop function if exists postgisftw.fwa_watershedstream;
+drop function if exists postgisftw.fwa_locatealong;
+drop function if exists postgisftw.fwa_locatealonginterval;
 
 drop schema if exists fwapg cascade;
