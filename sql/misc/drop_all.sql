@@ -31,6 +31,12 @@ drop table if exists whse_basemapping.fwa_named_streams;
 drop table if exists whse_basemapping.fwa_waterbodies;
 drop table if exists whse_basemapping.fwa_stream_order_parent;
 
+drop table if exists whse_basemapping.fwa_assessment_watersheds_lut;
+drop table if exists whse_basemapping.fwa_assessment_watersheds_streams_lut;
+drop table if exists whse_basemapping.fwa_streams_watersheds_lut;
+drop table if exists whse_basemapping.fwa_waterbodies_upstream_area;
+drop table if exists whse_basemapping.fwa_watersheds_upstream_area;
+
 -- additional data
 drop table if exists usgs.wbdhu12;
 drop table if exists hydrosheds.hybas_lev12_v1c;
