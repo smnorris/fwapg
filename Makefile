@@ -112,7 +112,7 @@ clean_db:
 	touch $@
 
 $(STREAM_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
-	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp where watershed_group_code = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'"
+	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp where watershed_group_code = '$(subst .make/fwa_stream_networks_sp_,,$@)'"
 	# load to staging schema
 	bcdata bc2pg --db_url $(DATABASE_URL) -t \
 		--schema fwapg \
