@@ -3,9 +3,9 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.2.3 (2022-09)
+0.3.0 (2022-10-14)
 ------------------
-- modify load process to avoid problems with dependent views (#117)
+- modify load process to use latest `bcdata`, and also avoid problems with dependent views (#117)
 - set stream_order_parent of streams draining to ocean to NULL (#115)
 - ensure fwa functions not created in postgisftw are created in public schema (#73)
 
