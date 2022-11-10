@@ -32,3 +32,9 @@ select
   feature_code,
   (st_dump(geom)).geom as geom
 from fwapg.fwa_obstructions_sp;
+
+-- local code is not populated in obstruction table, get it from streams
+UPDATE whse_basemapping.fwa_obstructions_sp o
+SET local_watershed_code = s.local_watershed_code
+FROM whse_basemapping.fwa_stream_networks_sp s
+WHERE o.linear_feature_id = s.linear_feature_id;
