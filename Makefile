@@ -89,7 +89,7 @@ clean_db:
 	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t whse_basemapping.fwa_watersheds_poly
 	touch $@
 
-$(STREAM_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
+$(STREAM_TARGETS): .make/spatial_large_load
 	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp where watershed_group_code = '$(subst .make/fwa_stream_networks_sp_,,$@)'"
 	# load to staging schema
 	bcdata bc2pg --db_url $(DATABASE_URL) -t \
@@ -99,7 +99,7 @@ $(STREAM_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
 		whse_basemapping.fwa_stream_networks_sp
 	touch $@
 
-$(LBD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
+$(LBD_TARGETS): .make/spatial_large_load
 	$(PSQL) -c "delete from fwapg.fwa_linear_boundaries_sp where watershed_group_code = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'"
 	# load to staging schema
 	bcdata bc2pg --db_url $(DATABASE_URL) -t \
@@ -109,7 +109,7 @@ $(LBD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
 		whse_basemapping.fwa_linear_boundaries_sp
 	touch $@
 
-$(WSD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
+$(WSD_TARGETS): .make/spatial_large_load
 	$(PSQL) -c "delete from fwapg.fwa_watersheds_poly where watershed_group_code = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'"
 	# load to staging schema
 	bcdata bc2pg --db_url $(DATABASE_URL) -t \
@@ -170,7 +170,7 @@ $(WSD_TARGETS): .make/spatial_large_load .make/fwa_watershed_groups_poly
 	touch $@
 
 # get non spatial data from FTP
-# can't seem to download directly with ogr2ogr /vsizip/vsicurl, so download the entire file with wget
+# file name is not quite right for direct access via /vsizip/vsicurl - download the entire file with wget
 data/FWA_BC.gdb.zip:
 	mkdir -p data
 	wget --trust-server-names -qN ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip -P data
@@ -192,13 +192,8 @@ data/FWA_BC.gdb.zip:
 	$(PSQL) -c "drop table fwapg.$(subst .make/,,$@)"
 	touch $@
 
-# apply fixes
-.make/datafixes: sql/misc/datafixes.sql $(SPATIAL_BASIC) $(SPATIAL_LARGE)
-	$(PSQL) -f $<  # fix known FWA errors that may not yet be fixed in source
-	touch $@
-
 # create value added tables that require just a single .sql script
-.make/%: sql/tables/value_added/%.sql $(SPATIAL_BASIC) $(SPATIAL_LARGE) $(NON_SPATIAL_TARGETS) .make/datafixes
+.make/%: sql/tables/value_added/%.sql $(SPATIAL_BASIC) $(SPATIAL_LARGE) $(NON_SPATIAL_TARGETS)
 	$(PSQL) -f $<
 	touch $@
 
