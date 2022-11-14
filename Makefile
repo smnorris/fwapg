@@ -36,7 +36,6 @@ ALL_TARGETS = .make/db \
 	.make/wbdhu12 \
 	.make/hydrosheds \
 	$(VALUE_ADDED_TARGETS) \
-	.make/fwa_stream_order_parent \
 	.make/fwa_streams_watersheds_lut \
 	.make/fwa_functions \
 	.make/fwa_waterbodies_upstream_area \
@@ -298,7 +297,7 @@ data/WBD_National_GDB.zip:
 	touch $@
 
 # additional FWA functions
-.make/fwa_functions: $(SPATIAL_BASIC) $(SPATIAL_LARGE) $(NON_SPATIAL_TARGETS) $(VALUE_ADDED_TARGETS) .make/fwa_streams_watersheds_lut .make/fwa_stream_order_parent \
+.make/fwa_functions: $(SPATIAL_BASIC) $(SPATIAL_LARGE) $(NON_SPATIAL_TARGETS) $(VALUE_ADDED_TARGETS) .make/fwa_streams_watersheds_lut \
 	.make/hydrosheds \
 	.make/wbdhu12
 	$(PSQL) -f sql/functions/FWA_SliceWatershedAtPoint.sql
