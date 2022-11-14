@@ -122,17 +122,19 @@ $(WSD_TARGETS): .make/spatial_large_load
 # copy data from fwapg to whse_basemapping
 .make/fwa_stream_networks_sp: $(STREAM_TARGETS)
 	# build the lookups
-	#$(PSQL) -f sql/tables/temp/fwa_stream_order_max.sql
-	#$(PSQL) -c "drop table if exists fwapg.fwa_stream_order_parent"
-	#$(PSQL) -c "create table fwapg.fwa_stream_order_parent \
-	#	(blue_line_key integer primary key, stream_order_parent integer);"
-	#for wsg in $(GROUPS) ; do \
-	#	$(PSQL) -v wsg=$$wsg -f sql/tables/temp/fwa_stream_order_parent.sql ; \
-	#done
+	$(PSQL) -f sql/tables/temp/fwa_stream_order_max.sql
+	$(PSQL) -c "drop table if exists fwapg.fwa_stream_order_parent"
+	$(PSQL) -c "create table fwapg.fwa_stream_order_parent \
+		(blue_line_key integer primary key, stream_order_parent integer);"
+	for wsg in $(GROUPS) ; do \
+		$(PSQL) -v wsg=$$wsg -f sql/tables/temp/fwa_stream_order_parent.sql ; \
+	done
 	# load data per group so inserts are in managable chunks
 	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
 	done
+	$(PSQL) -c "drop table fwapg.fwa_stream_order_parent"
+	$(PSQL) -c "drop table fwapg.fwa_stream_order_max"
 	$(PSQL) -c "drop table fwapg.fwa_stream_networks_sp"
 	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_stream_networks_sp"
 	# apply data fixes
