@@ -385,6 +385,8 @@ create table if not exists whse_basemapping.fwa_stream_networks_sp (
   gnis_name character varying(80),
   left_right_tributary character varying(7),
   stream_order integer,
+  stream_order_parent integer,
+  stream_order_max integer,
   stream_magnitude integer,
   waterbody_key integer,
   blue_line_key_50k integer,

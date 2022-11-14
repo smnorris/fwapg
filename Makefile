@@ -121,6 +121,15 @@ $(WSD_TARGETS): .make/spatial_large_load
 
 # copy data from fwapg to whse_basemapping
 .make/fwa_stream_networks_sp: $(STREAM_TARGETS)
+	# build the lookups
+	#$(PSQL) -f sql/tables/temp/fwa_stream_order_max.sql
+	#$(PSQL) -c "drop table if exists fwapg.fwa_stream_order_parent"
+	#$(PSQL) -c "create table fwapg.fwa_stream_order_parent \
+	#	(blue_line_key integer primary key, stream_order_parent integer);"
+	#for wsg in $(GROUPS) ; do \
+	#	$(PSQL) -v wsg=$$wsg -f sql/tables/temp/fwa_stream_order_parent.sql ; \
+	#done
+	# load data per group so inserts are in managable chunks
 	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
 	done
@@ -213,22 +222,6 @@ data/FWA_BC.gdb.zip:
 	$(PSQL) -c "COMMENT ON TABLE whse_basemapping.fwa_streams_watersheds_lut IS 'A convenience lookup for quickly relating streams and fundamental watersheds';"
 	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_streams_watersheds_lut.linear_feature_id IS 'FWA stream segment unique identifier';"
 	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_streams_watersheds_lut.watershed_feature_id IS 'FWA fundamental watershed unique identifer';"
-	touch $@
-
-# create a table holding the parent stream order of all streams (where possible)
-.make/fwa_stream_order_parent: sql/tables/value_added_chunked/fwa_stream_order_parent.sql .make/fwa_stream_networks_sp
-	# create table
-	$(PSQL) -c "drop table if exists whse_basemapping.fwa_stream_order_parent"
-	$(PSQL) -c "create table whse_basemapping.fwa_stream_order_parent \
-		(blue_line_key integer primary key, stream_order_parent integer);"
-	# load data per group so inserts are in managable chunks
-	for wsg in $(GROUPS) ; do \
-		$(PSQL) -v wsg=$$wsg -f $< ; \
-	done
-	# comment and index after load
-	$(PSQL) -c "COMMENT ON TABLE whse_basemapping.fwa_stream_order_parent IS 'Streams (as blue_line_key) and the stream order of the stream they flow into';"
-	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_stream_order_parent.blue_line_key IS 'FWA blue_line_key';"
-	$(PSQL) -c "COMMENT ON COLUMN whse_basemapping.fwa_stream_order_parent.stream_order_parent IS 'The stream_order of the stream the blue_line_key flows into';"
 	touch $@
 
 # USA (lower 48) watersheds - USGS HU12 polygons

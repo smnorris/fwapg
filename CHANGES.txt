@@ -3,6 +3,12 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.3.1 ()
+------------------
+- ensure fixes are applied for partial loads (#120)
+- add stream_order_parent and stream_order_max to output table and remove parent order lookup (#122)
+
+
 0.3.0 (2022-10-14)
 ------------------
 - modify load process to use latest `bcdata`, and also avoid problems with dependent views (#117)
