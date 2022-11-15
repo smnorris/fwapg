@@ -11,7 +11,6 @@ for table in approx_borders \
   bcboundary \
   named_streams \
   streams_watersheds_lut \
-  stream_order_parent \
   waterbodies \
   waterbodies_upstream_area \
   watersheds_upstream_area \
