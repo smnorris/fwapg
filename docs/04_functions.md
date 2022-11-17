@@ -309,6 +309,30 @@ Make the same request as the example above, but
 [at 10km](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100)
 
 
+## FWA_StreamsAsMVT
+
+### Synopsis
+
+```sql
+FWA_StreamsAsMVT(
+  z integer,
+  x integer,
+  y integer
+)
+```
+
+### Description
+
+Return FWA streams as MVT, filtering by `stream_order_max` (the maximum order of a given stream / `blue_line_key`) based on the provided zoom level. 
+Enables fast display of source 1:20,000 streams at all zoom levels (show full length of higher order streams at lower zooms), using `pg_tileserv`.
+
+Note: for databases with modest resources, tiles at low zoom levels may be slow to render. The function should still be speedy enough for general use if [pg_tileserv is behind a cache](https://github.com/CrunchyData/pg_tileserv#basic-operation).
+
+### Web service
+
+[FWA_StreamsAsMVT](https://tiles.hillcrestgeo.ca/bcfishpass/postgisftw.fwa_streamsasmvt.html)
+
+
 ## FWA_Upstream
 
 ### Synopsis

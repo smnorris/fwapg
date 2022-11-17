@@ -29,7 +29,6 @@ drop table if exists whse_basemapping.fwa_basins_poly;
 drop table if exists whse_basemapping.fwa_bcboundary;
 drop table if exists whse_basemapping.fwa_named_streams;
 drop table if exists whse_basemapping.fwa_waterbodies;
-drop table if exists whse_basemapping.fwa_stream_order_parent;
 
 drop table if exists whse_basemapping.fwa_assessment_watersheds_lut;
 drop table if exists whse_basemapping.fwa_assessment_watersheds_streams_lut;
