@@ -50,7 +50,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#fwa-bcboundary">fwa_bcboundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fwa-named-streams">fwa_named_streams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fwa-streams-watersheds-lut">fwa_streams_watersheds_lut</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fwa-stream-order-parent">fwa_stream_order_parent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fwa-waterbodies">fwa_waterbodies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fwa-waterbodies-upstream-area">fwa_waterbodies_upstream_area</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fwa-watersheds-upstream-area">fwa_watersheds_upstream_area</a></li>
@@ -283,30 +282,6 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">watershed_feature_id</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
 <td><p>FWA fundamental watershed unique identifer</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="fwa-stream-order-parent">
-<h2>fwa_stream_order_parent<a class="headerlink" href="#fwa-stream-order-parent" title="Permalink to this heading"></a></h2>
-<p>A convenince table, holding parent <code class="docutils literal notranslate"><span class="pre">stream_order</span></code> values for each stream in BC (as defined by <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>).
-‘Parent’ stream order is the order of the <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> stream into which the given stream drains.
-For side channels, <code class="docutils literal notranslate"><span class="pre">stream_order_parent</span></code> is the order of the main channel at the location of the downstream tributary with the side channel.</p>
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Column</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
-<td><p>See FWA documentation for blue_line_key description</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stream_order_parent</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
-<td><p>The stream_order of the stream the blue_line_key flows into</p></td>
 </tr>
 </tbody>
 </table>

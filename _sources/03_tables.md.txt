@@ -75,17 +75,6 @@ A convenience lookup for quickly relating streams and fundamental watersheds
 | `linear_feature_id` | `bigint` | FWA stream segment unique identifier |
 | `watershed_feature_id` | `integer` | FWA fundamental watershed unique identifer |
 
-## fwa_stream_order_parent
-
-A convenince table, holding parent `stream_order` values for each stream in BC (as defined by `blue_line_key`).
-'Parent' stream order is the order of the `blue_line_key` stream into which the given stream drains.
-For side channels, `stream_order_parent` is the order of the main channel at the location of the downstream tributary with the side channel.
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `blue_line_key`       | `integer` | See FWA documentation for blue_line_key description |
-| `stream_order_parent` | `integer` | The stream_order of the stream the blue_line_key flows into |
-
 
 ## fwa_waterbodies
 
