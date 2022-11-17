@@ -7,7 +7,7 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 ------------------
 - ensure fixes are applied for partial loads (#120)
 - add stream_order_parent and stream_order_max to output table and remove parent order lookup (#122)
-
+- add function postgisftw.fwa_streamsasmvt() - zoom dependent filtering of streams as MVT
 
 0.3.0 (2022-10-14)
 ------------------
