@@ -120,17 +120,29 @@ $(WSD_TARGETS): .make/spatial_large_load
 
 # copy data from fwapg to whse_basemapping
 .make/fwa_stream_networks_sp: $(STREAM_TARGETS)
-	# build the lookups
+	# a temporary cleaning measure to remove two invalid local codes
+	$(PSQL) -c "update fwapg.fwa_stream_networks_sp set local_watershed_code = NULL where local_watershed_code = '<Null>'"
+	# build the max order lookup before loading streams
 	$(PSQL) -f sql/tables/temp/fwa_stream_order_max.sql
+	# load stream data to target table - load per group so inserts are in managable chunks
+	for wsg in $(GROUPS) ; do \
+		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
+	done
+	# create parent order lookup 
+	# (not created/loaded above with max order table because it depends on optimized stream data for timely creation)
 	$(PSQL) -c "drop table if exists fwapg.fwa_stream_order_parent"
 	$(PSQL) -c "create table fwapg.fwa_stream_order_parent \
 		(blue_line_key integer primary key, stream_order_parent integer);"
 	for wsg in $(GROUPS) ; do \
 		$(PSQL) -v wsg=$$wsg -f sql/tables/temp/fwa_stream_order_parent.sql ; \
 	done
-	# load data per group so inserts are in managable chunks
+	# load parent order values as updates 
 	for wsg in $(GROUPS) ; do \
-		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
+		echo "update whse_basemapping.fwa_stream_networks_sp s \
+		set stream_order_parent = p.stream_order_parent \
+		from fwapg.fwa_stream_order_parent p \
+		where s.blue_line_key = p.blue_line_key \
+		and s.watershed_group_code = :'wsg'" | $(PSQL) -v wsg=$$wsg ;\
 	done
 	$(PSQL) -c "drop table fwapg.fwa_stream_order_parent"
 	$(PSQL) -c "drop table fwapg.fwa_stream_order_max"

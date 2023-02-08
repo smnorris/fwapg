@@ -12,8 +12,8 @@ select
   blue_line_key,
   max(stream_order) as max_stream_order
 from fwapg.fwa_stream_networks_sp
-where wscode_ltree is not null
+where fwa_watershed_code is not null
 and watershed_key = blue_line_key
 and edge_type != 6010
-and wscode_ltree <@ '999'::ltree is false
+and fwa_watershed_code not like '999%'
 group by blue_line_key;

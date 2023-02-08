@@ -7,8 +7,8 @@ insert into fwapg.fwa_stream_order_parent
   select distinct on (a.blue_line_key)
     a.blue_line_key,
     b.stream_order as stream_order_parent
-  from fwapg.fwa_stream_networks_sp a
-  left outer join fwapg.fwa_stream_networks_sp b
+  from whse_basemapping.fwa_stream_networks_sp a
+  left outer join whse_basemapping.fwa_stream_networks_sp b
   on a.wscode_ltree = b.localcode_ltree
   where
     a.watershed_group_code = :'wsg'
@@ -33,8 +33,8 @@ insert into fwapg.fwa_stream_order_parent (
 select distinct on (a.blue_line_key)
   a.blue_line_key,
   b.stream_order as stream_order_parent
-from fwapg.fwa_stream_networks_sp a
-left outer join fwapg.fwa_stream_networks_sp b
+from whse_basemapping.fwa_stream_networks_sp a
+left outer join whse_basemapping.fwa_stream_networks_sp b
 on (a.wscode_ltree = b.wscode_ltree and
     a.localcode_ltree = b.localcode_ltree)
 where
