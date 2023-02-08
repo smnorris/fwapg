@@ -62,17 +62,6 @@ For a given spatial FWA table, the load sequence is:
 Note that the download time for the larger tables is *very* slow, the full load takes several hours.
 However, once scripts are complete you have an up-to-date FWA database ready for speedy queries. 
 
-## Partial loads
-
-Partial loads are possible but require some manual intervention. Load an individual table like this:
-
-    # load required table to staging schema
-    make .make/fwa_stream_networks_sp   
-    # drop existing table in whse_basemapping if present
-    psql -c "drop table if exists whse_basemapping.fwa_stream_networks_sp"
-    # switch data from staging schema into whse_basemapping
-    psql -c "alter table fwapg.fwa_stream_networks_sp set schema whse_basemapping"
-
 
 ## Updates
 
