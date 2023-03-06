@@ -1,26 +1,31 @@
-name: CI
-
+# This is a basic workflow to help you get started with Actions
+name: docs-deploy
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
 on:
   push:
-    branches:
-      - main
-
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
-
+  docs:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
-    # Standard drop-in approach that should work for most people.
-    - uses: ammaraskar/sphinx-action@master
+    - uses: actions/checkout@master
+    - uses: erpcya/sphinx-action@feature/#update-sphinx-base-image
       with:
+        pre-build-command: "pip install sphinx_rtd_theme"
         docs-folder: "docs/"
-    # Publish built docs to gh-pages branch.
-    # ===============================
+        build-command: "sphinx-build -b html . _build/html"
+    - uses: erpcya/sphinx-action@feature/#update-sphinx-base-image
+      with:
+        pre-build-command: "pip install sphinx_rtd_theme"
+        docs-folder: "docs/"
+        build-command: "sphinx-build -b epub . _build/epub"
     - name: Commit documentation changes
       run: |
-        git clone https://github.com/smnorris/fwapg.git --branch gh-pages --single-branch gh-pages
+        git clone https://github.com/${{ github.repository }}.git --branch gh-pages --single-branch gh-pages
         cp -r docs/_build/html/* gh-pages/
         cd gh-pages
         touch .nojekyll
@@ -36,4 +41,3 @@ jobs:
         branch: gh-pages
         directory: gh-pages
         github_token: ${{ secrets.GITHUB_TOKEN }}
-    # ===============================
