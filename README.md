@@ -40,7 +40,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
         cd fwapg
         make
 
-The full load takes several hours, but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
+The full load takes about 2 hours - but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
 
 *Locate the nearest point on the FWA stream network to a X,Y location on Highway 14:*
 
