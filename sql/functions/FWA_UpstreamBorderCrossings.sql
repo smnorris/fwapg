@@ -1,7 +1,4 @@
--- ensure the functions are created in the public schema
-set search_path to public;
-
-CREATE OR REPLACE FUNCTION FWA_UpstreamBorderCrossings(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_UpstreamBorderCrossings(blkey integer, meas float)
 
 RETURNS text
 
@@ -77,4 +74,4 @@ LIMIT 1) as f;
 $$
 language 'sql' immutable strict parallel safe;
 
-COMMENT ON FUNCTION FWA_UpstreamBorderCrossings IS 'Provided a location as blue_line_key and downstream_route_measure, return border name if any streams upstream of the location intersect parallels 49/60 or longitude -120 ';
+COMMENT ON FUNCTION whse_basemapping.FWA_UpstreamBorderCrossings IS 'Provided a location as blue_line_key and downstream_route_measure, return border name if any streams upstream of the location intersect parallels 49/60 or longitude -120 ';

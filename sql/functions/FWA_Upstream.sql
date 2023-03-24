@@ -66,7 +66,7 @@ return TRUE when the values for b are upstream of the values for a.
 set search_path to public;
 
 -- watershed code comparison only
-CREATE OR REPLACE FUNCTION FWA_Upstream(
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
     wscode_ltree_a ltree,
     localcode_ltree_a ltree,
     wscode_ltree_b ltree,
@@ -116,7 +116,7 @@ language 'sql' immutable parallel safe;
 
 
 -- linear comparisons
-CREATE OR REPLACE FUNCTION FWA_Upstream(
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
     blue_line_key_a integer,
     downstream_route_measure_a double precision,
     upstream_route_measure_a double precision,
@@ -226,7 +226,7 @@ language 'sql' immutable parallel safe;
 
 
 -- shortcut for points, dnstr measure a and upstr measure are equivalent
-CREATE OR REPLACE FUNCTION FWA_Upstream(
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
     blue_line_key_a integer,
     downstream_route_measure_a double precision,
     wscode_ltree_a ltree,
@@ -242,7 +242,7 @@ CREATE OR REPLACE FUNCTION FWA_Upstream(
 RETURNS boolean AS $$
 
 SELECT
-  FWA_Upstream(
+  whse_basemapping.FWA_Upstream(
     blue_line_key_a,
     downstream_route_measure_a,
     downstream_route_measure_a,

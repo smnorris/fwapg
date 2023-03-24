@@ -1,37 +1,31 @@
--- Provided a point as (x,y, srid), return aggregated boundary of all hydroshed polygons upstream of point
+-- ensure the functions are created in the public schema
 
-CREATE OR REPLACE FUNCTION postgisftw.hydroshed(x float, y float, srid integer)
+CREATE OR REPLACE FUNCTION hydrosheds.hydroshed(id bigint)
 
-RETURNS table
-
-    (
-        geom geometry
-    )
+RETURNS geometry(polygon, 3005)
 
 AS
 
 $$
 
 WITH RECURSIVE walkup (hybas_id, geom) AS
-        (
-            SELECT hybas_id, wsd.geom
-            FROM hydrosheds.hybas_lev12_v1c wsd
-            INNER JOIN (SELECT ST_Transform(ST_SetSRID(ST_MakePoint(x, y), srid), 3005) as geom)  as pt
-            ON ST_Intersects(wsd.geom, pt.geom)
+    (
+        SELECT hybas_id, wsd.geom
+        FROM hydrosheds.hybas_lev12_v1c wsd
+        WHERE hybas_id = id
 
-            UNION ALL
+        UNION ALL
 
-            SELECT b.hybas_id, b.geom
-            FROM hydrosheds.hybas_lev12_v1c b,
-            walkup w
-            WHERE b.next_down = w.hybas_id
-        )
-    SELECT
-      ST_Union(w.geom) as geom
-    FROM walkup w;
+        SELECT b.hybas_id, b.geom
+        FROM hydrosheds.hybas_lev12_v1c b,
+        walkup w
+        WHERE b.next_down = w.hybas_id
+    )
+SELECT
+  ST_Union(w.geom, .5) as geom
+FROM walkup w;
 
 $$
-language 'sql' immutable parallel safe;
+language 'sql' immutable strict parallel safe;
 
-
-COMMENT ON FUNCTION postgisftw.hydroshed IS 'Return aggregated boundary of all hydroshed polygons upstream of the provided location';
+COMMENT ON FUNCTION hydrosheds.hydroshed IS 'Return geometry of aggregated watershed boundary for watershed upstream of provided hydroshed id';

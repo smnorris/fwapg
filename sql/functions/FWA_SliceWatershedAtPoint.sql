@@ -7,10 +7,8 @@
 -- Then cut these polys with a blade spanning between the input point and
 -- the closest points on the opposite edges of the bank/adjacent watershed poly
 
--- ensure the functions are created in the public schema
-set search_path to public;
 
-CREATE OR REPLACE FUNCTION FWA_SliceWatershedAtPoint(blkey integer, meas float)
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_SliceWatershedAtPoint(blkey integer, meas float)
 
 RETURNS TABLE(wsds integer[], geom geometry)  AS $$
 
@@ -216,4 +214,4 @@ ON st_intersects(cut.geom, stream.geom);
 $$
 language 'sql' immutable strict parallel safe;
 
-COMMENT ON FUNCTION FWA_SliceWatershedAtPoint IS 'Aggregate and slice watershed polygons on/adjacent to polygonal rivers/canals at given blue_line_key/measure. Returns the cut portion of watersheds upstream of the provided point';
+COMMENT ON FUNCTION whse_basemapping.FWA_SliceWatershedAtPoint IS 'Aggregate and slice watershed polygons on/adjacent to polygonal rivers/canals at given blue_line_key/measure. Returns the cut portion of watersheds upstream of the provided point';

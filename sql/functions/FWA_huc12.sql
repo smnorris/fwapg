@@ -1,7 +1,4 @@
--- ensure the functions are created in the public schema
-set search_path to public;
-
-CREATE OR REPLACE FUNCTION FWA_huc12(id character varying)
+CREATE OR REPLACE FUNCTION usgs.FWA_huc12(id character varying)
 
 RETURNS geometry(polygon, 3005)
 
@@ -30,4 +27,4 @@ $$
 language 'sql' immutable strict parallel safe;
 
 
-COMMENT ON FUNCTION FWA_huc12 IS 'Return geometry of aggregated watershed boundary for watershed upstream of provided huc12 id';
+COMMENT ON FUNCTION usgs.FWA_huc12 IS 'Return geometry of aggregated watershed boundary for watershed upstream of provided huc12 id';

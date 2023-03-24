@@ -1,6 +1,6 @@
 -- Return a point on the stream network based on the location provided by input blue_line_key and downstream_route_measure
 
-CREATE OR REPLACE FUNCTION postgisftw.FWA_LocateAlong(blue_line_key integer, downstream_route_measure float)
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_LocateAlong(blue_line_key integer, downstream_route_measure float)
 
 RETURNS TABLE (
     geom                     geometry(Point, 3005)
@@ -30,4 +30,4 @@ END
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.FWA_LocateAlong IS 'Return a point on the stream network based on the location provided by blue_line_key and downstream_route_measure'
+COMMENT ON FUNCTION whse_basemapping.FWA_LocateAlong IS 'Return a point on the stream network based on the location provided by blue_line_key and downstream_route_measure'

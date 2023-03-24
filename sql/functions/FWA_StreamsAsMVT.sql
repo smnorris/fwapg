@@ -1,5 +1,4 @@
-CREATE OR REPLACE
-FUNCTION postgisftw.fwa_streamsasmvt(
+CREATE OR REPLACE FUNCTION whse_basemapping.fwa_streamsasmvt(
             z integer, x integer, y integer)
 RETURNS bytea
 AS $$
@@ -36,4 +35,4 @@ LANGUAGE 'plpgsql'
 STABLE
 PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.fwa_streamsasmvt IS 'Zoom-level dependent FWA streams';
+COMMENT ON FUNCTION whse_basemapping.fwa_streamsasmvt IS 'Zoom-level dependent FWA streams';
