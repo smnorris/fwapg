@@ -3,6 +3,13 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.4.0 (2023-03-23)
+------------------
+- load data from ftp rather than WFS (#127)
+- load FWA functions to whse_basemapping schema (and usgs/hydrosheds schemas) rather than public
+  (search_path must be set to find these)
+- add postgisftw functions (for publication via pgfs/pgts) from a single separate file
+
 0.3.1 (2023-02-08)
 ------------------
 - ensure fixes are applied for partial loads (#120)
