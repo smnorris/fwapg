@@ -1,7 +1,7 @@
 -- functions for publication by pg_featureserv / pg_tileserv must be created in postgisftw schema
 
 -- -------------------------------------------------------------------------------------------------------------------------
--- FWA_IndexPoint
+-- FWA_IndexPoint  -- note that this is different from whse_basemapping.FWA_IndexPoint()
 -- -------------------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION postgisftw.FWA_IndexPoint(
     x float,
@@ -77,7 +77,7 @@ END
 $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.FWA_LocateAlong IS 'Return a point on the stream network based on the location provided by blue_line_key and downstream_route_measure'
+COMMENT ON FUNCTION postgisftw.FWA_LocateAlong IS 'Return a point on the stream network based on the location provided by blue_line_key and downstream_route_measure';
 
 
 
@@ -177,7 +177,7 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.FWA_LocateAlongInterval IS 'Return a table (index, measure, geom), representing points along a stream between specified locations at specified interval'
+COMMENT ON FUNCTION postgisftw.FWA_LocateAlongInterval IS 'Return a table (index, measure, geom), representing points along a stream between specified locations at specified interval';
 
 
 
