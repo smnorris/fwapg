@@ -29,7 +29,12 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
         export DATABASE_URL=postgres://username:password@localhost:5432/fwapg
 
-3. Get scripts, load and optimize the data:
+3. FWA functions are added to the `whse_basemapping` schema - add them to the `SEARCH_PATH` to ensure they are picked up without schema qualification:
+
+        psql -c "ALTER DATABASE <database_name> SET search_path TO public,whse_basemapping,usgs,hydrosheds"
+
+
+4. Get scripts, load and optimize the data:
 
         git clone https://github.com/smnorris/fwapg.git
         cd fwapg

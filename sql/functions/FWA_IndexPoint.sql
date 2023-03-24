@@ -9,10 +9,8 @@
 -- - bc_ind                   - indicates if the stream is in BC
 -- - geom                     - point geometry of closest location on the stream (at downstream_route_measure)
 
--- ensure the functions are created in the public schema
-set search_path to public;
 
-CREATE OR REPLACE FUNCTION FWA_IndexPoint(
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_IndexPoint(
     point geometry(Point, 3005),
     tolerance float DEFAULT 5000,
     num_features integer DEFAULT 1
@@ -109,45 +107,4 @@ LIMIT $3
 $$
 language 'sql' immutable parallel safe;
 
-COMMENT ON FUNCTION FWA_IndexPoint(geometry(Point, 3005), float, integer) IS 'Provided a BC Albers point geometry, return the point indexed (snapped) to nearest stream(s) within specified tolerance (m)';
-
-
-
-CREATE OR REPLACE FUNCTION postgisftw.FWA_IndexPoint(
-    x float,
-    y float,
-    srid integer,
-    tolerance float DEFAULT 5000,
-    num_features integer DEFAULT 1
-)
-
-RETURNS TABLE
-    (
-        linear_feature_id bigint,
-        gnis_name text,
-        wscode_ltree ltree,
-        localcode_ltree ltree,
-        blue_line_key integer,
-        downstream_route_measure float,
-        distance_to_stream float,
-        bc_ind boolean,
-        geom geometry(Point, 3005)
-    )
-
-AS
-
-$$
-
-WITH pt AS
-
-(
-  SELECT ST_Transform(ST_SetSRID(ST_Makepoint($1, $2), $3), 3005) as geom
-)
-
-SELECT FWA_IndexPoint(pt.geom, $4, $5)
-FROM pt
-
-$$
-language 'sql' immutable parallel safe;
-
-COMMENT ON FUNCTION postgisftw.FWA_IndexPoint(float, float, integer, float, integer) IS 'Provided a point (as x,y coordinates and EPSG code), return the point indexed (snapped) to nearest stream(s) within specified tolerance (m)';
+COMMENT ON FUNCTION whse_basemapping.FWA_IndexPoint(geometry(Point, 3005), float, integer) IS 'Provided a BC Albers point geometry, return the point indexed (snapped) to nearest stream(s) within specified tolerance (m)';

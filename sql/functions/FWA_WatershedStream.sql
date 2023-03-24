@@ -4,7 +4,7 @@
 -- Typical use is for generating pour 'points' (linear pour points as per
 -- https://pro.arcgis.com/en/pro-app/tool-reference/spatial-analyst/watershed.htm)
 
-CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedStream(blue_line_key integer, downstream_route_measure float)
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_WatershedStream(blue_line_key integer, downstream_route_measure float)
 
 RETURNS TABLE(linear_feature_id bigint, geom geometry)
 AS
@@ -83,4 +83,4 @@ end
 $$
 language 'plpgsql' immutable parallel safe;
 
-COMMENT ON FUNCTION postgisftw.fwa_watershedstream IS 'Provided a location as blue_line_key and downstream_route_measure, return stream segments upstream, within the same first order watershed.';
+COMMENT ON FUNCTION whse_basemapping.fwa_watershedstream IS 'Provided a location as blue_line_key and downstream_route_measure, return stream segments upstream, within the same first order watershed.';

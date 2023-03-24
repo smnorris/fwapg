@@ -6,28 +6,18 @@ SHELL=/bin/bash
 # provide db connection param to psql and ensure scripts stop on error
 PSQL = psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 
-# Kludge to get the OGR to work with openshift container 
-# To avoid this issue, use a newer gdal
-# https://github.com/OSGeo/gdal/issues/4570
-DATABASE_URL_OGR=$(DATABASE_URL)?application_name=foo
+# process only groups noted in wsg.txt
+GROUPS = $(shell cat wsg.txt)
 
 # tables downloadable via via wfs are defined in sql/tables/spatial
 SPATIAL_BASIC=$(basename $(subst sql/tables/spatial/basic/,.make/,$(wildcard sql/tables/spatial/basic/fwa_*.sql)))
 SPATIAL_LARGE=$(basename $(subst sql/tables/spatial/large/,.make/,$(wildcard sql/tables/spatial/large/fwa_*.sql)))
-
-WSG = $(shell cat wsg.txt)
-
-STREAM_TARGETS = $(addprefix .make/fwa_stream_networks_sp_, $(WSG))
-WSD_TARGETS = $(addprefix .make/fwa_watersheds_poly_, $(WSG))
-LBD_TARGETS = $(addprefix .make/fwa_linear_boundaries_sp_, $(WSG))
 
 # tables not downloadable via wfs are defined in sql/tables/non_spatial
 NON_SPATIAL_TARGETS=$(basename $(subst sql/tables/non_spatial/,.make/,$(wildcard sql/tables/non_spatial/fwa_*.sql)))
 
 # custom fwapg tables
 VALUE_ADDED_TARGETS=$(basename $(subst sql/tables/value_added/,.make/,$(wildcard sql/tables/value_added/*.sql)))
-
-GROUPS = $(shell cat wsg.txt)
 
 ALL_TARGETS = .make/db \
 	$(SPATIAL_LARGE) \
@@ -42,7 +32,6 @@ ALL_TARGETS = .make/db \
 	.make/fwa_watersheds_upstream_area \
 	.make/fwa_assessment_watersheds_lut \
 	.make/fwa_assessment_watersheds_streams_lut
-
 
 all: $(ALL_TARGETS)
 
@@ -59,6 +48,7 @@ clean_db:
 # ** the database must already exist **
 .make/db: sql/functions/FWA_Downstream.sql sql/functions/FWA_Upstream.sql sql/tables/spatial/schema.sql
 	mkdir -p .make
+	mkdir -p data
 	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS postgis with schema public"
 	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS ltree with schema public"
 	$(PSQL) -c "CREATE EXTENSION IF NOT EXISTS intarray with schema public"
@@ -75,7 +65,19 @@ clean_db:
 	$(PSQL) -f sql/tables/non_spatial/schema.sql          
 	touch $@
 
-# spell out the loading of streams/linear boundaries/watersheds per wsg
+# download and rename (so we do not have to unzip)
+data/FWA_BC.gdb.zip:
+	curl -o $@ -z $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip
+
+data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip:
+	curl -o $@ -z $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
+
+data/FWA_WATERSHEDS_POLY.gdb.zip:
+	curl -o $@ -z $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_WATERSHEDS_POLY.zip
+
+data/FWA_STREAM_NETWORKS_SP.gdb.zip:
+	curl -o $@ -z $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
+
 # create load tables for larger spatial tables
 .make/spatial_large_load: .make/db
 	# delete existing load tables
@@ -88,40 +90,19 @@ clean_db:
 	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t whse_basemapping.fwa_watersheds_poly
 	touch $@
 
-$(STREAM_TARGETS): .make/spatial_large_load
-	$(PSQL) -c "delete from fwapg.fwa_stream_networks_sp where watershed_group_code = '$(subst .make/fwa_stream_networks_sp_,,$@)'"
-	# load to staging schema
-	bcdata bc2pg --db_url $(DATABASE_URL) -t \
-		--schema fwapg \
-		--query "WATERSHED_GROUP_CODE = '$(subst .make/fwa_stream_networks_sp_,,$@)'" \
-		--append \
-		whse_basemapping.fwa_stream_networks_sp
-	touch $@
-
-$(LBD_TARGETS): .make/spatial_large_load
-	$(PSQL) -c "delete from fwapg.fwa_linear_boundaries_sp where watershed_group_code = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'"
-	# load to staging schema
-	bcdata bc2pg --db_url $(DATABASE_URL) -t \
-		--schema fwapg \
-		--query "WATERSHED_GROUP_CODE = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'" \
-		--append \
-		whse_basemapping.fwa_linear_boundaries_sp
-	touch $@
-
-$(WSD_TARGETS): .make/spatial_large_load
-	$(PSQL) -c "delete from fwapg.fwa_watersheds_poly where watershed_group_code = '$(subst .make/fwa_linear_boundaries_sp_,,$@)'"
-	# load to staging schema
-	bcdata bc2pg --db_url $(DATABASE_URL) -t \
-		--schema fwapg \
-		--query "WATERSHED_GROUP_CODE = '$(subst .make/fwa_watersheds_poly_,,$@)'" \
-		--append \
-		whse_basemapping.fwa_watersheds_poly
-	touch $@
-
-# copy data from fwapg to whse_basemapping
-.make/fwa_stream_networks_sp: $(STREAM_TARGETS)
-	# a temporary cleaning measure to remove two invalid local codes
-	$(PSQL) -c "update fwapg.fwa_stream_networks_sp set local_watershed_code = NULL where local_watershed_code = '<Null>'"
+# load the larger tables per watershed group
+.make/fwa_stream_networks_sp: data/FWA_STREAM_NETWORKS_SP.gdb.zip .make/spatial_large_load
+	# load from file to staging table
+	for wsg in $(GROUPS) ; do \
+		ogr2ogr \
+			-f PostgreSQL \
+			PG:$(DATABASE_URL) \
+			-nln fwapg.fwa_stream_networks_sp \
+			-append \
+			-update \
+			data/FWA_STREAM_NETWORKS_SP.gdb.zip \
+			$$wsg  ; \
+	done
 	# build the max order lookup before loading streams
 	$(PSQL) -f sql/tables/temp/fwa_stream_order_max.sql
 	# load stream data to target table - load per group so inserts are in managable chunks
@@ -152,7 +133,19 @@ $(WSD_TARGETS): .make/spatial_large_load
 	$(PSQL) -f sql/misc/fixes_fwa_stream_networks_sp.sql
 	touch $@
 
-.make/fwa_linear_boundaries_sp: $(LBD_TARGETS)
+.make/fwa_linear_boundaries_sp: data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip .make/spatial_large_load
+	# load from file to staging table
+	for wsg in $(GROUPS) ; do \
+		ogr2ogr \
+			-f PostgreSQL \
+			PG:$(DATABASE_URL) \
+			-nln fwapg.fwa_linear_boundaries_sp \
+			-append \
+			-update \
+			data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip \
+			$$wsg  ; \
+	done
+	# load from staging to target
 	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_linear_boundaries_sp.sql -v wsg=$$wsg ; \
 	done
@@ -160,7 +153,18 @@ $(WSD_TARGETS): .make/spatial_large_load
 	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_linear_boundaries_sp"
 	touch $@
 
-.make/fwa_watersheds_poly: $(WSD_TARGETS)
+.make/fwa_watersheds_poly: data/FWA_WATERSHEDS_POLY.gdb.zip .make/spatial_large_load
+	# load from file to staging table
+	for wsg in $(GROUPS) ; do \
+		ogr2ogr \
+			-f PostgreSQL \
+			PG:$(DATABASE_URL) \
+			-nln fwapg.fwa_watersheds_poly \
+			-append \
+			-update \
+			data/FWA_WATERSHEDS_POLY.gdb.zip \
+			$$wsg  ; \
+	done
 	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f sql/tables/spatial/large/fwa_watersheds_poly.sql -v wsg=$$wsg ; \
 	done
@@ -168,42 +172,32 @@ $(WSD_TARGETS): .make/spatial_large_load
 	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_watersheds_poly"
 	touch $@
 
-# load spatial tables with not so many records. Requires loading streams first because local code for
-# obstacles comes from streams
+# load smaller spatial tables from FWA_BC.gdb
+# Requires loading streams first because local code for obstacles comes from streams
 .make/fwa_%: sql/tables/spatial/basic/fwa_%.sql .make/fwa_stream_networks_sp
 	# delete existing load table
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	# create empty load table
 	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t $(subst .make/,,whse_basemapping.$@)
-	# load these tables with larger features in smaller chunks to save memory
-	if [ $@ == '.make/fwa_assessment_watersheds_poly' ] || \
-		[ $@ == '.make/fwa_named_watersheds_poly' ] || \
-		[ $@ == '.make/fwa_watershed_groups_poly' ] || \
-		[ $@ == '.make/fwa_wetlands_poly' ] ; then \
-		set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --append -p 5000 -t $(subst .make/,,whse_basemapping.$@) ; \
-		$(PSQL) -c "truncate whse_basemapping.$(subst .make/,,$@)" ; \
-		set -e ; $(PSQL) -f $< ; \
-	else \
-		set -e ; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --append -t $(subst .make/,,whse_basemapping.$@) ; \
-		$(PSQL) -c "truncate whse_basemapping.$(subst .make/,,$@)" ; \
-		set -e ; $(PSQL) -f $< ; \
-	fi
+	ogr2ogr \
+		-f PostgreSQL \
+		PG:$(DATABASE_URL) \
+		-nln fwapg.$(subst .make/,,$@) \
+		-append \
+		-update \
+		data/FWA_BC.gdb.zip \
+		$(subst .make/,,$@)  ; \
+	$(PSQL) -c "truncate whse_basemapping.$(subst .make/,,$@)"
+	set -e ; $(PSQL) -f $<
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	touch $@
-
-# get non spatial data from FTP
-# file name is not quite right for direct access via /vsizip/vsicurl - download the entire file with wget
-data/FWA_BC.gdb.zip:
-	mkdir -p data
-	wget --trust-server-names -qN ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip -P data
-	mv data/FWA_BC.zip $@
 
 # load non spatial tables 
 .make/fwa_%: sql/tables/non_spatial/fwa_%.sql data/FWA_BC.gdb.zip .make/db
 	# load to temp fwapg schema
 	ogr2ogr \
 		-f PostgreSQL \
-		PG:$(DATABASE_URL_OGR) \
+		PG:$(DATABASE_URL) \
 		-nln $(subst .make/,fwapg.,$@) \
 		data/FWA_BC.gdb.zip \
 		$(shell echo $(subst .make/,,$@) | tr '[:lower:]' '[:upper:]')
@@ -248,7 +242,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -c "drop table if exists usgs.wbdhu12"
 	ogr2ogr \
 		-f PostgreSQL \
-		PG:$(DATABASE_URL_OGR)  \
+		PG:$(DATABASE_URL)  \
 		-t_srs EPSG:3005 \
 		-lco SCHEMA=usgs \
 		-lco GEOMETRY_NAME=geom \
@@ -277,7 +271,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -c "drop table if exists hydrosheds.hybas_ar_lev12_v1c"
 	ogr2ogr \
 		-f PostgreSQL \
-		PG:$(DATABASE_URL_OGR) \
+		PG:$(DATABASE_URL) \
 		-t_srs EPSG:3005 \
 		-lco SCHEMA=hydrosheds \
 		-lco GEOMETRY_NAME=geom \
@@ -287,7 +281,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -c "drop table if exists hydrosheds.hybas_na_lev12_v1c"
 	ogr2ogr \
 		-f PostgreSQL \
-		PG:$(DATABASE_URL_OGR) \
+		PG:$(DATABASE_URL) \
 		-t_srs EPSG:3005 \
 		-lco SCHEMA=hydrosheds \
 		-lco GEOMETRY_NAME=geom \
@@ -304,8 +298,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -c "ALTER TABLE hydrosheds.hybas_lev12_v1c ADD PRIMARY KEY (hybas_id)"
 	$(PSQL) -c "CREATE INDEX ON hydrosheds.hybas_lev12_v1c (next_down)"
 	$(PSQL) -c "COMMENT ON TABLE hydrosheds.hybas_lev12_v1c IS 'HydroBasins for North America from https://www.hydrosheds.org. See source for column documentation';"
-	$(PSQL) -f sql/functions/FWA_hydroshed.sql  # internal function, requires hydroshed id as input
-	$(PSQL) -f sql/functions/hydroshed.sql      # published function, point as (x, y, srid) as input
+	$(PSQL) -f sql/functions/hydroshed.sql  # internal function, hydroshed id as input
 	touch $@
 
 # additional FWA functions
@@ -320,6 +313,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlongInterval.sql
+	$(PSQL) -f sql/functions/postgisftw.sql  # pg_fs/pg_ts functions
 	touch $@
 
 # rather than generating these lookups (slow), download pre-generated data

@@ -21,6 +21,12 @@ If you are not loading to an existing database, create a new one (adjusting the 
 createdb fwapg
 ```
 
+## Adjust search path
+
+Functions are loaded to schemas `whse_basemapping`, `usgs`, and `hydrosheds`. Ensure they are found by altering the `search_path` something like this:
+
+   psql -c "ALTER DATABASE fwapg SET search_path TO public,whse_basemapping,usgs,hydrosheds"
+
 ## Environment variables
 
 The data load script requires the environment variable `DATABASE_URL` to be set in order to connect to the database.
@@ -35,7 +41,7 @@ To confirm that you can connect to the database with this environment variable, 
 
 ```bash
 $ psql $DATABASE_URL
-psql (13.3)
+psql (14.7)
 Type "help" for help.
 
 fwapg=#
@@ -45,22 +51,17 @@ fwapg=#
 
 Get the `fwapg` scripts by either downloading and unzipping the [latest release](https://github.com/smnorris/fwapg/releases), or downloading the development version:
 
-        git clone https://github.com/smnorris/fwapg.git
+    git clone https://github.com/smnorris/fwapg.git
 
 Load and optimize the data:
 
     cd fwapg
     make
 
-For a given spatial FWA table, the load sequence is:
-- download features from `openmaps.gov.bc.ca` WFS service in 5k chunks
-- load geojson responses to temp table in `fwapg` schema with single `jsonb` column
-- create output table in `fwapg` schema
-- copy data from the load table to output table, translating data from geojson
-- change the schema name of the table to `whse_basemapping`
-
-Note that the download time for the larger tables is *very* slow, the full load takes several hours.
-However, once scripts are complete you have an up-to-date FWA database ready for speedy queries. 
+For a given spatial FWA table, the load sequence is generally:
+- download .gdb from FWA ftp
+- load data to temp table in `fwapg` schema 
+- copy data from the load table to output `whse_basemapping` table, adding custom types and columns
 
 
 ## Updates
@@ -73,21 +74,8 @@ To drop all `fwapg` managed data and functions and re-load:
     make clean_db
     make
 
-To refresh in the background:
-
-    make clean_targets
-    make
-
-To refresh a specific table, remove the `make` created placeholder files for the given table then re-load as noted above:
-
-    rm .make/fwa_stream_networks_sp*
-    make .make/fwa_stream_networks_sp
-    psql -c "drop table if exists whse_basemapping.fwa_stream_networks_sp"
-    psql -c "alter table fwapg.fwa_stream_networks_sp set schema whse_basemapping"
-
 
 ## Data currency
 
-All tables containing geometries (ie spatial data) are downloaded from DataBC WFS server and are guaranteed to the be latest available.
-
-All tables without geometries (code tables, 20k-50k lookups) are downloaded from GeoBC FTP site and are thus only as current as the latest publication of the `FWA_BC.zip` file to FTP.
+All data are downloaded from GeoBC FWA FTP and will thus be as current as the latest publication of the data to FTP. 
+Note that the ftp data is not automatically synced with the BCGW - it is manually refreshed by GeoBC.

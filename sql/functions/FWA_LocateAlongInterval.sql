@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION postgisftw.FWA_LocateAlongInterval(blue_line_key integer, start_measure integer DEFAULT 0, interval_length integer DEFAULT 1000, end_measure integer DEFAULT NULL)
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_LocateAlongInterval(blue_line_key integer, start_measure integer DEFAULT 0, interval_length integer DEFAULT 1000, end_measure integer DEFAULT NULL)
 
 RETURNS TABLE
     (
@@ -82,7 +82,7 @@ AND s.upstream_route_measure > i.downstream_route_measure
 SELECT
   s.n::integer as index,
   s.downstream_route_measure::float,
-  postgisftw.FWA_LocateAlong(s.blue_line_key, s.downstream_route_measure::float) as geom
+  whse_basemapping.FWA_LocateAlong(s.blue_line_key, s.downstream_route_measure::float) as geom
 FROM segments s;
 
 END;
@@ -90,4 +90,4 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.FWA_LocateAlongInterval IS 'Return a table (index, measure, geom), representing points along a stream between specified locations at specified interval'
+COMMENT ON FUNCTION whse_basemapping.FWA_LocateAlongInterval IS 'Return a table (index, measure, geom), representing points along a stream between specified locations at specified interval'

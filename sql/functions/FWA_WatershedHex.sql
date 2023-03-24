@@ -3,7 +3,7 @@
 -- watershed
 
 
-CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedHex(blue_line_key integer, downstream_route_measure float)
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_WatershedHex(blue_line_key integer, downstream_route_measure float)
 
 RETURNS TABLE(hex_id bigint, geom geometry)
 AS
@@ -61,4 +61,4 @@ end
 $$
 language 'plpgsql' immutable parallel safe;
 
-COMMENT ON FUNCTION postgisftw.fwa_watershedhex IS 'Provided a location as blue_line_key and downstream_route_measure, return a 25m hexagon grid covering first order watershed in which location lies';
+COMMENT ON FUNCTION whse_basemapping.fwa_watershedhex IS 'Provided a location as blue_line_key and downstream_route_measure, return a 25m hexagon grid covering first order watershed in which location lies';

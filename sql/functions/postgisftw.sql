@@ -1,25 +1,235 @@
--- Given blue_line_key and downstream_route_measure, return a (potentially
--- modified) FWA watershed with:
--- - wscode_ltree
--- - localcode_ltree
--- - area_ha
--- - refine_method - for the 1st order watershed in which the point lies:
---     CUT  - point is on a river/canal, cut the input watersheds at point
---     DEM  - point is on a single line stream,further DEM refinement needed
---     DROP - point is on single line stream and close enough to top of the
---            first order watershed that retaining the first order watershed
---            is not necessary
---     KEEP - point is on single line stream and close enough to bottom of the
---            first order watershed that the entire first order watershed is
---            retained  (no further refining necessary)
---     LAKE - point is in a lake/non-canal reservoir, simply return watershed
---            upstream of the outlet
--- - geom
+-- functions for publication by pg_featureserv / pg_tileserv must be created in postgisftw schema
+
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_IndexPoint  -- note that this is different from whse_basemapping.FWA_IndexPoint()
+-- -------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION postgisftw.FWA_IndexPoint(
+    x float,
+    y float,
+    srid integer,
+    tolerance float DEFAULT 5000,
+    num_features integer DEFAULT 1
+)
+
+RETURNS TABLE
+    (
+        linear_feature_id bigint,
+        gnis_name text,
+        wscode_ltree ltree,
+        localcode_ltree ltree,
+        blue_line_key integer,
+        downstream_route_measure float,
+        distance_to_stream float,
+        bc_ind boolean,
+        geom geometry(Point, 3005)
+    )
+
+AS
+
+$$
+
+WITH pt AS
+
+(
+  SELECT ST_Transform(ST_SetSRID(ST_Makepoint($1, $2), $3), 3005) as geom
+)
+
+SELECT FWA_IndexPoint(pt.geom, $4, $5)
+FROM pt
+
+$$
+language 'sql' immutable parallel safe;
+
+COMMENT ON FUNCTION postgisftw.FWA_IndexPoint(float, float, integer, float, integer) IS 'Provided a point (as x,y coordinates and EPSG code), return the point indexed (snapped) to nearest stream(s) within specified tolerance (m)';
 
 
--- TODO - what happens if cut returns an invalid geometry?
 
-CREATE OR REPLACE FUNCTION whse_basemapping.FWA_WatershedAtMeasure(blue_line_key integer, downstream_route_measure float)
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_LocateAlong
+-- -------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION postgisftw.FWA_LocateAlong(blue_line_key integer, downstream_route_measure float)
+
+RETURNS TABLE (
+    geom                     geometry(Point, 3005)
+)
+
+AS
+
+$$
+
+DECLARE
+   v_blkey    integer := blue_line_key;
+   v_measure  float   := downstream_route_measure;
+   v_geom     geometry;
+
+BEGIN
+
+RETURN QUERY
+SELECT distinct on (s.blue_line_key)
+  (ST_Dump(ST_LocateAlong(s.geom, v_measure))).geom as geom
+FROM whse_basemapping.fwa_stream_networks_sp AS s
+WHERE s.blue_line_key = v_blkey
+AND round(s.downstream_route_measure::numeric, 4) <= round(v_measure::numeric, 4)
+AND round(s.upstream_route_measure::numeric, 4) > round(v_measure::numeric, 4)
+order by s.blue_line_key, s.downstream_route_measure desc;
+END
+
+$$
+LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
+
+COMMENT ON FUNCTION postgisftw.FWA_LocateAlong IS 'Return a point on the stream network based on the location provided by blue_line_key and downstream_route_measure';
+
+
+
+
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_LocateAlongInterval
+-- -------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION postgisftw.FWA_LocateAlongInterval(blue_line_key integer, start_measure integer DEFAULT 0, interval_length integer DEFAULT 1000, end_measure integer DEFAULT NULL)
+
+RETURNS TABLE
+    (
+        index                    integer,
+        downstream_route_measure float,
+        geom                     geometry(Point, 3005)
+    )
+
+AS
+
+$$
+
+DECLARE
+
+   v_blkey          integer := blue_line_key;
+   v_interval       integer := interval_length;
+   v_measure_start  integer := start_measure;
+   v_measure_end    integer := end_measure;
+   v_measure_max    numeric;
+   v_measure_min    numeric;
+
+BEGIN
+
+-- find min and max measures of the stream
+-- (round measures to avoid floating point issues)
+SELECT
+  min(round(s.downstream_route_measure::numeric, 3)) as min_measure,
+  max(round(s.upstream_route_measure::numeric, 3)) as max_measure
+FROM whse_basemapping.fwa_stream_networks_sp s
+WHERE s.blue_line_key = v_blkey
+INTO v_measure_min, v_measure_max;
+
+-- Check that the provided measure actually falls within the min/max measures of stream
+-- (if portions of the stream do not exist in the db there will simply be gaps in returned points)
+IF v_measure_start < v_measure_min OR v_measure_start > v_measure_max THEN
+  RAISE EXCEPTION 'Input start_measure value does not exist in FWA';
+END IF;
+
+IF v_measure_end > v_measure_max THEN
+  RAISE EXCEPTION 'Input end_measure value does not exist in FWA';
+END IF;
+
+IF v_measure_end <= v_measure_start THEN
+  RAISE EXCEPTION 'Input end_measure value must be more than input start_measure value';
+END IF;
+
+IF (v_measure_end - v_measure_start) < v_interval THEN
+  RAISE EXCEPTION 'Distance between start_measure and end_measure is less than input interval_length';
+END IF;
+
+-- if no end point provided, process the entire stream
+IF v_measure_end IS NULL THEN
+  v_measure_end := v_measure_max;
+END IF;
+
+RETURN QUERY
+
+WITH intervals AS
+
+(SELECT
+  v_blkey as blue_line_key,
+  generate_series(0, v_measure_end / v_interval) as n,
+  generate_series(v_measure_start, v_measure_end, v_interval) as downstream_route_measure
+),
+
+segments AS
+(
+SELECT
+  i.n,
+  s.blue_line_key,
+  s.linear_feature_id,
+  i.downstream_route_measure,
+  s.geom
+FROM whse_basemapping.fwa_stream_networks_sp AS s
+INNER JOIN intervals i
+ON s.blue_line_key = i.blue_line_key
+AND s.downstream_route_measure <= i.downstream_route_measure
+AND s.upstream_route_measure > i.downstream_route_measure
+)
+
+SELECT
+  s.n::integer as index,
+  s.downstream_route_measure::float,
+  postgisftw.FWA_LocateAlong(s.blue_line_key, s.downstream_route_measure::float) as geom
+FROM segments s;
+
+END;
+
+$$
+LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
+
+COMMENT ON FUNCTION postgisftw.FWA_LocateAlongInterval IS 'Return a table (index, measure, geom), representing points along a stream between specified locations at specified interval';
+
+
+
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_StreamsAsMVT
+-- for pg_tileserv, scale dependent stream display
+-- -------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION whse_basemapping.fwa_streamsasmvt(
+            z integer, x integer, y integer)
+RETURNS bytea
+AS $$
+DECLARE
+    result bytea;
+BEGIN
+    WITH
+
+    bounds AS (
+      SELECT ST_TileEnvelope(z, x, y) AS geom
+    ),
+
+    mvtgeom AS (
+      SELECT
+        blue_line_key,
+        gnis_name,
+        stream_order_max,
+        ST_AsMVTGeom(ST_Transform(ST_Force2D(s.geom), 3857), bounds.geom)
+      FROM whse_basemapping.fwa_stream_networks_sp s, bounds
+      WHERE ST_Intersects(s.geom, ST_Transform((select geom from bounds), 3005))
+      AND s.edge_type != 6010
+      AND wscode_ltree is not null
+      AND stream_order_max >= (-z + 13)
+     )
+
+    SELECT ST_AsMVT(mvtgeom, 'default')
+    INTO result
+    FROM mvtgeom;
+
+    RETURN result;
+END;
+$$
+LANGUAGE 'plpgsql'
+STABLE
+PARALLEL SAFE;
+
+COMMENT ON FUNCTION whse_basemapping.fwa_streamsasmvt IS 'Zoom-level dependent FWA streams';
+
+
+
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_WatershedAtMeasure
+-- -------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedAtMeasure(blue_line_key integer, downstream_route_measure float)
 
 RETURNS TABLE
  (wscode_ltree text,
@@ -518,4 +728,199 @@ $$
 language 'plpgsql' immutable strict parallel safe;
 
 
-COMMENT ON FUNCTION whse_basemapping.fwa_watershedatmeasure IS 'Provided a location as blue_line_key and downstream_route_measure, return the entire watershed boundary upstream of the location';
+COMMENT ON FUNCTION postgisftw.fwa_watershedatmeasure IS 'Provided a location as blue_line_key and downstream_route_measure, return the entire watershed boundary upstream of the location';
+
+
+
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_WatershedHex
+-- -------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedHex(blue_line_key integer, downstream_route_measure float)
+
+RETURNS TABLE(hex_id bigint, geom geometry)
+AS
+
+
+$$
+
+declare
+   v_blkey    integer := blue_line_key;
+   v_measure  float := downstream_route_measure;
+
+
+begin
+
+return query
+
+-- interpolate point on stream
+WITH pt AS (
+  SELECT
+    s.linear_feature_id,
+    s.blue_line_key,
+    s.downstream_route_measure,
+    ST_LocateAlong(s.geom, v_measure) AS geom
+  FROM whse_basemapping.fwa_stream_networks_sp s
+  WHERE s.blue_line_key = v_blkey
+  AND s.downstream_route_measure <= v_measure
+  AND s.upstream_route_measure > v_measure
+),
+
+-- find the watershed in which the point falls
+wsd AS (
+  SELECT w.watershed_feature_id, w.geom
+  FROM pt
+  INNER JOIN whse_basemapping.fwa_watersheds_poly w
+  ON ST_Intersects(pt.geom, w.geom)
+),
+
+-- generate a hex grid (with 25m sides) covering the entire watershed polygon
+hex AS (
+  SELECT ST_ForceRHR(ST_Force2D(CDB_HexagonGrid(ST_Buffer(wsd.geom, 25), 25))) as geom
+  FROM wsd
+)
+
+-- cut the hex watersheds with the watershed polygon
+SELECT
+  row_number() over() as hex_id,
+  CASE
+    WHEN ST_Within(a.geom, b.geom) THEN ST_Multi(a.geom)
+    ELSE ST_ForceRHR(ST_Multi(ST_Force2D(ST_Intersection(a.geom, b.geom))))
+  END as geom
+ FROM hex a
+INNER JOIN wsd b ON ST_Intersects(a.geom, b.geom);
+
+end
+$$
+language 'plpgsql' immutable parallel safe;
+
+COMMENT ON FUNCTION postgisftw.fwa_watershedhex IS 'Provided a location as blue_line_key and downstream_route_measure, return a 25m hexagon grid covering first order watershed in which location lies';
+
+
+
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_WatershedStream
+-- -------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION postgisftw.FWA_WatershedStream(blue_line_key integer, downstream_route_measure float)
+
+RETURNS TABLE(linear_feature_id bigint, geom geometry)
+AS
+
+
+$$
+
+declare
+   v_blkey    integer := blue_line_key;
+   v_measure  float := downstream_route_measure;
+
+
+begin
+
+return query
+
+WITH local_segment AS
+(SELECT
+  s.linear_feature_id,
+  s.blue_line_key,
+  v_measure as measure,
+  s.wscode_ltree,
+  s.localcode_ltree,
+  ST_Force2D(
+    ST_Multi(
+      ST_LocateBetween(s.geom, v_measure, s.upstream_route_measure)
+    )
+  ) AS geom,
+  ST_LocateAlong(s.geom, v_measure) as geom_pt
+FROM whse_basemapping.fwa_stream_networks_sp s
+WHERE s.blue_line_key = v_blkey
+AND s.downstream_route_measure <= v_measure
+AND s.upstream_route_measure > v_measure
+),
+
+wsd AS
+(SELECT
+  w.watershed_feature_id,
+  w.geom
+ FROM whse_basemapping.fwa_watersheds_poly w
+ INNER JOIN local_segment ls ON ST_Intersects(w.geom, ls.geom_pt)
+)
+
+SELECT
+  ls.linear_feature_id,
+  ST_Multi(ls.geom) as geom
+from local_segment ls
+UNION ALL
+SELECT
+  b.linear_feature_id,
+  ST_Multi(b.geom) as geom
+FROM local_segment a
+INNER JOIN whse_basemapping.fwa_stream_networks_sp b
+ON
+-- upstream, but not same blue_line_key
+(
+FWA_Upstream(a.wscode_ltree, a.localcode_ltree, b.wscode_ltree, b.localcode_ltree)
+-- not the same line or blue_line_key
+AND b.linear_feature_id != a.linear_feature_id
+AND b.blue_line_key != a.blue_line_key
+-- same watershed code
+AND a.wscode_ltree = b.wscode_ltree
+-- not a side channel that may be downstream
+AND b.localcode_ltree IS NOT NULL
+)
+-- or upstream on the same blueline
+OR (b.blue_line_key = a.blue_line_key AND
+b.downstream_route_measure > a.measure)
+
+-- within same first order watershed as input location
+INNER JOIN wsd
+ON ST_Within(b.geom, ST_Buffer(wsd.geom, .1));
+
+end
+
+$$
+language 'plpgsql' immutable parallel safe;
+
+COMMENT ON FUNCTION postgisftw.fwa_watershedstream IS 'Provided a location as blue_line_key and downstream_route_measure, return stream segments upstream, within the same first order watershed.';
+
+
+-- -------------------------------------------------------------------------------------------------------------------------
+-- hydroshed
+-- note that this is slightly different from the hydrosheds.hydroshed function
+-- -------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION postgisftw.hydroshed(x float, y float, srid integer)
+
+RETURNS table
+
+    (
+        geom geometry
+    )
+
+AS
+
+$$
+
+WITH RECURSIVE walkup (hybas_id, geom) AS
+        (
+            SELECT hybas_id, wsd.geom
+            FROM hydrosheds.hybas_lev12_v1c wsd
+            INNER JOIN (SELECT ST_Transform(ST_SetSRID(ST_MakePoint(x, y), srid), 3005) as geom)  as pt
+            ON ST_Intersects(wsd.geom, pt.geom)
+
+            UNION ALL
+
+            SELECT b.hybas_id, b.geom
+            FROM hydrosheds.hybas_lev12_v1c b,
+            walkup w
+            WHERE b.next_down = w.hybas_id
+        )
+    SELECT
+      ST_Union(w.geom) as geom
+    FROM walkup w;
+
+$$
+language 'sql' immutable parallel safe;
+
+
+COMMENT ON FUNCTION postgisftw.hydroshed IS 'Return aggregated boundary of all hydroshed polygons upstream of the provided location';
