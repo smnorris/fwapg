@@ -259,7 +259,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -c "CREATE INDEX ON usgs.wbdhu12 (huc12)"
 	$(PSQL) -c "CREATE INDEX ON usgs.wbdhu12 (tohuc)"
 	$(PSQL) -c "COMMENT ON TABLE usgs.wbdhu12 IS 'USGS National Watershed Boundary Dataset, HUC12 level. See https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.xml';"
-	$(PSQL) -f sql/functions/FWA_huc12.sql
+	$(PSQL) -f sql/functions/huc12.sql
 	touch $@
 
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
