@@ -3,6 +3,10 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.4.1 (2023-03-28)
+------------------
+- fix error with load of multipart features from file (#135)
+
 0.4.0 (2023-03-23)
 ------------------
 - load data from ftp rather than WFS (#127)
