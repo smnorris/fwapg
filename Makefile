@@ -182,7 +182,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 		-update \
 		-nlt PROMOTE_TO_MULTI \
 		data/FWA_BC.gdb.zip \
-		$(subst .make/,,$@)  ; \
+		$(subst .make/,,$@)
 	$(PSQL) -c "truncate whse_basemapping.$(subst .make/,,$@)"
 	set -e ; $(PSQL) -f $<
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
@@ -194,6 +194,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 	SET local_watershed_code = s.local_watershed_code \
 	FROM whse_basemapping.fwa_stream_networks_sp s \
 	WHERE o.linear_feature_id = s.linear_feature_id;"
+	touch $@
 
 # load non spatial tables 
 .make/fwa_%: sql/tables/non_spatial/fwa_%.sql data/FWA_BC.gdb.zip .make/db
