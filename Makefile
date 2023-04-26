@@ -182,7 +182,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 		-update \
 		-nlt PROMOTE_TO_MULTI \
 		data/FWA_BC.gdb.zip \
-		$(subst .make/,,$@)  ; \
+		$(subst .make/,,$@)
 	$(PSQL) -c "truncate whse_basemapping.$(subst .make/,,$@)"
 	set -e ; $(PSQL) -f $<
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
