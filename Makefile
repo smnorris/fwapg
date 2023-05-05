@@ -318,6 +318,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlongInterval.sql
 	$(PSQL) -f sql/functions/postgisftw.sql  # pg_fs/pg_ts functions
+	$(PSQL) -f sql/functions/FWA_ClipByWatershed.sql
 	touch $@
 
 # rather than generating these lookups (slow), download pre-generated data
