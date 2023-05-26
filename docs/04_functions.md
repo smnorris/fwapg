@@ -161,7 +161,7 @@ Snaps a point to the stream network. Provided a point (as either a BC Albers poi
 
 ### Examples
 
-1. Return the closest point on FWA stream network to a point defined by a lat/lon (within default 5000m tolerance):
+1. Return the closest point on FWA stream network to a point defined by a lon/lat (within default 5000m tolerance):
 
     ```sql
     SELECT * FROM FWA_IndexPoint(-123.7028, 48.3858, 4326);
@@ -456,6 +456,51 @@ Specify `True` for `include_equivalents` if you want to evaluate as true for fea
                       103088 | {1693}
                         7520 | {416,1129,708,1937,1128}
     ```
+
+## FWA_UpstreamTrace
+
+### Synopsis
+
+```sql
+-- Return stream stream network upstream of provided location
+-- (breaking stream at given location if location is farther from provided point than the provided tolerance)
+FWA_UpstreamTrace(
+  start_blue_line_key integer,
+  start_measure float,
+  tolerance float default 1
+)
+```
+
+### Description
+
+Return all records from `whse_basemapping.fwa_stream_networks_sp` that are upstream of provided location.
+Where the provided location is more than the provided tolerance (metres) from the endpoint of the stream segment
+on which it lies, split the source stream segment and only include the portion upstream of the location in the returned records.
+
+
+### Example
+
+A common use case would be to use this in combination with `FWA_IndexPoint`, extracting streams upstream of coordinates of a feature like a bridge:
+
+    ```sql
+    -- find blkey/measure of bridge over sooke river
+    SELECT blue_line_key, downstream_route_measure 
+    FROM postgisftw.FWA_IndexPoint(-123.7028, 48.3858, 4326);
+    ```
+    ```
+     blue_line_key | downstream_route_measure 
+    ---------------+--------------------------
+     354153927 |        350.3003598130115
+     ```
+
+    ```sql
+    -- extract streams
+    select * from FWA_UpstreamTrace(354153927, 350);
+    ```
+
+### Web service
+
+[FWA_UpstreamTrace](https://features.hillcrestgeo.ca/fwa/functions/fwa_upstreamtrace.html)
 
 ## FWA_WatershedAtMeasure
 

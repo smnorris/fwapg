@@ -29,7 +29,7 @@ SELECT FWA_Upstream(
   '930.079351.290329'::ltree
 ) = false as result;
 
--- watershed code and meausre comparisons
+-- watershed code and measure comparisons
 SELECT FWA_Upstream(
     354133645,
     100,

@@ -7,3 +7,4 @@ psql $DATABASE_URL -f test_FWA_IndexPoint.sql
 psql $DATABASE_URL -f test_FWA_LocateAlong.sql
 psql $DATABASE_URL -f test_FWA_Upstream.sql
 psql $DATABASE_URL -f test_FWA_UpstreamBorderCrossings.sql
+psql $DATABASE_URL -f test_FWA_UpstreamTrace.sql

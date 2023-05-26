@@ -317,6 +317,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
 	$(PSQL) -f sql/functions/FWA_LocateAlongInterval.sql
+	$(PSQL) -f sql/functions/FWA_UpstreamTrace.sql
 	$(PSQL) -f sql/functions/postgisftw.sql  # pg_fs/pg_ts functions
 	touch $@
 
