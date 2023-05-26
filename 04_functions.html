@@ -633,8 +633,8 @@ Enables fast display of source 1:20,000 streams at all zoom levels (show full le
 <h2>FWA_UpstreamTrace<a class="headerlink" href="#fwa-upstreamtrace" title="Permalink to this heading"></a></h2>
 <section id="id17">
 <h3>Synopsis<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Return stream stream network upstream of provided location</span>
-<span class="c1">-- (breaking stream at given location if location is farther from provided point than the provided tolerance)</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Return stream network upstream of provided location, breaking stream segment at given location </span>
+<span class="c1">-- if the location is not within provided distance (tolerance) to existing endpoints of the stream segment</span>
 <span class="n">FWA_UpstreamTrace</span><span class="p">(</span><span class="w"></span>
 <span class="w">  </span><span class="n">start_blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
 <span class="w">  </span><span class="n">start_measure</span><span class="w"> </span><span class="nb">float</span><span class="p">,</span><span class="w"></span>
