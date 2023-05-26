@@ -462,12 +462,10 @@ Specify `True` for `include_equivalents` if you want to evaluate as true for fea
 ### Synopsis
 
 ```sql
--- Return stream network upstream of provided location, breaking stream segment at given location 
--- if the location is not within provided distance (tolerance) to existing endpoints of the stream segment
-FWA_UpstreamTrace(
-  start_blue_line_key integer,
-  start_measure float,
-  tolerance float default 1
+    FWA_UpstreamTrace(
+      start_blue_line_key integer,
+      start_measure float,
+      tolerance float default 1
 )
 ```
 
@@ -482,21 +480,21 @@ on which it lies, split the source stream segment and only include the portion u
 
 A common use case would be to use this in combination with `FWA_IndexPoint`, extracting streams upstream of coordinates of a feature like a bridge:
 
-    ```sql
+```sql
     -- find blkey/measure of bridge over sooke river
     SELECT blue_line_key, downstream_route_measure 
     FROM postgisftw.FWA_IndexPoint(-123.7028, 48.3858, 4326);
-    ```
-    ```
-     blue_line_key | downstream_route_measure 
-    ---------------+--------------------------
-     354153927 |        350.3003598130115
-     ```
+```
+```
+ blue_line_key | downstream_route_measure 
+---------------+--------------------------
+ 354153927 |        350.3003598130115
+ ```
 
-    ```sql
-    -- extract streams
-    select * from FWA_UpstreamTrace(354153927, 350);
-    ```
+```sql
+-- extract streams
+select * from FWA_UpstreamTrace(354153927, 350);
+```
 
 ### Web service
 
