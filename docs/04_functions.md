@@ -462,8 +462,8 @@ Specify `True` for `include_equivalents` if you want to evaluate as true for fea
 ### Synopsis
 
 ```sql
--- Return stream stream network upstream of provided location
--- (breaking stream at given location if location is farther from provided point than the provided tolerance)
+-- Return stream network upstream of provided location, breaking stream segment at given location 
+-- if the location is not within provided distance (tolerance) to existing endpoints of the stream segment
 FWA_UpstreamTrace(
   start_blue_line_key integer,
   start_measure float,
