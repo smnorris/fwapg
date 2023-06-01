@@ -71,7 +71,7 @@ jobs:
         push: true # Will only build if this is not here
         tags: |
           ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/fwapg-loader:latest
-          ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/fwapg-loader:${{ steps.calculateImageTag.outputs.DATESTAMP }
+          ghcr.io/${{ steps.calculateImageTag.outputs.IMAGE_REPOSITORY }}/fwapg-loader:${{ steps.calculateImageTag.outputs.DATESTAMP }}
 
     #- name: Build and Push Client Docker Image
     #  uses: docker/build-push-action@v2
