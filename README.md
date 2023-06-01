@@ -21,8 +21,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
     - access to a PostgreSQL (>=13) database with the PostGIS extension (>=3.1) installed
     - GDAL >=3.4
     - Python 3
-    - [`bcdata`](https://github.com/smnorris/bcdata) >= 0.7.3
-    - [GNU parallel](https://www.gnu.org/software/parallel/)
+    - [`bcdata`](https://github.com/smnorris/bcdata)
     - [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
 
 2. Ensure you have a `DATABASE_URL` environment variable set to point to your database, for example:
@@ -74,6 +73,7 @@ Download the repo, create containers, create database, load fwa data:
     docker-compose run --rm loader psql -c "CREATE DATABASE fwapg" postgres
     docker-compose run --rm loader make --debug=basic
 
+Note that docker images specified in `docker-compose.yml` may not be available on ARM based systems.
 As long as you do not remove the container `fwapg-db`, it will retain all the data you put in it.
 If you have shut down Docker or the container, start it up again with this command:
 

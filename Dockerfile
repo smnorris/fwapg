@@ -1,4 +1,4 @@
-FROM osgeo/gdal:ubuntu-small-3.4.0
+FROM ghcr.io/osgeo/gdal:ubuntu-small-3.7.0
 
 RUN apt-get update && apt-get --assume-yes upgrade \
     && apt-get -qq install -y --no-install-recommends postgresql-common \
@@ -12,12 +12,12 @@ RUN apt-get update && apt-get --assume-yes upgrade \
     && apt-get -qq install -y --no-install-recommends wget \
     && apt-get -qq install -y --no-install-recommends zip \
     && apt-get -qq install -y --no-install-recommends unzip \
-    && apt-get -qq install -y --no-install-recommends parallel \
     && apt-get -qq install -y --no-install-recommends python3-dev \
     && apt-get -qq install -y --no-install-recommends python3-pip \
     && apt-get -qq install -y --no-install-recommends python3-psycopg2 \
     && pip3 install --upgrade numpy \
-    && pip3 install fiona rasterio geopandas bcdata \
+    && pip3 install geopandas==0.12.2 \
+    && pip3 install bcdata \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/fwapg
