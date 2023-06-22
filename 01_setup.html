@@ -4,18 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Setup and data load &mdash; fwapg 0.5.0 documentation</title>
+  <title>Setup and data load &mdash; fwapg 0.5.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -101,7 +101,7 @@
 <section id="create-the-database">
 <h2>Create the database<a class="headerlink" href="#create-the-database" title="Permalink to this heading"></a></h2>
 <p>If you are not loading to an existing database, create a new one (adjusting the database name as required):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb fwapg
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb<span class="w"> </span>fwapg
 </pre></div>
 </div>
 </section>
@@ -114,13 +114,13 @@
 <h2>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading"></a></h2>
 <p>The data load script requires the environment variable <code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code> to be set in order to connect to the database.</p>
 <p>For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://postgres:postgres@db:5432/fwapg
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://postgres:postgres@db:5432/fwapg
 </pre></div>
 </div>
 <p>To confirm that you can connect to the database with this environment variable, start <code class="docutils literal notranslate"><span class="pre">psql</span></code> with it as the first argument:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ psql <span class="nv">$DATABASE_URL</span>
-psql <span class="o">(</span><span class="m">14</span>.7<span class="o">)</span>
-Type <span class="s2">&quot;help&quot;</span> <span class="k">for</span> help.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>psql<span class="w"> </span><span class="nv">$DATABASE_URL</span>
+psql<span class="w"> </span><span class="o">(</span><span class="m">14</span>.7<span class="o">)</span>
+Type<span class="w"> </span><span class="s2">&quot;help&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>help.
 
 <span class="nv">fwapg</span><span class="o">=</span><span class="c1">#</span>
 </pre></div>

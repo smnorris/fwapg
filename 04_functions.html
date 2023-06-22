@@ -4,18 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Function reference &mdash; fwapg 0.5.0 documentation</title>
+  <title>Function reference &mdash; fwapg 0.5.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -135,25 +135,25 @@
 <h2>FWA_Downstream<a class="headerlink" href="#fwa-downstream" title="Permalink to this heading"></a></h2>
 <section id="synopsis">
 <h3>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_Downstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">      </span><span class="n">wscode</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="n">localcode</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="n">wscode</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="n">localcode</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">ltree</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_Downstream</span><span class="p">(</span>
+<span class="w">      </span><span class="n">wscode</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">      </span><span class="n">localcode</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">      </span><span class="n">wscode</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">      </span><span class="n">localcode</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">ltree</span>
+<span class="p">)</span>
 
-<span class="n">FWA_Downstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">blue_line_key</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">wscode_ltree</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">localcode_ltree</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">blue_line_key</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">wscode_ltree</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">localcode_ltree</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">include_equivalents</span><span class="w"> </span><span class="nb">boolean</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">.</span><span class="mi">001</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<span class="n">FWA_Downstream</span><span class="p">(</span>
+<span class="w">    </span><span class="n">blue_line_key</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wscode_ltree</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">localcode_ltree</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">blue_line_key</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wscode_ltree</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">localcode_ltree</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">include_equivalents</span><span class="w"> </span><span class="nb">boolean</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">False</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">.</span><span class="mi">001</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -167,12 +167,12 @@
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>At its most basic, the function compares two watershed code / local code <code class="docutils literal notranslate"><span class="pre">ltree</span></code> pairs and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the second pair is a parent of the first set (ie, downstream).</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span>
+<span class="w">  </span><span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">fwa_downstream</span>
@@ -182,13 +182,13 @@
 </div>
 </li>
 <li><p>Find features downstream of a known location on the network - this query finds the total length of stream downstream from Hope. Note that this result includes side channels, it is not necessarily the distance to the ocean:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">  </span><span class="n">ROUND</span><span class="p">((</span><span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">length_dnstr_km</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"> </span><span class="n">s</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="mi">356364114</span><span class="p">,</span><span class="w"> </span><span class="mi">160400</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="w"></span>
-<span class="p">);</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">ROUND</span><span class="p">((</span><span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">length_dnstr_km</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"> </span><span class="n">s</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span>
+<span class="w">  </span><span class="mi">356364114</span><span class="p">,</span><span class="w"> </span><span class="mi">160400</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">length_dnstr_km</span>
@@ -197,13 +197,13 @@
 </pre></div>
 </div>
 <p>Refine this slightly to find the distance to the ocean along the Fraser mainstem (where <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> is equal to <code class="docutils literal notranslate"><span class="pre">watershed_key</span></code>:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">  </span><span class="n">ROUND</span><span class="p">((</span><span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">length_dnstr_km</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"> </span><span class="n">s</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="mi">356364114</span><span class="p">,</span><span class="w"> </span><span class="mi">160400</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">ROUND</span><span class="p">((</span><span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">length_dnstr_km</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"> </span><span class="n">s</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span>
+<span class="w">  </span><span class="mi">356364114</span><span class="p">,</span><span class="w"> </span><span class="mi">160400</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span>
 <span class="k">AND</span><span class="w"> </span><span class="n">watershed_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">blue_line_key</span><span class="p">;</span><span class="w"> </span><span class="c1">-- do not include side channels</span>
 </pre></div>
 </div>
@@ -214,23 +214,23 @@
 </div>
 </li>
 <li><p>For each feature in table A, find all records downstream in table B and collect them into an array. This query lists all dams downstream of each fish passage field assessment location (data from <a class="reference external" href="https://github.com/smnorris/bcfishpass"><code class="docutils literal notranslate"><span class="pre">bcfishpass</span></code></a>)</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">array_agg</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">dam_id</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">downstream_dam_ids</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">bcfishpass</span><span class="p">.</span><span class="n">crossings</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
-<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">bcfishpass</span><span class="p">.</span><span class="n">dams</span><span class="w"> </span><span class="n">b</span><span class="w"></span>
-<span class="k">ON</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">stream_crossing_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">array_agg</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">dam_id</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">downstream_dam_ids</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">bcfishpass</span><span class="p">.</span><span class="n">crossings</span><span class="w"> </span><span class="n">a</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">bcfishpass</span><span class="p">.</span><span class="n">dams</span><span class="w"> </span><span class="n">b</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">stream_crossing_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">aggregated_crossings_id</span> <span class="o">|</span> <span class="n">downstream_dam_ids</span>
@@ -252,19 +252,19 @@
 <h2>FWA_IndexPoint<a class="headerlink" href="#fwa-indexpoint" title="Permalink to this heading"></a></h2>
 <section id="id1">
 <h3>Synopsis<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span><span class="w"> </span><span class="mi">3005</span><span class="p">),</span><span class="w"></span>
-<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="nb">float</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">num_features</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_IndexPoint</span><span class="p">(</span>
+<span class="w">    </span><span class="n">point</span><span class="w"> </span><span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span><span class="w"> </span><span class="mi">3005</span><span class="p">),</span>
+<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="nb">float</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span>
+<span class="w">    </span><span class="n">num_features</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">)</span>
 
-<span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="nb">float</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">y</span><span class="w"> </span><span class="nb">float</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">srid</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="nb">float</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">num_features</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<span class="n">FWA_IndexPoint</span><span class="p">(</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="nb">float</span><span class="p">,</span>
+<span class="w">    </span><span class="n">y</span><span class="w"> </span><span class="nb">float</span><span class="p">,</span>
+<span class="w">    </span><span class="n">srid</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="nb">float</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span>
+<span class="w">    </span><span class="n">num_features</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -327,7 +327,7 @@
 <h3>Examples<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>Return the closest point on FWA stream network to a point defined by a lon/lat (within default 5000m tolerance):</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">7028</span><span class="p">,</span><span class="w"> </span><span class="mi">48</span><span class="p">.</span><span class="mi">3858</span><span class="p">,</span><span class="w"> </span><span class="mi">4326</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">7028</span><span class="p">,</span><span class="w"> </span><span class="mi">48</span><span class="p">.</span><span class="mi">3858</span><span class="p">,</span><span class="w"> </span><span class="mi">4326</span><span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">linear_feature_id</span> <span class="o">|</span>  <span class="n">gnis_name</span>  <span class="o">|</span> <span class="n">wscode_ltree</span> <span class="o">|</span> <span class="n">localcode_ltree</span> <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">distance_to_stream</span> <span class="o">|</span> <span class="n">bc_ind</span> <span class="o">|</span>                        <span class="n">geom</span>
@@ -337,23 +337,23 @@
 </div>
 </li>
 <li><p>Index a set of point geometries, finding up to 10 features within 100m:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">  </span><span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">i</span><span class="p">.</span><span class="o">*</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="k">VALUES</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EA004&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1054676</span><span class="p">,</span><span class="w"> </span><span class="mi">1304723</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">)),</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EA005&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1045356</span><span class="p">,</span><span class="w"> </span><span class="mi">1348750</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">)),</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EA007&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1066334</span><span class="p">,</span><span class="w"> </span><span class="mi">1356262</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">)),</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EB002&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1126747</span><span class="p">,</span><span class="w"> </span><span class="mi">1283184</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">)),</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EC002&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1089342</span><span class="p">,</span><span class="w"> </span><span class="mi">1214473</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">))</span><span class="w"></span>
-<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">pts</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="p">)</span><span class="w"></span>
-<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span><span class="w"></span>
-<span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="w">  </span><span class="k">FROM</span><span class="w"></span>
-<span class="w">  </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"></span>
-<span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">true</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">i</span><span class="p">.</span><span class="o">*</span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="k">VALUES</span>
+<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EA004&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1054676</span><span class="p">,</span><span class="w"> </span><span class="mi">1304723</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">)),</span>
+<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EA005&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1045356</span><span class="p">,</span><span class="w"> </span><span class="mi">1348750</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">)),</span>
+<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EA007&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1066334</span><span class="p">,</span><span class="w"> </span><span class="mi">1356262</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">)),</span>
+<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EB002&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1126747</span><span class="p">,</span><span class="w"> </span><span class="mi">1283184</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">)),</span>
+<span class="w">  </span><span class="p">(</span><span class="s1">&#39;07EC002&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ST_SetSRID</span><span class="p">(</span><span class="n">ST_MakePoint</span><span class="p">(</span><span class="mi">1089342</span><span class="p">,</span><span class="w"> </span><span class="mi">1214473</span><span class="p">),</span><span class="w"> </span><span class="mi">3005</span><span class="p">))</span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">pts</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="p">)</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">  </span><span class="k">FROM</span>
+<span class="w">  </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">true</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span> <span class="n">linear_feature_id</span> <span class="o">|</span>   <span class="n">gnis_name</span>    <span class="o">|</span>       <span class="n">wscode_ltree</span>       <span class="o">|</span>         <span class="n">localcode_ltree</span>         <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">distance_to_stream</span> <span class="o">|</span> <span class="n">bc_ind</span> <span class="o">|</span>                        <span class="n">geom</span>
@@ -378,7 +378,7 @@
 <h2>FWA_LocateAlong<a class="headerlink" href="#fwa-locatealong" title="Permalink to this heading"></a></h2>
 <section id="id4">
 <h3>Synopsis<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_LocateAlong</span><span class="p">(</span><span class="n">blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"> </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="nb">float</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_LocateAlong</span><span class="p">(</span><span class="n">blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"> </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="nb">float</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -389,16 +389,16 @@
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h3>
 <p>Create a point geometry at measure 25,000 on the Skeena River:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">ST_AsText</span><span class="p">(</span><span class="w"></span>
-<span class="w">        </span><span class="n">FWA_LocateAlong</span><span class="p">(</span><span class="w"></span>
-<span class="w">          </span><span class="p">(</span><span class="w"></span>
-<span class="w">            </span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">blue_line_key</span><span class="w"></span>
-<span class="w">            </span><span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"></span>
-<span class="w">            </span><span class="k">WHERE</span><span class="w"> </span><span class="n">gnis_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Skeena River&#39;</span><span class="w"></span>
-<span class="w">          </span><span class="p">),</span><span class="w"></span>
-<span class="w">        </span><span class="mi">25000</span><span class="w"></span>
-<span class="w">        </span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">);</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">ST_AsText</span><span class="p">(</span>
+<span class="w">        </span><span class="n">FWA_LocateAlong</span><span class="p">(</span>
+<span class="w">          </span><span class="p">(</span>
+<span class="w">            </span><span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">blue_line_key</span>
+<span class="w">            </span><span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span>
+<span class="w">            </span><span class="k">WHERE</span><span class="w"> </span><span class="n">gnis_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Skeena River&#39;</span>
+<span class="w">          </span><span class="p">),</span>
+<span class="w">        </span><span class="mi">25000</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">    </span><span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                         <span class="n">st_astext</span>
@@ -417,12 +417,12 @@
 <h2>FWA_LocateAlongInterval<a class="headerlink" href="#fwa-locatealonginterval" title="Permalink to this heading"></a></h2>
 <section id="id7">
 <h3>Synopsis<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_LocateAlongInterval</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="n">blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">start_measure</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">interval_length</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">end_measure</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_LocateAlongInterval</span><span class="p">(</span>
+<span class="w">  </span><span class="n">blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">  </span><span class="n">start_measure</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">interval_length</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="n">end_measure</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">NULL</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -455,16 +455,16 @@
 <section id="id9">
 <h3>Example<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <p>Return points at a 1km interval along the Peace between Site C and Bennet dams:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">     </span><span class="k">index</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"></span>
-<span class="w">     </span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"></span>
-<span class="w">     </span><span class="n">ST_AsText</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span><span class="w"></span>
-<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_LocateAlongInterval</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="mi">359572348</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="mi">1597489</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="mi">1000</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="mi">1706733</span><span class="w"></span>
-<span class="w">    </span><span class="p">);</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="k">SELECT</span>
+<span class="w">     </span><span class="k">index</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
+<span class="w">     </span><span class="n">downstream_route_measure</span><span class="p">,</span>
+<span class="w">     </span><span class="n">ST_AsText</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_LocateAlongInterval</span><span class="p">(</span>
+<span class="w">    </span><span class="mi">359572348</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">1597489</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">1706733</span>
+<span class="w">    </span><span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="nb">id</span>  <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span>                                  <span class="n">st_astext</span>
@@ -490,11 +490,11 @@
 <h2>FWA_StreamsAsMVT<a class="headerlink" href="#fwa-streamsasmvt" title="Permalink to this heading"></a></h2>
 <section id="id11">
 <h3>Synopsis<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_StreamsAsMVT</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="n">z</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">y</span><span class="w"> </span><span class="nb">integer</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_StreamsAsMVT</span><span class="p">(</span>
+<span class="w">  </span><span class="n">z</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">  </span><span class="n">y</span><span class="w"> </span><span class="nb">integer</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -514,41 +514,41 @@ Enables fast display of source 1:20,000 streams at all zoom levels (show full le
 <section id="id14">
 <h3>Synopsis<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- compare watershed codes only</span>
-<span class="n">FWA_Upstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">wscode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">localcode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">wscode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">localcode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">    </span><span class="n">wscode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">localcode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wscode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">localcode_ltree_b</span><span class="w"> </span><span class="n">ltree</span>
+<span class="p">)</span>
 
 <span class="c1">-- compare watershed codes and route positions (lines)</span>
-<span class="n">FWA_Upstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">blue_line_key_a</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">downstream_route_measure_a</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">upstream_route_measure_a</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">wscode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">localcode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">blue_line_key_b</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">downstream_route_measure_b</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">wscode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">localcode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">include_equivalents</span><span class="w"> </span><span class="nb">boolean</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">.</span><span class="mi">001</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">    </span><span class="n">blue_line_key_a</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">downstream_route_measure_a</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span>
+<span class="w">    </span><span class="n">upstream_route_measure_a</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wscode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">localcode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">blue_line_key_b</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">downstream_route_measure_b</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wscode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">localcode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">include_equivalents</span><span class="w"> </span><span class="nb">boolean</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">False</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">.</span><span class="mi">001</span>
+<span class="p">)</span>
 
 <span class="c1">-- compare watershed codes and route positions (points)</span>
-<span class="n">FWA_Upstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">blue_line_key_a</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">downstream_route_measure_a</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">wscode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">localcode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">blue_line_key_b</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">downstream_route_measure_b</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">wscode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">localcode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">include_equivalents</span><span class="w"> </span><span class="nb">boolean</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">False</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">.</span><span class="mi">001</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">    </span><span class="n">blue_line_key_a</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">downstream_route_measure_a</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wscode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">localcode_ltree_a</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">blue_line_key_b</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">downstream_route_measure_b</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wscode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">localcode_ltree_b</span><span class="w"> </span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">    </span><span class="n">include_equivalents</span><span class="w"> </span><span class="nb">boolean</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="k">False</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tolerance</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">.</span><span class="mi">001</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -564,12 +564,12 @@ Enables fast display of source 1:20,000 streams at all zoom levels (show full le
 <h3>Examples<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>At its most basic, the function compares two watershed code / local code <code class="docutils literal notranslate"><span class="pre">ltree</span></code> pairs and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the second pair is upstream of the first pair.</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="w"></span>
-<span class="p">);</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">  </span><span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;100.100000&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;100.100000.000100&#39;</span><span class="p">::</span><span class="n">ltree</span>
+<span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">fwa_upstream</span>
@@ -579,12 +579,12 @@ Enables fast display of source 1:20,000 streams at all zoom levels (show full le
 </div>
 </li>
 <li><p>Find features upstream of a known location on the network. This query finds the number of lakes upstream of the Mission/Terzaghi Dam on the Bridge River. As source FWA lakes do not have a <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> value, we use the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> lookup.</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">  </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">n_lakes</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_lakes_poly</span><span class="w"> </span><span class="n">l</span><span class="w"></span>
-<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_waterbodies</span><span class="w"> </span><span class="n">wb</span><span class="w"></span>
-<span class="k">ON</span><span class="w"> </span><span class="n">l</span><span class="p">.</span><span class="n">waterbody_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wb</span><span class="p">.</span><span class="n">waterbody_key</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span><span class="s1">&#39;100.239855&#39;</span><span class="p">,</span><span class="s1">&#39;100.239855.240724&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">wb</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">wb</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">n_lakes</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_lakes_poly</span><span class="w"> </span><span class="n">l</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_waterbodies</span><span class="w"> </span><span class="n">wb</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">l</span><span class="p">.</span><span class="n">waterbody_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wb</span><span class="p">.</span><span class="n">waterbody_key</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span><span class="s1">&#39;100.239855&#39;</span><span class="p">,</span><span class="s1">&#39;100.239855.240724&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">wb</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">wb</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">n_lakes</span>
@@ -595,23 +595,23 @@ Enables fast display of source 1:20,000 streams at all zoom levels (show full le
 </div>
 </li>
 <li><p>For each feature in table A, find all records upstream in table B and collect them into an array. This query lists all dams upstream of each fish passage field assessment location (data from <a class="reference external" href="https://github.com/smnorris/bcfishpass"><code class="docutils literal notranslate"><span class="pre">bcfishpass</span></code></a>)</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">array_agg</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">dam_id</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">upstream_dam_ids</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">bcfishpass</span><span class="p">.</span><span class="n">crossings</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
-<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">bcfishpass</span><span class="p">.</span><span class="n">dams</span><span class="w"> </span><span class="n">b</span><span class="w"></span>
-<span class="k">ON</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">stream_crossing_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">array_agg</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">dam_id</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">upstream_dam_ids</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">bcfishpass</span><span class="p">.</span><span class="n">crossings</span><span class="w"> </span><span class="n">a</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">bcfishpass</span><span class="p">.</span><span class="n">dams</span><span class="w"> </span><span class="n">b</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">a</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">b</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">stream_crossing_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">aggregated_crossings_id</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">aggregated_crossings_id</span> <span class="o">|</span> <span class="n">upstream_dam_ids</span>
@@ -633,11 +633,11 @@ Enables fast display of source 1:20,000 streams at all zoom levels (show full le
 <h2>FWA_UpstreamTrace<a class="headerlink" href="#fwa-upstreamtrace" title="Permalink to this heading"></a></h2>
 <section id="id17">
 <h3>Synopsis<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_UpstreamTrace</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="n">start_blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">start_measure</span><span class="w"> </span><span class="nb">float</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="n">tolerance</span><span class="w"> </span><span class="nb">float</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_UpstreamTrace</span><span class="p">(</span>
+<span class="w">  </span><span class="n">start_blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">  </span><span class="n">start_measure</span><span class="w"> </span><span class="nb">float</span><span class="p">,</span>
+<span class="w">  </span><span class="n">tolerance</span><span class="w"> </span><span class="nb">float</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -652,7 +652,7 @@ on which it lies, split the source stream segment and only include the portion u
 <p>A common use case would be to use this in combination with <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code>, extracting streams upstream of coordinates of a feature like a bridge:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- find blkey/measure of bridge over sooke river</span>
 <span class="k">SELECT</span><span class="w"> </span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">downstream_route_measure</span><span class="w"> </span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">postgisftw</span><span class="p">.</span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">7028</span><span class="p">,</span><span class="w"> </span><span class="mi">48</span><span class="p">.</span><span class="mi">3858</span><span class="p">,</span><span class="w"> </span><span class="mi">4326</span><span class="p">);</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">postgisftw</span><span class="p">.</span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">7028</span><span class="p">,</span><span class="w"> </span><span class="mi">48</span><span class="p">.</span><span class="mi">3858</span><span class="p">,</span><span class="w"> </span><span class="mi">4326</span><span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> 
@@ -661,7 +661,7 @@ on which it lies, split the source stream segment and only include the portion u
 </pre></div>
 </div>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- extract streams</span>
-<span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">FWA_UpstreamTrace</span><span class="p">(</span><span class="mi">354153927</span><span class="p">,</span><span class="w"> </span><span class="mi">350</span><span class="p">);</span><span class="w"></span>
+<span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">FWA_UpstreamTrace</span><span class="p">(</span><span class="mi">354153927</span><span class="p">,</span><span class="w"> </span><span class="mi">350</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -674,10 +674,10 @@ on which it lies, split the source stream segment and only include the portion u
 <h2>FWA_WatershedAtMeasure<a class="headerlink" href="#fwa-watershedatmeasure" title="Permalink to this heading"></a></h2>
 <section id="id21">
 <h3>Synopsis<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="nb">float</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span>
+<span class="w">    </span><span class="n">blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
+<span class="w">    </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="nb">float</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -760,36 +760,36 @@ watershed in which it falls, then that watershed is included in the aggregation<
 <h3>Examples<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>Extract the geometry of the watershed upstream of the Cowichan River at Hwy 19:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span><span class="w"> </span><span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span><span class="w"> </span><span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">);</span>
 </pre></div>
 </div>
 <p><img alt="watershed" src="_images/watershed5.png" /></p>
 </li>
 <li><p>Extract the watershed upstream of Chilliwack Lake:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span><span class="w"> </span><span class="n">indexed_pt</span><span class="w"> </span><span class="k">AS</span><span class="w"></span>
-<span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">    </span><span class="n">i</span><span class="p">.</span><span class="o">*</span><span class="w"></span>
-<span class="w">  </span><span class="k">FROM</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="w"></span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">WITH</span><span class="w"> </span><span class="n">indexed_pt</span><span class="w"> </span><span class="k">AS</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span>
+<span class="w">    </span><span class="n">i</span><span class="p">.</span><span class="o">*</span>
+<span class="w">  </span><span class="k">FROM</span>
+<span class="w">  </span><span class="p">(</span>
 <span class="w">    </span><span class="c1">-- find a point in the lake</span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">st_pointonsurface</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span><span class="w"></span>
-<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_lakes_poly</span><span class="w"></span>
-<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">gnis_name_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Chilliwack Lake&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">pt</span><span class="w"></span>
-<span class="w">  </span><span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="w">    </span><span class="k">FROM</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">st_pointonsurface</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_lakes_poly</span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">gnis_name_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Chilliwack Lake&#39;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">pt</span>
+<span class="w">  </span><span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span>
+<span class="w">  </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">    </span><span class="k">FROM</span>
 <span class="w">    </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="c1">-- index the point in the lake to the nearest FWA stream</span>
-<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">true</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">true</span>
+<span class="p">)</span>
 
-<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">blue_line_key</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">indexed_pt</span><span class="p">),</span><span class="w"></span>
-<span class="w">  </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">indexed_pt</span><span class="p">)</span><span class="w"></span>
-<span class="p">);</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span>
+<span class="w">  </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">blue_line_key</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">indexed_pt</span><span class="p">),</span>
+<span class="w">  </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">indexed_pt</span><span class="p">)</span>
+<span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">wscode_ltree</span>    <span class="o">|</span>     <span class="n">localcode_ltree</span>      <span class="o">|</span> <span class="n">area_ha</span>  <span class="o">|</span> <span class="n">refine_method</span>  <span class="o">|</span> <span class="n">geom</span>
