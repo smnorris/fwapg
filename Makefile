@@ -220,7 +220,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 # create streams - watersheds lookup
 .make/fwa_streams_watersheds_lut: sql/tables/value_added_chunked/fwa_streams_watersheds_lut.sql .make/fwa_stream_networks_sp .make/fwa_watersheds_poly .make/fwa_watershed_groups_poly
 	# create table
-	$(PSQL) -c "drop table if exists whse_basemapping.fwa_streams_watersheds_lut"
+	$(PSQL) -c "drop table if exists whse_basemapping.fwa_streams_watersheds_lut cascade"
 	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_streams_watersheds_lut \
 					(linear_feature_id bigint, watershed_feature_id integer);"
 	# load data per group so inserts are in managable chunks
