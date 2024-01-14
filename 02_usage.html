@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Usage &mdash; fwapg 0.5.1 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=b9afe91b"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -87,13 +89,13 @@
            <div itemprop="articleBody">
              
   <section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h1>
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
 <p>This document presumes a working familiarity with FWA data and spatial SQL queries with PostgreSQL/PostGIS.</p>
 <section id="upstream-downstream-analysis">
-<h2>Upstream / downstream analysis<a class="headerlink" href="#upstream-downstream-analysis" title="Permalink to this heading"></a></h2>
+<h2>Upstream / downstream analysis<a class="headerlink" href="#upstream-downstream-analysis" title="Link to this heading"></a></h2>
 <p>The most typical use of <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> is to answer the question - “what is upstream or downstream of these points of interest”?  Before answering this question, we have to link the points of interest to the FWA streams.</p>
 <section id="reference-a-single-point-to-the-stream-network">
-<h3>Reference a single point to the stream network<a class="headerlink" href="#reference-a-single-point-to-the-stream-network" title="Permalink to this heading"></a></h3>
+<h3>Reference a single point to the stream network<a class="headerlink" href="#reference-a-single-point-to-the-stream-network" title="Link to this heading"></a></h3>
 <p>If you simply have a single point location as <code class="docutils literal notranslate"><span class="pre">X,Y</span></code> (plus coordinate system identifier), use the function <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code>.</p>
 <p>For example, to find the nearest point on the FWA stream network to location <code class="docutils literal notranslate"><span class="pre">-123.7028,</span> <span class="pre">48.3858</span></code>:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
@@ -109,7 +111,7 @@
 <p>This function is available via the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> <a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_indexpoint.html">feature service</a> - you can experiment with it <a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_indexpoint/items.html?x=-123.7028&amp;amp;y=48.3858&amp;amp;srid=4326">directly</a> without having to install anything other than a web browser (zoom out to see the context in the default web map).</p>
 </section>
 <section id="reference-many-points-to-stream-network">
-<h3>Reference many points to stream network<a class="headerlink" href="#reference-many-points-to-stream-network" title="Permalink to this heading"></a></h3>
+<h3>Reference many points to stream network<a class="headerlink" href="#reference-many-points-to-stream-network" title="Link to this heading"></a></h3>
 <p>Referencing a single point is handy but generally it is necessary to join/snap an entire table of point geometries to FWA streams. We can download Environment Canada hydrometric stations as an example point dataset:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="c1"># download csv</span>
 <span class="w">  </span>wget<span class="w"> </span>http://dd.weather.gc.ca/hydrometric/doc/hydrometric_StationList.csv
@@ -164,7 +166,7 @@
 </div>
 </section>
 <section id="check-results">
-<h3>Check results<a class="headerlink" href="#check-results" title="Permalink to this heading"></a></h3>
+<h3>Check results<a class="headerlink" href="#check-results" title="Link to this heading"></a></h3>
 <p>Matching points with variable precision and accuracy to FWA streams can be a challenge. In the example above, station <code class="docutils literal notranslate"><span class="pre">07EA004</span></code> has two streams within 50m - which one is correct? Station <code class="docutils literal notranslate"><span class="pre">07EC002</span></code> is 95m from the nearest stream, is this too far to be confident about the match?</p>
 <p>For quality matching of points to streams it is essential to be familiar with the contents and lineage of the point data. Is there any information in the data that can improve the match? How were the points collected? These hydrometric station locations were likely digitized from paper maps that used a much different scale from FWA 1:20,000 mapping - using the closest point will not work reliably. However, the data in the <code class="docutils literal notranslate"><span class="pre">name</span></code> column is consistent and appears to be very reliable - we can improve the join based on matching to the FWA stream name:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="k">CREATE</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">pg_trgm</span><span class="p">;</span>
@@ -263,14 +265,14 @@
 </div>
 </section>
 <section id="watershed-codes">
-<h3>Watershed codes<a class="headerlink" href="#watershed-codes" title="Permalink to this heading"></a></h3>
+<h3>Watershed codes<a class="headerlink" href="#watershed-codes" title="Link to this heading"></a></h3>
 <p>Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and the <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">route_measure</span></code> values.</p>
 <p>From the <a class="reference external" href="https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater">FWA user guide</a>, the watershed codes are <em>a hierarchical key that provides the ability to process both upstream and downstream queries</em>. The source FWA database stores these codes as strings, with trailing <code class="docutils literal notranslate"><span class="pre">-000000-</span></code> values to fill in the full 143 characters.</p>
 <p><code class="docutils literal notranslate"><span class="pre">fwapg</span></code> translates the watershed code strings to <a class="reference external" href="https://www.postgresql.org/docs/current/ltree.html"><code class="docutils literal notranslate"><span class="pre">ltree</span></code></a> types for easier searching of the hierarchical tree-like structure (these codes are stored in columns <code class="docutils literal notranslate"><span class="pre">wscode_ltree</span></code> and <code class="docutils literal notranslate"><span class="pre">localcode_ltree</span></code> in the various tables).</p>
 <p>While the <code class="docutils literal notranslate"><span class="pre">ltree</span></code> module provides operators simple hierarchy queries (eg <code class="docutils literal notranslate"><span class="pre">ltree</span> <span class="pre">&#64;&gt;</span> <span class="pre">ltree</span></code>, is left argument an ancestor of right (or equal)), upstream/downstream queries are <a class="reference external" href="https://github.com/smnorris/fwapg/blob/main/sql/functions/FWA_Upstream.sql">not quite as simple</a> as ancestor/descendant queries of the codes. Therefore, functions <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code> and <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> are provided to make these operations simpler.</p>
 </section>
 <section id="query-downstream">
-<h3>Query downstream<a class="headerlink" href="#query-downstream" title="Permalink to this heading"></a></h3>
+<h3>Query downstream<a class="headerlink" href="#query-downstream" title="Link to this heading"></a></h3>
 <p>Using <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> enables doing this with a join:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
 <span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
@@ -298,7 +300,7 @@
 <p>Note that this is only the downstream portion present in the FWA data - if the point is in the Columbia basin or similar, portions of stream not in BC are not included.</p>
 </section>
 <section id="query-upstream">
-<h3>Query upstream<a class="headerlink" href="#query-upstream" title="Permalink to this heading"></a></h3>
+<h3>Query upstream<a class="headerlink" href="#query-upstream" title="Link to this heading"></a></h3>
 <p>An upstream query is almost the same, using <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code>:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
 <span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
@@ -364,7 +366,7 @@
 </div>
 </section>
 <section id="generate-watershed">
-<h3>Generate watershed<a class="headerlink" href="#generate-watershed" title="Permalink to this heading"></a></h3>
+<h3>Generate watershed<a class="headerlink" href="#generate-watershed" title="Link to this heading"></a></h3>
 <p>With <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code> in hand, creating a watershed boundary now seems straightforward - find the fundamental watersheds upstream and aggregate them. For example, to extract the watershed upstream of hydrometric station <code class="docutils literal notranslate"><span class="pre">08HA002</span></code> as a single polygon, using unaltered FWA linework:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
 <span class="w">  </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
