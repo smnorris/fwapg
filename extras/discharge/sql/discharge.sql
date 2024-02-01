@@ -1,7 +1,7 @@
 -- Join discharge per wsd to streams via streams-wsd lookup to create
 -- per-linear_feature_id discharge table
 
-INSERT INTO bcfishpass.discharge
+INSERT INTO whse_basemapping.fwa_stream_networks_discharge
 (linear_feature_id, watershed_group_code, mad_mm, mad_m3s)
 SELECT
   s.linear_feature_id,
