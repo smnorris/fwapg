@@ -13,7 +13,7 @@ WSGS=$($PSQL -AXt -c "SELECT watershed_group_code FROM whse_basemapping.fwa_wate
 # -----------------------------
 
 # run the analysis per watershed group
-parallel $PSQL -f sql/load_fwa_assessment_watersheds_lut.sql -v wsg={1} ::: $WSGS
+parallel $PSQL -f sql/fwa_assessment_watersheds_lut.sql -v wsg={1} ::: $WSGS
 
 # create and load output table
 $PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_assessment_watersheds_lut;"
@@ -30,13 +30,19 @@ do
 done
 $PSQL -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
 
+# drop the temp tables
+for WSG in $WSGS
+do
+  $PSQL -c "DROP TABLE fwapg.fwa_assessment_watersheds_lut_"$WSG
+done
+
 
 # -----------------------------
 # join assessment watersheds to streams
 # -----------------------------
 
 # run the analysis per watershed group
-parallel $PSQL -f sql/load_fwa_assessment_watersheds_streams_lut.sql -v wsg={1} ::: $WSGS
+parallel $PSQL -f sql/fwa_assessment_watersheds_streams_lut.sql -v wsg={1} ::: $WSGS
 
 $PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_assessment_watersheds_streams_lut;"
 $PSQL -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut

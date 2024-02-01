@@ -32,7 +32,7 @@ INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly p
 ON s.watershed_group_code = p.watershed_group_code
 AND ST_Intersects(s.geom, p.geom)
 WHERE s.edge_type != 6010
-AND s.watershed_group_code = :wsg
+AND s.watershed_group_code = :'wsg'
 -- try and remove coincident lines where possible
 AND NOT ST_Touches(s.geom, p.geom)
 ORDER BY linear_feature_id, length desc)
@@ -62,6 +62,6 @@ ON s.watershed_group_code = p.watershed_group_code
 AND ST_Intersects(s.geom, p.geom)
 AND ST_Touches(s.geom, p.geom)
 WHERE s.edge_type != 6010
-AND s.watershed_group_code = :wsg
+AND s.watershed_group_code = :'wsg'
 ORDER BY linear_feature_id, watershed_feature_id
 ON CONFLICT DO NOTHING;
