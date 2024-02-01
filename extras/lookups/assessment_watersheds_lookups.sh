@@ -26,7 +26,7 @@ watershed_group_id integer)"
 for WSG in $WSGS
 do
   echo 'Loading '$WSG
-  psql -c "INSERT INTO whse_basemapping.fwa_assessment_watersheds_lut SELECT * FROM fwapg.fwa_assessment_watersheds_lut_"$WSG
+  $PSQL -c "INSERT INTO whse_basemapping.fwa_assessment_watersheds_lut SELECT * FROM fwapg.fwa_assessment_watersheds_lut_"$WSG
 done
 $PSQL -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
 
@@ -54,7 +54,7 @@ watershed_group_id integer);"
 for WSG in $WSGS
 do
   echo 'Loading '$WSG
-  psql -c "INSERT INTO whse_basemapping.fwa_assessment_watersheds_streams_lut SELECT * FROM fwapg.fwa_assessment_watersheds_streams_lut_"$WSG
+  $PSQL -c "INSERT INTO whse_basemapping.fwa_assessment_watersheds_streams_lut SELECT * FROM fwapg.fwa_assessment_watersheds_streams_lut_"$WSG
 done
 $PSQL -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_streams_lut (watershed_feature_id)"
 
