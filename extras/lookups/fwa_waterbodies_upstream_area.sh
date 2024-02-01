@@ -5,7 +5,7 @@ PSQL="psql $DATABASE_URL -v ON_ERROR_STOP=1"
 WSGS=$($PSQL -AXt -c "SELECT watershed_group_code FROM whse_basemapping.fwa_watershed_groups_poly")
 
 # run the analysis per watershed group
-parallel $PSQL -v wsg={1} -f sql/tables/value_added/fwa_waterbodies_upstream_area.sql ::: $WSGS
+parallel $PSQL -v wsg={1} -f sql/fwa_waterbodies_upstream_area.sql ::: $WSGS
 
 # load temp per wsg tables to output table
 $PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies_upstream_area;
@@ -18,7 +18,7 @@ $PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies_upstream_area;
 for WSG in $WSGS
 do
   echo 'Loading '$WSG
-  psql -c "INSERT INTO whse_basemapping.fwa_waterbodies_upstream_area SELECT * FROM fwapg.fwa_waterbodies_upstream_area_"$WSG
+  $PSQL -c "INSERT INTO whse_basemapping.fwa_waterbodies_upstream_area SELECT * FROM fwapg.fwa_waterbodies_upstream_area_"$WSG
 done
 $PSQL -c "ALTER TABLE whse_basemapping.fwa_waterbodies_upstream_area ADD PRIMARY KEY (linear_feature_id)"
 $PSQL -c "ANALYZE whse_basemapping.fwa_waterbodies_upstream_area"
