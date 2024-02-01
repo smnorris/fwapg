@@ -2,7 +2,16 @@
 -- This should be reasonably accurate in most areas - but use with caution in the far NE,
 -- areas of extensive wetland will likely have issues, connectivity can be arbitrary
 
-INSERT INTO whse_basemapping.fwa_waterbodies_upstream_area
+DROP TABLE IF EXISTS fwapg.fwa_waterbodies_upstream_area_:wsg;
+
+CREATE table fwapg.fwa_waterbodies_upstream_area_:wsg (
+  linear_feature_id bigint,
+  upstream_lake_ha double precision,
+  upstream_reservoir_ha double precision,
+  upstream_wetland_ha double precision
+);
+
+INSERT INTO fwapg.fwa_waterbodies_upstream_area_:wsg
 (
   linear_feature_id,
   upstream_lake_ha,

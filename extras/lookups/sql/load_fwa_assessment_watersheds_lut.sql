@@ -1,5 +1,14 @@
--- this takes ages and could probably be more efficent, but just needs to be run 1x
-INSERT INTO whse_basemapping.fwa_assessment_watersheds_lut
+DROP TABLE IF EXISTS fwapg.fwa_assessment_watersheds_lut_:wsg;
+
+CREATE table fwapg.fwa_assessment_watersheds_lut_:wsg (
+  watershed_feature_id integer PRIMARY KEY,
+  assmnt_watershed_id integer,
+  watershed_group_code text,
+  watershed_group_id integer
+);
+
+
+INSERT INTO whse_basemapping.fwa_assessment_watersheds_lut_:wsg
 (watershed_feature_id, assmnt_watershed_id, watershed_group_code, watershed_group_id)
 SELECT
   a.watershed_feature_id,

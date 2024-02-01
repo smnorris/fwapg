@@ -7,8 +7,16 @@
 
 -- associate stream segments with assessment watersheds based on what watershed
 -- contains the most length of each segment
--- This takes some time...
-INSERT INTO whse_basemapping.fwa_assessment_watersheds_streams_lut
+
+DROP TABLE IF EXISTS fwapg.fwa_assessment_watersheds_streams_lut_:wsg;
+CREATE table fwapg.fwa_assessment_watersheds_streams_lut_:wsg (
+  watershed_feature_id integer PRIMARY KEY,
+  assmnt_watershed_id integer,
+  watershed_group_code text,
+  watershed_group_id integer
+);
+
+INSERT INTO fwapg.fwa_assessment_watersheds_streams_lut_:wsg
 WITH overlay AS
 (SELECT DISTINCT ON (linear_feature_id)
  s.linear_feature_id,
@@ -42,7 +50,7 @@ FROM overlay;
 -- the watershed with the lowest id
 -- Note that we do not try and re-insert records that have already been
 -- matched in the first step.
-INSERT INTO whse_basemapping.fwa_assessment_watersheds_streams_lut
+INSERT INTO fwapg.fwa_assessment_watersheds_streams_lut_:wsg
 SELECT DISTINCT ON (linear_feature_id)
  s.linear_feature_id,
  p.watershed_feature_id,

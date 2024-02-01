@@ -1,29 +1,37 @@
 #!/bin/bash
 set -euxo pipefail
 
-psql -c "CREATE TABLE whse_basemapping.fwa_waterbodies_upstream_area
+PSQL="psql $DATABASE_URL -v ON_ERROR_STOP=1"
+WSGS=$($PSQL -AXt -c "SELECT watershed_group_code FROM whse_basemapping.fwa_watershed_groups_poly")
+
+# run the analysis per watershed group
+parallel $PSQL -v wsg={1} -f sql/tables/value_added/fwa_waterbodies_upstream_area.sql ::: $WSGS
+
+# load temp per wsg tables to output table
+$PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_waterbodies_upstream_area;
+        CREATE TABLE whse_basemapping.fwa_waterbodies_upstream_area
         (linear_feature_id bigint,
          upstream_lake_ha double precision,
          upstream_reservoir_ha double precision,
          upstream_wetland_ha double precision)"
 
-# load watershed groups individually
-# (calling this in parallel seems to grind things to a halt)
-for WSG in $(psql -AtX -P border=0,footer=no \
-  -c "SELECT watershed_group_code
-      FROM whse_basemapping.fwa_watershed_groups_poly
-      ORDER BY watershed_group_code
-      ")
+for WSG in $WSGS
 do
-  echo 'Processing '$WSG
-  psql -AX -v wsg=$WSG -f sql/tables/value_added/fwa_waterbodies_upstream_area.sql
+  echo 'Loading '$WSG
+  psql -c "INSERT INTO whse_basemapping.fwa_waterbodies_upstream_area SELECT * FROM fwapg.fwa_waterbodies_upstream_area_"$WSG
 done
+$PSQL -c "ALTER TABLE whse_basemapping.fwa_waterbodies_upstream_area ADD PRIMARY KEY (linear_feature_id)"
+$PSQL -c "ANALYZE whse_basemapping.fwa_waterbodies_upstream_area"
 
-psql -c "ALTER TABLE whse_basemapping.fwa_waterbodies_upstream_area ADD PRIMARY KEY (linear_feature_id)"
+# drop the temp tables
+for WSG in $WSGS
+do
+  $PSQL -c "DROP TABLE fwapg.fwa_waterbodies_upstream_area_"$WSG
+done
 
 echo 'fwa_waterbodies_upstream_area loaded successfully'
 
-psql -c "\copy whse_basemapping.fwa_waterbodies_upstream_area TO 'fwa_waterbodies_upstream_area.csv' DELIMITER ',' CSV HEADER;"
+$PSQL -c "\copy whse_basemapping.fwa_waterbodies_upstream_area TO 'fwa_waterbodies_upstream_area.csv' DELIMITER ',' CSV HEADER;"
 zip -r fwa_waterbodies_upstream_area.zip fwa_waterbodies_upstream_area.csv
 rm fwa_waterbodies_upstream_area.csv
 echo 'fwa_waterbodies_upstream_area dumped to zipped csv'
