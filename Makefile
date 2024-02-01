@@ -63,7 +63,9 @@ clean_db:
 	$(PSQL) -f sql/functions/FWA_Downstream.sql
 	$(PSQL) -f sql/functions/FWA_Upstream.sql
 	$(PSQL) -f sql/tables/spatial/schema.sql              
-	$(PSQL) -f sql/tables/non_spatial/schema.sql          
+	$(PSQL) -f sql/tables/non_spatial/schema.sql
+	echo "ALTER DATABASE :db SET search_path TO public,whse_basemapping,usgs,hydrosheds" | \
+	  $(PSQL) -v db=$(shell echo $(DATABASE_URL) | cut -d "/" -f 4)
 	touch $@
 
 # download and rename (so we do not have to unzip)
