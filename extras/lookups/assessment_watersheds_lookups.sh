@@ -65,25 +65,6 @@ do
 done
 
 
-# check results with this query and add any streams that are missed
-
-# SELECT
-#   s.linear_feature_id
-# FROM whse_basemapping.fwa_stream_networks_sp s
-# LEFT OUTER JOIN whse_basemapping.fwa_assessment_watersheds_streams_lut l
-# ON s.linear_feature_id = l.linear_feature_id
-# WHERE s.edge_type != 6010
-# AND l.linear_feature_id IS NULL;
-#
-#  linear_feature_id
-# -------------------
-#          832599689
-
-#$PSQL -c "INSERT INTO whse_basemapping.fwa_assessment_watersheds_streams_lut
-#   (linear_feature_id, watershed_feature_id, watershed_group_code, watershed_group_id)
-#    VALUES (832599689, 15559, 'TABR', 197)"
-
-
 # dump lookups to file so they don't have to be regenerated every time a db is set up
 $PSQL -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut TO 'fwa_assessment_watersheds_streams_lut.csv' DELIMITER ',' CSV HEADER;"
 $PSQL -c "\copy whse_basemapping.fwa_assessment_watersheds_lut TO 'fwa_assessment_watersheds_lut.csv' DELIMITER ',' CSV HEADER;"
