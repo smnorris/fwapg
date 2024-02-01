@@ -352,9 +352,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -c "drop table if exists whse_basemapping.fwa_assessment_watersheds_lut"
 	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut \
 	(watershed_feature_id integer PRIMARY KEY, \
-	assmnt_watershed_id integer, \
-	watershed_group_code text, \
-	watershed_group_id integer)"
+	assmnt_watershed_id integer)"
 	$(PSQL) -c "\copy whse_basemapping.fwa_assessment_watersheds_lut FROM 'data/fwa_assessment_watersheds_lut.csv' delimiter ',' csv header"
 	$(PSQL) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
 	touch $@
@@ -365,9 +363,7 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -c "drop table if exists whse_basemapping.fwa_assessment_watersheds_streams_lut"
 	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut \
 	(linear_feature_id integer PRIMARY KEY, \
-	assmnt_watershed_id integer, \
-	watershed_group_code text, \
-	watershed_group_id integer)"
+	assmnt_watershed_id integer)"
 	$(PSQL) -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut FROM 'data/fwa_assessment_watersheds_streams_lut.csv' delimiter ',' csv header"
 	$(PSQL) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_streams_lut (linear_feature_id)"
 	touch $@

@@ -18,8 +18,6 @@ Some workflows require relating `fwa_assessment_watersheds_poly` to fundamental 
 |--------|------|-------------|
 | watershed_feature_id | integer |           |
 | assmnt_watershed_id  | integer |           |
-| watershed_group_code | text    |           |
-| watershed_group_id   | integer |           |
 
 ## fwa_assessment_watersheds_streams_lut
 
@@ -29,8 +27,6 @@ Some workflows require relating `fwa_assessment_watersheds_poly` to stream segme
 |--------|------|-------------|
 | linear_feature_id | integer |           |
 | assmnt_watershed_id  | integer |           |
-| watershed_group_code | text    |           |
-| watershed_group_id   | integer |           |
 
 ## fwa_basins_poly
 

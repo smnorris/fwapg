@@ -11,9 +11,7 @@
 DROP TABLE IF EXISTS fwapg.fwa_assessment_watersheds_streams_lut_:wsg;
 CREATE table fwapg.fwa_assessment_watersheds_streams_lut_:wsg (
   watershed_feature_id integer PRIMARY KEY,
-  assmnt_watershed_id integer,
-  watershed_group_code text,
-  watershed_group_id integer
+  assmnt_watershed_id integer
 );
 
 INSERT INTO fwapg.fwa_assessment_watersheds_streams_lut_:wsg
@@ -21,16 +19,13 @@ WITH overlay AS
 (SELECT DISTINCT ON (linear_feature_id)
  s.linear_feature_id,
  p.watershed_feature_id,
- s.watershed_group_code,
- s.watershed_group_id,
  CASE
    WHEN ST_Coveredby(s.geom, p.geom) THEN ST_Length(s.geom)
    ELSE ST_length(ST_Intersection(s.geom, p.geom))
  END AS length
 FROM whse_basemapping.fwa_stream_networks_sp s
 INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly p
-ON s.watershed_group_code = p.watershed_group_code
-AND ST_Intersects(s.geom, p.geom)
+ON ST_Intersects(s.geom, p.geom)
 WHERE s.edge_type != 6010
 AND s.watershed_group_code = :'wsg'
 -- try and remove coincident lines where possible
@@ -39,9 +34,7 @@ ORDER BY linear_feature_id, length desc)
 
 SELECT
   linear_feature_id,
-  watershed_feature_id,
-  watershed_group_code,
-  watershed_group_id
+  watershed_feature_id
 FROM overlay;
 
 
@@ -53,13 +46,10 @@ FROM overlay;
 INSERT INTO fwapg.fwa_assessment_watersheds_streams_lut_:wsg
 SELECT DISTINCT ON (linear_feature_id)
  s.linear_feature_id,
- p.watershed_feature_id,
- s.watershed_group_code,
- s.watershed_group_id
+ p.watershed_feature_id
 FROM whse_basemapping.fwa_stream_networks_sp s
 INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly p
-ON s.watershed_group_code = p.watershed_group_code
-AND ST_Intersects(s.geom, p.geom)
+ON ST_Intersects(s.geom, p.geom)
 AND ST_Touches(s.geom, p.geom)
 WHERE s.edge_type != 6010
 AND s.watershed_group_code = :'wsg'
