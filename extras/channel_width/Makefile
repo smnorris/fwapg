@@ -33,14 +33,17 @@ all: $(GENERATED_FILES)
 	bcdata bc2pg WHSE_FISH.FISS_STREAM_SAMPLE_SITES_SP
 	$(PSQL) -c "CREATE INDEX ON whse_fish.fiss_stream_sample_sites_sp (new_watershed_code)"
 	bcdata bc2pg WHSE_FISH.PSCIS_ASSESSMENT_SVW
+	# bcfishpass crossings should be separated from streams to make this much more efficient
+	curl -o bcfishpass.gpkg.zip https://bcfishpass.s3.us-west-2.amazonaws.com/freshwater_fish_habitat_accessibility_MODEL.gpkg.zip
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL) \
 		-nln fwapg.pscis_crossings \
 		-overwrite \
 		-where "crossing_source = 'PSCIS'" \
-		/vsizip//vsicurl/https://bcfishpass.s3.us-west-2.amazonaws.com/freshwater_fish_habitat_accessibility_MODEL.gpkg.zip \
+		bcfishpass.gpkg.zip \
 		crossings
+	rm bcfishpass.gpkg.zip
 	touch $@
 
 # --------
