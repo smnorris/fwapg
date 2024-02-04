@@ -7,6 +7,8 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 ------------------
 - add modelled discharge / channel width / precipitation scripts and data
 - add streams_vw (with mean annual discharge / channel width / upstream mean annual precip)
+- move parent order / max order columns from primary streams table to streams_vw
+- consolidated database setup sql for easier maintenance
 
 0.5.1 (2023-06-22)
 ------------------

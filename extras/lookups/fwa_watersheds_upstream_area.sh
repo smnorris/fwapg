@@ -29,6 +29,5 @@ done
 echo 'fwa_watersheds_upstream_area loaded successfully'
 
 $PSQL -c "\copy whse_basemapping.fwa_watersheds_upstream_area TO 'fwa_watersheds_upstream_area.csv' DELIMITER ',' CSV HEADER;"
-zip -r fwa_watersheds_upstream_area.zip fwa_watersheds_upstream_area.csv
-rm fwa_watersheds_upstream_area.csv
+gzip fwa_watersheds_upstream_area.csv
 echo 'fwa_watersheds_upstream_area dumped to zipped csv'

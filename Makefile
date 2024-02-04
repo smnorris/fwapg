@@ -1,6 +1,5 @@
 .PHONY: all clean_targets clean_db
 
-
 SHELL=/bin/bash
 
 # provide db connection param to psql and ensure scripts stop on error
@@ -13,21 +12,27 @@ SPATIAL=$(basename $(subst load/spatial/,.make/,$(wildcard load/spatial/fwa_*.sq
 SPATIAL_CHUNKED=$(basename $(subst load/spatial_chunked/,.make/,$(wildcard load/spatial_chunked/fwa_*.sql)))
 NON_SPATIAL=$(basename $(subst load/non_spatial/,.make/,$(wildcard load/non_spatial/fwa_*.sql)))
 VALUE_ADDED=$(basename $(subst load/value_added/,.make/,$(wildcard load/value_added/*.sql)))
+VALUE_ADDED_CHUNKED=$(basename $(subst load/value_added_chunked/,.make/,$(wildcard load/value_added_chunked/*.sql)))
+EXTRAS=fwa_stream_networks_channel_width \
+	fwa_stream_networks_discharge \
+	fwa_assessment_watersheds_lut \
+	fwa_assessment_watersheds_streams_lut \
+	fwa_waterbodies_upstream_area \
+	fwa_watersheds_upstream_area \
+	fwa_stream_networks_mean_annual_precip
+
 
 ALL_TARGETS = .make/db \
 	$(SPATIAL_CHUNKED) \
 	$(SPATIAL) \
 	$(NON_SPATIAL) \
-	.make/fwa_obstructions_local_code \
 	.make/wbdhu12 \
 	.make/hydrosheds \
 	$(VALUE_ADDED) \
+	$(VALUE_ADDED_CHUNKED) \
 	.make/fwa_streams_watersheds_lut \
 	.make/fwa_functions \
-	.make/fwa_waterbodies_upstream_area \
-	.make/fwa_watersheds_upstream_area \
-	.make/fwa_assessment_watersheds_lut \
-	.make/fwa_assessment_watersheds_streams_lut
+	.make/extras
 
 all: $(ALL_TARGETS)
 
@@ -36,7 +41,12 @@ clean_targets:
 	rm -Rf .make
 	rm -Rf data
 
-# create database objects ** the database must already exist **
+clean_db:
+	rm -Rf .make/db
+	$(PSQL) -f db/clean.sql
+
+# create database objects
+# ** the database must already exist **
 .make/db:
 	mkdir -p .make
 	mkdir -p data
@@ -48,26 +58,28 @@ clean_targets:
 	$(PSQL) -f db/functions/ST_Safe_Repair.sql
 	$(PSQL) -f db/functions/FWA_Downstream.sql
 	$(PSQL) -f db/functions/FWA_Upstream.sql
+	echo "ALTER DATABASE :db SET search_path TO public,whse_basemapping,usgs,hydrosheds" | \
+	  $(PSQL) -v db=$(shell echo $(DATABASE_URL) | cut -d "/" -f 4)
 	touch $@
 
 # download and rename (so we do not have to unzip)
 data/FWA_BC.gdb.zip:
-	curl -o $@ -z $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip
+	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip
 
 data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip:
-	curl -o $@ -z $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
+	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
 
 data/FWA_WATERSHEDS_POLY.gdb.zip:
-	curl -o $@ -z $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_WATERSHEDS_POLY.zip
+	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_WATERSHEDS_POLY.zip
 
 data/FWA_STREAM_NETWORKS_SP.gdb.zip:
-	curl -o $@ -z $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
+	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
 
 # load the larger tables per watershed group
 .make/fwa_stream_networks_sp: data/FWA_STREAM_NETWORKS_SP.gdb.zip .make/db
 	# drop/create load table
 	$(PSQL) -c "drop table if exists fwapg.fwa_stream_networks_sp"
-	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t whse_basemapping.fwa_stream_networks_sp
+	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_stream_networks_sp
 	# load from file to staging table
 	for wsg in $(GROUPS) ; do \
 		set -e; ogr2ogr \
@@ -86,12 +98,12 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 	$(PSQL) -c "drop table fwapg.fwa_stream_networks_sp"
 	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_stream_networks_sp"
 	# apply data fixes
-	$(PSQL) -f db/fixes/fwa_stream_networks_sp.sql
+	$(PSQL) -f load/fixes/fwa_stream_networks_sp.sql
 	touch $@
 
 .make/fwa_linear_boundaries_sp: data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip .make/db
 	$(PSQL) -c "drop table if exists fwapg.fwa_linear_boundaries_sp"
-	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t whse_basemapping.fwa_linear_boundaries_sp
+	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_linear_boundaries_sp
 	# load from file to staging table
 	for wsg in $(GROUPS) ; do \
 		set -e; ogr2ogr \
@@ -113,7 +125,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 
 .make/fwa_watersheds_poly: data/FWA_WATERSHEDS_POLY.gdb.zip .make/db
 	$(PSQL) -c "drop table if exists fwapg.fwa_watersheds_poly"
-	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t whse_basemapping.fwa_watersheds_poly
+	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_watersheds_poly
 	# load from file to staging table
 	for wsg in $(GROUPS) ; do \
 		set -e; ogr2ogr \
@@ -137,7 +149,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 	# delete existing load table
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	# create empty load table
-	set -e; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -t $(subst .make/,,whse_basemapping.$@)
+	set -e; bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t $(subst .make/,,whse_basemapping.$@)
 	set -e; ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL) \
@@ -211,7 +223,7 @@ data/WBD_National_GDB.zip:
 .make/hydrosheds: .make/db
 	# clear any existing data
 	$(PSQL) -c "truncate hydrosheds.hybas_lev12_v1c"
-	# Load _ar_ and _na_ shapefiles
+	# Load cached data
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL) \
@@ -219,17 +231,10 @@ data/WBD_National_GDB.zip:
 		-nln hydrosheds.hybas_lev12_v1c \
 		-append \
 		-update \
+		-preserve_fid \
+		-where "hybas_id is not null" \
 		-nlt PROMOTE_TO_MULTI \
-		/vsizip/vsicurl/https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip
-	ogr2ogr \
-		-f PostgreSQL \
-		PG:$(DATABASE_URL) \
-		-t_srs EPSG:3005 \
-		-nln hydrosheds.hybas_lev12_v1c \
-		-append \
-		-update \
-		-nlt PROMOTE_TO_MULTI \
-		/vsizip/vsicurl/https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.zip
+		/vsizip/vsicurl/https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.gpkg.zip
 	$(PSQL) -f db/functions/hydroshed.sql  # internal function, hydroshed id as input
 	touch $@
 
@@ -237,44 +242,23 @@ data/WBD_National_GDB.zip:
 .make/fwa_functions: $(SPATIAL) $(SPATIAL_CHUNKED) $(NON_SPATIAL) $(VALUE_ADDED) $(VALUE_ADDED_CHUNKED) .make/fwa_streams_watersheds_lut \
 	.make/hydrosheds \
 	.make/wbdhu12
-	$(PSQL) -f sql/functions/FWA_SliceWatershedAtPoint.sql
-	$(PSQL) -f sql/functions/FWA_WatershedAtMeasure.sql
-	$(PSQL) -f sql/functions/FWA_WatershedHex.sql
-	$(PSQL) -f sql/functions/FWA_WatershedStream.sql
-	$(PSQL) -f sql/functions/FWA_UpstreamBorderCrossings.sql
-	$(PSQL) -f sql/functions/FWA_IndexPoint.sql
-	$(PSQL) -f sql/functions/FWA_LocateAlong.sql
-	$(PSQL) -f sql/functions/FWA_LocateAlongInterval.sql
-	$(PSQL) -f sql/functions/FWA_UpstreamTrace.sql
-	$(PSQL) -f sql/functions/postgisftw.sql  # pg_fs/pg_ts functions
+	$(PSQL) -f db/functions/FWA_SliceWatershedAtPoint.sql
+	$(PSQL) -f db/functions/FWA_WatershedAtMeasure.sql
+	$(PSQL) -f db/functions/FWA_WatershedHex.sql
+	$(PSQL) -f db/functions/FWA_WatershedStream.sql
+	$(PSQL) -f db/functions/FWA_UpstreamBorderCrossings.sql
+	$(PSQL) -f db/functions/FWA_IndexPoint.sql
+	$(PSQL) -f db/functions/FWA_LocateAlong.sql
+	$(PSQL) -f db/functions/FWA_LocateAlongInterval.sql
+	$(PSQL) -f db/functions/FWA_UpstreamTrace.sql
+	$(PSQL) -f db/functions/postgisftw.sql  # pg_fs/pg_ts functions
 	touch $@
 
 # rather than generating these lookups/datasets (scripts in /extras), download pre-generated data
-.make/fwa_waterbodies_upstream_area: .make/db
-	wget --trust-server-names -qN https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_waterbodies_upstream_area.zip -P data
-	unzip -qun data/fwa_waterbodies_upstream_area.zip -d data
-	$(PSQL) -c "truncate whse_basemapping.fwa_waterbodies_upstream_area"
-	$(PSQL) -c "\copy whse_basemapping.fwa_waterbodies_upstream_area FROM 'data/fwa_waterbodies_upstream_area.csv' delimiter ',' csv header"
+.make/extras: .make/db
+	for table in $(EXTRAS) ; do \
+		echo $$table ;\
+		set -e; $(PSQL) -c "truncate whse_basemapping.$$table" ; \
+		set -e; $(PSQL) -c "\copy whse_basemapping.$$table FROM PROGRAM 'curl -s https://www.hillcrestgeo.ca/outgoing/public/fwapg/$$table.csv.gz | gunzip' delimiter ',' csv header" ; \
+	done
 	touch $@
-
-.make/fwa_watersheds_upstream_area: .make/db
-	wget --trust-server-names -qN https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_watersheds_upstream_area.zip -P data
-	unzip -qun data/fwa_watersheds_upstream_area.zip -d data
-	$(PSQL) -c "truncate whse_basemapping.fwa_watersheds_upstream_area"
-	$(PSQL) -c "\copy whse_basemapping.fwa_watersheds_upstream_area FROM 'data/fwa_watersheds_upstream_area.csv' delimiter ',' csv header"
-	touch $@
-
-.make/fwa_assessment_watersheds_lut: .make/db
-	wget --trust-server-names -qN https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip -P data
-	unzip -qun data/fwa_assessment_watersheds_lut.csv.zip -d data
-	$(PSQL) -c "truncate whse_basemapping.fwa_assessment_watersheds_lut"
-	$(PSQL) -c "\copy whse_basemapping.fwa_assessment_watersheds_lut FROM 'data/fwa_assessment_watersheds_lut.csv' delimiter ',' csv header"
-	touch $@
-
-.make/fwa_assessment_watersheds_streams_lut: .make/db
-	wget --trust-server-names -qN https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip -P data
-	unzip -qun data/fwa_assessment_watersheds_streams_lut.csv.zip -d data
-	$(PSQL) -c "truncate whse_basemapping.fwa_assessment_watersheds_streams_lut"
-	$(PSQL) -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut FROM 'data/fwa_assessment_watersheds_streams_lut.csv' delimiter ',' csv header"
-	touch $@
-

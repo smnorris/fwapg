@@ -385,8 +385,8 @@ create table whse_basemapping.fwa_stream_networks_sp (
   gnis_name character varying(80),
   left_right_tributary character varying(7),
   stream_order integer,
-  stream_order_parent integer,
-  stream_order_max integer,
+  --stream_order_parent integer,
+  --stream_order_max integer,
   stream_magnitude integer,
   waterbody_key integer,
   blue_line_key_50k integer,
@@ -668,9 +668,14 @@ comment on column whse_basemapping.fwa_named_streams.geom IS 'The geometry of th
 
 
 -- report on max order of given blue line key, useful for filtering when mapping at various scales
-create table fwapg.fwa_stream_order_max (
+create table whse_basemapping.fwa_stream_networks_order_max (
     blue_line_key integer primary key,
     stream_order_max integer
+);
+
+create table whse_basemapping.fwa_stream_networks_order_parent (
+    blue_line_key integer primary key,
+    stream_order_parent integer
 );
 
 -- The source FWA database holds waterbodies in four different tables.
@@ -736,22 +741,12 @@ comment on table usgs.wbdhu12 IS 'USGS National Watershed Boundary Dataset, HUC1
 
 -- canada watershed boundaries (via hydrosheds)
 create table hydrosheds.hybas_lev12_v1c (
-    hybas_id   bigint           ,
+    hybas_id   bigint    primary key       ,
     next_down  numeric(11,0)               ,
-    next_sink  numeric(11,0)               ,
-    main_bas   numeric(11,0)               ,
-    dist_sink  numeric(9,1)                ,
-    dist_main  numeric(9,1)                ,
-    sub_area   numeric(9,1)                ,
-    up_area    numeric(9,1)                ,
-    pfaf_id    numeric(13,0)               ,
-    endo       numeric(6,0)                ,
-    coast      numeric(6,0)                ,
-    "order"      numeric(6,0)                ,
-    sort       numeric(11,0)               ,
     geom       geometry(MultiPolygon,3005)
 );
 create index on hydrosheds.hybas_lev12_v1c (next_down);
+create index on hydrosheds.hybas_lev12_v1c using gist (geom);
 comment on table hydrosheds.hybas_lev12_v1c IS 'HydroBasins for North America from https://www.hydrosheds.org. See source for column documentation';
 
 

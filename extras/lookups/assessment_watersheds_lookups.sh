@@ -15,20 +15,12 @@ WSGS=$($PSQL -AXt -c "SELECT watershed_group_code FROM whse_basemapping.fwa_wate
 # run the analysis per watershed group
 parallel $PSQL -f sql/fwa_assessment_watersheds_lut.sql -v wsg={1} ::: $WSGS
 
-# create and load output table
-$PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_assessment_watersheds_lut;"
-$PSQL -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut
-(watershed_feature_id integer PRIMARY KEY,
-assmnt_watershed_id integer,
-watershed_group_code text,
-watershed_group_id integer)"
-
+$PSQL -c "truncate whse_basemapping.fwa_assessment_watersheds_lut;"
 for WSG in $WSGS
 do
   echo 'Loading '$WSG
   $PSQL -c "INSERT INTO whse_basemapping.fwa_assessment_watersheds_lut SELECT * FROM fwapg.fwa_assessment_watersheds_lut_"$WSG
 done
-$PSQL -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
 
 # drop the temp tables
 for WSG in $WSGS
@@ -44,13 +36,7 @@ done
 # run the analysis per watershed group
 parallel $PSQL -f sql/fwa_assessment_watersheds_streams_lut.sql -v wsg={1} ::: $WSGS
 
-$PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_assessment_watersheds_streams_lut;"
-$PSQL -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut
-(linear_feature_id bigint primary key,
-watershed_feature_id integer,
-watershed_group_code text,
-watershed_group_id integer);"
-
+$PSQL -c "truncate whse_basemapping.fwa_assessment_watersheds_streams_lut;"
 for WSG in $WSGS
 do
   echo 'Loading '$WSG
@@ -69,7 +55,5 @@ done
 $PSQL -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut TO 'fwa_assessment_watersheds_streams_lut.csv' DELIMITER ',' CSV HEADER;"
 $PSQL -c "\copy whse_basemapping.fwa_assessment_watersheds_lut TO 'fwa_assessment_watersheds_lut.csv' DELIMITER ',' CSV HEADER;"
 
-zip -r fwa_assessment_watersheds_streams_lut.zip fwa_assessment_watersheds_streams_lut.csv
-rm fwa_assessment_watersheds_streams_lut.csv
-zip -r fwa_assessment_watersheds_lut.zip fwa_assessment_watersheds_lut.csv
-rm fwa_assessment_watersheds_lut.csv
+gzip fwa_assessment_watersheds_streams_lut.csv
+gzip fwa_assessment_watersheds_lut.csv

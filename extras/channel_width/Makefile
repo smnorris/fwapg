@@ -96,8 +96,8 @@ fwa_stream_networks_channel_width.zip: .make/channel_width_modelled sql/channel_
 	parallel $(PSQL) -f sql/channel_width.sql -v wsg={1} ::: $(WSG)
 	# dump output to file
 	$(PSQL) -c "\copy whse_basemapping.fwa_stream_networks_channel_width TO 'fwa_stream_networks_channel_width.csv' DELIMITER ',' CSV HEADER;"
-	zip -r fwa_stream_networks_channel_width.zip fwa_stream_networks_channel_width.csv
-	rm fwa_stream_networks_channel_width.csv
+	gzip fwa_stream_networks_channel_width.csv
+
 
 clean:
 	rm -f .make

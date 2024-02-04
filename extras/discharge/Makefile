@@ -105,6 +105,5 @@ fwa_stream_networks_discharge.zip: .make/discharge03_wsd
 	$(PSQL) -c "drop table fwapg.discharge02_load"
 	$(PSQL) -c "drop table fwapg.discharge03_wsd"
 	$(PSQL) -c "\copy whse_basemapping.fwa_stream_networks_discharge TO 'fwa_stream_networks_discharge.csv' DELIMITER ',' CSV HEADER;"
-	zip -r fwa_stream_networks_discharge.zip fwa_stream_networks_discharge.csv
-	rm fwa_stream_networks_discharge.csv
+	gzip fwa_stream_networks_discharge.csv
 	echo 'Discharge processing complete, see whse_basemapping.fwa_stream_networks_discharge columns mad_mm, mad_m3s'

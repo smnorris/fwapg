@@ -36,6 +36,12 @@ drop table if exists whse_basemapping.fwa_streams_watersheds_lut;
 drop table if exists whse_basemapping.fwa_waterbodies_upstream_area;
 drop table if exists whse_basemapping.fwa_watersheds_upstream_area;
 
+drop table if exists whse_basemapping.fwa_stream_networks_order_max;
+drop table if exists whse_basemapping.fwa_stream_networks_order_parent;
+drop table if exists whse_basemapping.fwa_stream_networks_discharge;
+drop table if exists whse_basemapping.fwa_stream_networks_mean_annual_precip;
+drop table if exists whse_basemapping.fwa_stream_networks_channel_width;
+
 -- additional data
 drop table if exists usgs.wbdhu12;
 drop table if exists hydrosheds.hybas_lev12_v1c;
