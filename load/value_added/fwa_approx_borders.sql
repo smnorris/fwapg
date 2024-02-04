@@ -14,12 +14,6 @@
 --   lines and streams and generate a lookup of all BC streams that exit the
 --   province rather than approximating in this way. We could also presumably
 --   query to find streams that end where measure != 0
-DROP TABLE IF EXISTS whse_basemapping.fwa_approx_borders;
-
-CREATE TABLE whse_basemapping.fwa_approx_borders
-(approx_border_id SERIAL PRIMARY KEY,
-border text,
-geom geometry(LINESTRING, 3005));
 
 INSERT INTO whse_basemapping.fwa_approx_borders
 (border, geom)
@@ -62,8 +56,3 @@ SELECT
 FROM (SELECT
         -120.0005 AS x,
         generate_series(60, 53.79914, -.01) AS y) AS segments;
-
-COMMENT ON TABLE whse_basemapping.fwa_approx_borders IS 'Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for finding cross-border streams';
-COMMENT ON COLUMN whse_basemapping.fwa_approx_borders.approx_border_id IS 'Unique identifer';
-COMMENT ON COLUMN whse_basemapping.fwa_approx_borders.border IS 'A code identifying the border (USA49, YTNWT_60, AB_120)';
-COMMENT ON COLUMN whse_basemapping.fwa_approx_borders.geom IS 'Geometry of the border line';

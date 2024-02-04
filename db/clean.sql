@@ -61,5 +61,4 @@ drop function if exists usgs.huc12;
 drop function if exists hydrosheds.hydroshed;
 drop function if exists st_safe_repair;
 
-drop schema if exists postgisftw cascade;
 drop schema if exists fwapg cascade;

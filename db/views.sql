@@ -1,6 +1,4 @@
-drop view if exists whse_basemapping.fwa_streams_vw;
-
-create or replace view whse_basemapping.fwa_streams_vw as
+create view whse_basemapping.fwa_streams_vw as
   SELECT
   s.linear_feature_id,
   s.edge_type,

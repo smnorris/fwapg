@@ -1,11 +1,4 @@
 -- report on max order of given blue line key, useful for filtering when mapping at various scales
-
-drop table if exists fwapg.fwa_stream_order_max ;
-
-create table fwapg.fwa_stream_order_max
-  (blue_line_key integer primary key,
-    stream_order_max integer);
-
 insert into fwapg.fwa_stream_order_max
 (blue_line_key, stream_order_max)
 select 
