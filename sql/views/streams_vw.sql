@@ -30,6 +30,6 @@ LEFT OUTER JOIN whse_basemapping.fwa_streams_watersheds_lut l
 ON s.linear_feature_id = l.linear_feature_id
 INNER JOIN whse_basemapping.fwa_watersheds_upstream_area ua
 ON l.watershed_feature_id = ua.watershed_feature_id
-LEFT OUTER JOIN bcfishpass.mean_annual_precip p ON s.wscode_ltree = p.wscode_ltree AND s.localcode_ltree = p.localcode_ltree
-LEFT OUTER JOIN bcfishpass.channel_width cw ON s.linear_feature_id = cw.linear_feature_id
-LEFT OUTER JOIN bcfishpass.discharge mad ON s.linear_feature_id = mad.linear_feature_id;
+LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_mean_annual_precip p ON s.wscode_ltree = p.wscode_ltree AND s.localcode_ltree = p.localcode_ltree
+LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_channel_width cw ON s.linear_feature_id = cw.linear_feature_id
+LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_discharge mad ON s.linear_feature_id = mad.linear_feature_id;
