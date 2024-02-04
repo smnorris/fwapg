@@ -106,22 +106,9 @@ $PSQL -t -c "SELECT
 
 
 # ----------
-# Create the output table.
+# Load the output table.
 # ----------
-# There can be some remenant duplicates in the source data, make sure it does not get included
-# by adding a unique constraint on watershed codes
-$PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_stream_networks_mean_annual_precip"
-$PSQL -c "CREATE TABLE whse_basemapping.fwa_stream_networks_mean_annual_precip
-(
-  id serial primary key,
-  wscode_ltree ltree,
-  localcode_ltree ltree,
-  watershed_group_code text,
-  area bigint,
-  map integer,
-  map_upstream integer,
-  UNIQUE (wscode_ltree, localcode_ltree)
-);"
+$PSQL -c "truncate whse_basemapping.fwa_stream_networks_mean_annual_precip"
 
 # Take data from the MAP load tables, average the MAP over the stream segment
 # (watershed code / local code) and insert (along with area of fundamental watershed(s) associated with
@@ -149,3 +136,8 @@ $PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_ply"
 $PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_pt"
 $PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_ln"
 rm data/MAP.tif*
+
+# dump output to file
+$PSQL -c "\copy whse_basemapping.fwa_stream_networks_mean_annual_precip TO 'fwa_stream_networks_mean_annual_precip.csv' DELIMITER ',' CSV HEADER;"
+zip -r fwa_stream_networks_mean_annual_precip.zip fwa_stream_networks_mean_annual_precip.csv
+rm fwa_stream_networks_mean_annual_precip.csv

@@ -59,3 +59,54 @@ create table if not exists whse_basemapping.fwa_watershed_type_codes (
     watershed_type character varying(1),
     watershed_description character varying(255)
 );
+
+-- ---------------------------------------------------------------------------------------------------------------------
+-- extras
+-- ---------------------------------------------------------------------------------------------------------------------
+create table if not exists whse_basemapping.fwa_waterbodies_upstream_area (
+    linear_feature_id bigint primary key,
+    upstream_lake_ha double precision,
+    upstream_reservoir_ha double precision,
+    upstream_wetland_ha double precision
+);
+
+create table whse_basemapping.fwa_watersheds_upstream_area (
+  watershed_feature_id integer primary key,
+  upstream_area_ha double precision
+
+create table whse_basemapping.fwa_assessment_watersheds_lut (
+  watershed_feature_id integer primary key,
+  assmnt_watershed_id integer
+);
+create index on whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id);
+
+create table whse_basemapping.fwa_assessment_watersheds_streams_lut (
+  linear_feature_id integer primary key,
+  assmnt_watershed_id integer
+);
+create index on whse_basemapping.fwa_assessment_watersheds_streams_lut (assmnt_watershed_id);
+
+create table whse_basemapping.fwa_stream_networks_discharge (
+    linear_feature_id integer primary key,
+    watershed_group_code text, \
+    mad_mm double precision,
+    mad_m3s double precision
+);
+
+create table whse_basemapping.fwa_stream_networks_mean_annual_precip (
+  id serial primary key,
+  wscode_ltree ltree,
+  localcode_ltree ltree,
+  watershed_group_code text,
+  area bigint,
+  map integer,
+  map_upstream integer,
+  unique (wscode_ltree, localcode_ltree) -- There can be some remenant duplication in the source data,
+                                         -- this constraint ensures it is removed
+)
+
+create table whse_basemapping.fwa_stream_networks_channel_width (
+    linear_feature_id bigint primary key,
+    channel_width_source text,
+    channel_width double precision
+);

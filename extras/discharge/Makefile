@@ -95,22 +95,16 @@ data/discharge.nc: data/runoff_yearsum_mean.nc data/baseflow_yearsum_mean.nc
 	touch $@
 
 ## For habitat modelling, it is easier if discharge is per-stream
-.make/discharge: .make/discharge03_wsd
+fwa_stream_networks_discharge.zip: .make/discharge03_wsd
 	# Transfer per-watershed discharge data to per-stream
-	# create output fwapg.discharge table
-	$(PSQL) -c "DROP TABLE IF EXISTS whse_basemapping.fwa_stream_networks_discharge"
-	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_stream_networks_discharge \
-	( \
-	    linear_feature_id integer PRIMARY KEY, \
-	    watershed_group_code text, \
-	    mad_mm double precision, \
-	    mad_m3s double precision \
-	);"
+	$(PSQL) -c "truncate whse_basemapping.fwa_stream_networks_discharge"
 	for wsg in $(WSGS) ; do \
 	  $(PSQL) -f sql/discharge.sql -v wsg=$$wsg ; \
 	done
 	$(PSQL) -c "drop table fwapg.discharge01_raster"
 	$(PSQL) -c "drop table fwapg.discharge02_load"
 	$(PSQL) -c "drop table fwapg.discharge03_wsd"
+	$(PSQL) -c "\copy whse_basemapping.fwa_stream_networks_discharge TO 'fwa_stream_networks_discharge.csv' DELIMITER ',' CSV HEADER;"
+	zip -r fwa_stream_networks_discharge.zip fwa_stream_networks_discharge.csv
+	rm fwa_stream_networks_discharge.csv
 	echo 'Discharge processing complete, see whse_basemapping.fwa_stream_networks_discharge columns mad_mm, mad_m3s'
-	touch $@

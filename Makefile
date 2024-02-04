@@ -323,47 +323,32 @@ data/WBD_National_GDB.zip:
 	$(PSQL) -f sql/functions/postgisftw.sql  # pg_fs/pg_ts functions
 	touch $@
 
-# rather than generating these lookups (slow), download pre-generated data
+# rather than generating these lookups/datasets (slow), download pre-generated data
 .make/fwa_waterbodies_upstream_area: .make/db
 	wget --trust-server-names -qN https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_waterbodies_upstream_area.zip -P data
 	unzip -qun data/fwa_waterbodies_upstream_area.zip -d data
-	$(PSQL) -c "drop table if exists whse_basemapping.fwa_waterbodies_upstream_area"
-	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_waterbodies_upstream_area \
-		(linear_feature_id bigint primary key, \
-		upstream_lake_ha double precision, \
-		upstream_reservoir_ha double precision, \
-		upstream_wetland_ha double precision)"
+	$(PSQL) -c "truncate whse_basemapping.fwa_waterbodies_upstream_area"
 	$(PSQL) -c "\copy whse_basemapping.fwa_waterbodies_upstream_area FROM 'data/fwa_waterbodies_upstream_area.csv' delimiter ',' csv header"
 	touch $@
 
 .make/fwa_watersheds_upstream_area: .make/db
 	wget --trust-server-names -qN https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_watersheds_upstream_area.zip -P data
 	unzip -qun data/fwa_watersheds_upstream_area.zip -d data
-	$(PSQL) -c "drop table if exists whse_basemapping.fwa_watersheds_upstream_area"
-	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_watersheds_upstream_area \
-		(watershed_feature_id integer primary key, \
-		upstream_area_ha double precision );"
+	$(PSQL) -c "truncate whse_basemapping.fwa_watersheds_upstream_area"
 	$(PSQL) -c "\copy whse_basemapping.fwa_watersheds_upstream_area FROM 'data/fwa_watersheds_upstream_area.csv' delimiter ',' csv header"
 	touch $@
 
 .make/fwa_assessment_watersheds_lut: .make/db
 	wget --trust-server-names -qN https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_lut.csv.zip -P data
 	unzip -qun data/fwa_assessment_watersheds_lut.csv.zip -d data
-	$(PSQL) -c "drop table if exists whse_basemapping.fwa_assessment_watersheds_lut"
-	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_lut \
-	(watershed_feature_id integer PRIMARY KEY, \
-	assmnt_watershed_id integer)"
+	$(PSQL) -c "truncate whse_basemapping.fwa_assessment_watersheds_lut"
 	$(PSQL) -c "\copy whse_basemapping.fwa_assessment_watersheds_lut FROM 'data/fwa_assessment_watersheds_lut.csv' delimiter ',' csv header"
-	$(PSQL) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_lut (assmnt_watershed_id)"
 	touch $@
 
 .make/fwa_assessment_watersheds_streams_lut: .make/db
 	wget --trust-server-names -qN https://hillcrestgeo.ca/outgoing/public/fwapg/fwa_assessment_watersheds_streams_lut.csv.zip -P data
 	unzip -qun data/fwa_assessment_watersheds_streams_lut.csv.zip -d data
-	$(PSQL) -c "drop table if exists whse_basemapping.fwa_assessment_watersheds_streams_lut"
-	$(PSQL) -c "CREATE TABLE whse_basemapping.fwa_assessment_watersheds_streams_lut \
-	(linear_feature_id integer PRIMARY KEY, \
-	assmnt_watershed_id integer)"
+	$(PSQL) -c "truncate whse_basemapping.fwa_assessment_watersheds_streams_lut"
 	$(PSQL) -c "\copy whse_basemapping.fwa_assessment_watersheds_streams_lut FROM 'data/fwa_assessment_watersheds_streams_lut.csv' delimiter ',' csv header"
-	$(PSQL) -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_streams_lut (linear_feature_id)"
 	touch $@
+

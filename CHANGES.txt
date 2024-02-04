@@ -5,7 +5,7 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
 0.6.0 ()
 ------------------
-- add modelled discharge / channel width / precipitation scripts
+- add modelled discharge / channel width / precipitation scripts and data
 - add streams_vw (with mean annual discharge / channel width / upstream mean annual precip)
 
 0.5.1 (2023-06-22)

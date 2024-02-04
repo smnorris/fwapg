@@ -14,14 +14,13 @@ GENERATED_FILES = .make/bcdata \
 	.make/channel_width_mapped \
 	channel_width_analysis.csv \
 	.make/channel_width_modelled \
-	.make/channel_width
+	fwa_stream_networks_channel_width.zip
 
 GENERATED_TABLES =  whse_fish.fiss_stream_sample_sites_sp\
 	fwapg.channel_width_measured \
 	fwapg.channel_width_mapped \
 	fwapg.channel_width_analysis \
-	fwapg.channel_width_modelled \
-	whse_basemapping.fwa_stream_networks_channel_width
+	fwapg.channel_width_modelled
 
 all: $(GENERATED_FILES)
 
@@ -92,18 +91,17 @@ channel_width_analysis.csv: .make/channel_width_mapped .make/channel_width_measu
 # OUTPUT TABLE
 # --------
 # combine the measured/mapped/modelled data into a single table for easy relating to streams table
-.make/channel_width: .make/channel_width_modelled sql/channel_width.sql
-	$(PSQL) -c "DROP TABLE IF EXISTS whse_basemapping.fwa_stream_networks_channel_width; \
-	CREATE TABLE whse_basemapping.fwa_stream_networks_channel_width ( \
-		linear_feature_id bigint primary key, \
-	  channel_width_source text, \
-	  channel_width double precision);"
+fwa_stream_networks_channel_width.zip: .make/channel_width_modelled sql/channel_width.sql
+	$(PSQL) -c "truncate whse_basemapping.fwa_stream_networks_channel_width;"
 	parallel $(PSQL) -f sql/channel_width.sql -v wsg={1} ::: $(WSG)
-	touch $@
+	# dump output to file
+	$(PSQL) -c "\copy whse_basemapping.fwa_stream_networks_channel_width TO 'fwa_stream_networks_channel_width.csv' DELIMITER ',' CSV HEADER;"
+	zip -r fwa_stream_networks_channel_width.zip fwa_stream_networks_channel_width.csv
+	rm fwa_stream_networks_channel_width.csv
 
 clean:
 	rm -f .make
-	# drop all target tables
+	# drop all temp target tables
 	for table in $(GENERATED_TABLES); do \
 		$(PSQL) -c "DROP TABLE IF EXISTS "$$table ;\
 	done
