@@ -93,8 +93,8 @@ channel_width_analysis.csv: .make/channel_width_mapped .make/channel_width_measu
 # --------
 # combine the measured/mapped/modelled data into a single table for easy relating to streams table
 .make/channel_width: .make/channel_width_modelled sql/channel_width.sql
-	$(PSQL) -c "DROP TABLE IF EXISTS bcfishpass.channel_width; \
-	CREATE TABLE bcfishpass.channel_width ( \
+	$(PSQL) -c "DROP TABLE IF EXISTS whse_basemapping.fwa_stream_networks_channel_width; \
+	CREATE TABLE whse_basemapping.fwa_stream_networks_channel_width ( \
 		linear_feature_id bigint primary key, \
 	  channel_width_source text, \
 	  channel_width double precision);"

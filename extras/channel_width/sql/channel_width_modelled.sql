@@ -1,9 +1,9 @@
 -- Model channel width - based on upstream area and precip
 
 
-DROP TABLE IF EXISTS bcfishpass.channel_width_modelled;
+DROP TABLE IF EXISTS fwapg.channel_width_modelled;
 
-CREATE TABLE bcfishpass.channel_width_modelled
+CREATE TABLE fwapg.channel_width_modelled
 (
   channel_width_id serial primary key,
   wscode_ltree ltree,
@@ -39,7 +39,7 @@ GROUP BY s.wscode_ltree, s.localcode_ltree, s.watershed_group_code
 
 )
 
-INSERT INTO bcfishpass.channel_width_modelled
+INSERT INTO fwapg.channel_width_modelled
 (
   wscode_ltree,
   localcode_ltree,
@@ -62,13 +62,13 @@ SELECT
         (ln(s.upstream_area_ha) + ln(coalesce(p.map_upstream, 0) + 1) - ln(100) - ln(1000))
       )::numeric, 2) as channel_width_modelled
 FROM streams s
-INNER JOIN bcfishpass.mean_annual_precip p
+INNER JOIN whse_basemapping.fwa_stream_networks_mean_annual_precip p
 ON s.wscode_ltree = p.wscode_ltree
 AND s.localcode_ltree = p.localcode_ltree
 WHERE s.upstream_area_ha IS NOT NULL;
 
 
-CREATE INDEX ON bcfishpass.channel_width_modelled USING GIST (wscode_ltree);
-CREATE INDEX ON bcfishpass.channel_width_modelled USING BTREE (wscode_ltree);
-CREATE INDEX ON bcfishpass.channel_width_modelled USING GIST (localcode_ltree);
-CREATE INDEX ON bcfishpass.channel_width_modelled USING BTREE (localcode_ltree);
+CREATE INDEX ON fwapg.channel_width_modelled USING GIST (wscode_ltree);
+CREATE INDEX ON fwapg.channel_width_modelled USING BTREE (wscode_ltree);
+CREATE INDEX ON fwapg.channel_width_modelled USING GIST (localcode_ltree);
+CREATE INDEX ON fwapg.channel_width_modelled USING BTREE (localcode_ltree);

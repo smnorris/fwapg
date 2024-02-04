@@ -28,9 +28,9 @@ CREATE TABLE fwapg.channel_width_analysis
   upstream_area_lake double precision,
   upstream_area_manmade double precision,
   upstream_area_wetland double precision,
-  ecoregion_code text,
-  ecosection_code text,
-  zone text,
+  --ecoregion_code text,
+  --ecosection_code text,
+  --zone text,
   map integer,
   map_upstream integer,
   lon double precision,
@@ -107,9 +107,9 @@ INSERT INTO fwapg.channel_width_analysis
   upstream_area_lake,
   upstream_area_manmade,
   upstream_area_wetland,
-  ecoregion_code,
-  ecosection_code,
-  zone,
+  --ecoregion_code,
+  --ecosection_code,
+  --zone,
   map,
   map_upstream,
   lon,
@@ -139,9 +139,9 @@ SELECT DISTINCT ON (blue_line_key, downstream_route_measure)
   coalesce(uwb.upstream_lake_ha, 0) as upstream_lake_ha,
   coalesce(uwb.upstream_reservoir_ha, 0) as upstream_reservoir_ha,
   coalesce(uwb.upstream_wetland_ha, 0) as upstream_wetland_ha,
-  es.parent_ecoregion_code as ecoregion_code,
-  es.ecosection_code,
-  bec.zone,
+  --es.parent_ecoregion_code as ecoregion_code,
+  --es.ecosection_code,
+  --bec.zone,
   map.map,
   map.map_upstream,
   st_x(st_transform(m.geom, 4326)) as lon,
@@ -156,10 +156,10 @@ INNER JOIN whse_basemapping.fwa_watersheds_upstream_area ua
 ON w.watershed_feature_id = ua.watershed_feature_id
 INNER JOIN whse_basemapping.fwa_waterbodies_upstream_area uwb
 ON s.linear_feature_id = uwb.linear_feature_id
-LEFT OUTER JOIN whse_terrestrial_ecology.erc_ecosections_subdivided es
-ON ST_Intersects(m.geom, es.geom)
-LEFT OUTER JOIN whse_forest_vegetation.bec_biogeoclimatic_poly_subdivided bec
-ON ST_Intersects(m.geom, bec.geom)
+--LEFT OUTER JOIN whse_terrestrial_ecology.erc_ecosections_subdivided es
+--ON ST_Intersects(m.geom, es.geom)
+--LEFT OUTER JOIN whse_forest_vegetation.bec_biogeoclimatic_poly_subdivided bec
+--ON ST_Intersects(m.geom, bec.geom)
 LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_mean_annual_precip map
 ON s.wscode_ltree = map.wscode_ltree AND s.localcode_ltree = map.localcode_ltree
 ORDER BY blue_line_key, downstream_route_measure, stream_sample_site_id, stream_crossing_id;

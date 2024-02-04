@@ -4,7 +4,7 @@ WITH cwmeas AS
     s.linear_feature_id,
     c.channel_width_measured AS cw
   FROM whse_basemapping.fwa_stream_networks_sp s
-  LEFT OUTER JOIN bcfishpass.channel_width_measured c
+  LEFT OUTER JOIN fwapg.channel_width_measured c
     ON s.wscode_ltree = c.wscode_ltree
     AND s.localcode_ltree = c.localcode_ltree
   LEFT OUTER JOIN whse_basemapping.fwa_waterbodies wb
@@ -17,7 +17,7 @@ cwmap AS
   SELECT
   a.linear_feature_id,
   ROUND(avg(a.channel_width_mapped)::numeric, 2) as cw
-FROM bcfishpass.channel_width_mapped a
+FROM fwapg.channel_width_mapped a
 WHERE a.watershed_group_code = :'wsg'
 GROUP BY a.linear_feature_id
 ),
@@ -28,7 +28,7 @@ cwmodel AS
     s.linear_feature_id,
     c.channel_width_modelled AS cw
   FROM whse_basemapping.fwa_stream_networks_sp s
-  LEFT OUTER JOIN bcfishpass.channel_width_modelled c
+  LEFT OUTER JOIN fwapg.channel_width_modelled c
     ON s.wscode_ltree = c.wscode_ltree
     AND s.localcode_ltree = c.localcode_ltree
     AND s.watershed_group_code = c.watershed_group_code
@@ -38,7 +38,7 @@ cwmodel AS
     s.watershed_group_code = :'wsg'
 )
 
-INSERT INTO bcfishpass.channel_width 
+INSERT INTO whse_basemapping.fwa_stream_networks_channel_width
 (linear_feature_id, channel_width_source, channel_width)
 
 SELECT
