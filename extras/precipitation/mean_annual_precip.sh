@@ -8,7 +8,7 @@ mkdir -p data
 
 # ----------
 # Download cached ClimateBC Normals 1991-2020 MAP raster from S3
-# todo - is this available from climr db?
+# todo - is this available from climr db or some other more-easily downloaded source?
 # ----------
 wget --trust-server-names -qNP data https://bcfishpass.s3.us-west-2.amazonaws.com/MAP.tif
 
@@ -144,7 +144,7 @@ do
   $PSQL -X -v wsg="$WSG" < sql/map_upstream.sql
 done
 
-# optionally, drop the temp tables and source raster
+# drop temp tables and source raster
 $PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_ply"
 $PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_pt"
 $PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_ln"

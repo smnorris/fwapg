@@ -9,6 +9,12 @@ ClimateBC mean annual precipitation (MAP) referenced to FWA watersheds and strea
 
 The output table can be joined to streams or points on the FWA watershed network.
 
+## Requirements
+
+Raster processing is done with `rasterstats`:
+
+    pip install rasterstats
+
 ## Usage
 
 To download, process and generate mean annual precipitation for each stream segment:
@@ -44,7 +50,7 @@ Indexes:
 
 ## Source data lineage
 
-Climate BC web and api do not seem to provide urls to climate rasters. For easier builds, `Normal_1991_2020` `MAP.tif` from https://climatebc.ca/SpatialData is cached on S3:
+Climate BC web and api do not seem to provide urls to climate rasters. For easier builds, `Normal_1991_2020` `MAP.tif` from https://climatebc.ca/SpatialData (downloaded 2024-02-04) is cached on S3:
 
     aws s3 cp MAP.tif s3://bcfishpass/
     aws s3api put-object-acl --bucket bcfishpass --key MAP.tif --acl public-read

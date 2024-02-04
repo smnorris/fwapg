@@ -38,7 +38,7 @@ SELECT
   b.watershed_group_code,
   round(sum(ST_Area(b.geom)))::bigint as area,
   avg(a.map)::integer as map
-FROM whse_basemapping.fwa_stream_networks_mean_annual_precip_load_pt a
+FROM fwapg.mean_annual_precip_load_pt a
 INNER JOIN whse_basemapping.fwa_watersheds_poly b
 ON a.watershed_feature_id = b.watershed_feature_id
 WHERE 
@@ -63,7 +63,7 @@ SELECT
   watershed_group_code,
   1 as area,  -- again, to prevent round by zero errors
   round(map::numeric)::integer as map
-FROM whse_basemapping.fwa_stream_networks_mean_annual_precip_load_ln
+FROM fwapg.mean_annual_precip_load_ln
 WHERE 
   wscode_ltree IS NOT NULL AND 
   localcode_ltree IS NOT NULL AND
