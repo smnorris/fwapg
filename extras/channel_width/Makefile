@@ -41,7 +41,7 @@ all: $(GENERATED_FILES)
 		-nln fwapg.pscis_crossings \
 		-overwrite \
 		-where "crossing_source = 'PSCIS'" \
-		bcfishpass.gpkg.zip \
+		/vsizip/bcfishpass.gpkg.zip \
 		crossings
 	rm bcfishpass.gpkg.zip
 	touch $@

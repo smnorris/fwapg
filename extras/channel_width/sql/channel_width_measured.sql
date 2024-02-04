@@ -1,8 +1,8 @@
 -- Create measured channel width table
 
-DROP TABLE IF EXISTS bcfishpass.channel_width_measured;
+DROP TABLE IF EXISTS fwapg.channel_width_measured;
 
-CREATE TABLE bcfishpass.channel_width_measured
+CREATE TABLE fwapg.channel_width_measured
 (
   channel_width_id serial primary key,
   stream_sample_site_ids integer[],
@@ -25,7 +25,7 @@ WITH fiss_measurements AS
   e.localcode_ltree,
   w.watershed_group_code,
   p.channel_width as channel_width_fiss
-FROM bcfishpass.fiss_stream_sample_sites_events_sp e
+FROM fwapg.fiss_stream_sample_sites_events_sp e
 INNER JOIN whse_fish.fiss_stream_sample_sites_sp p
 ON e.stream_sample_site_id = p.stream_sample_site_id
 LEFT OUTER JOIN whse_basemapping.fwa_watersheds_poly w
@@ -43,11 +43,11 @@ pscis_measurements AS
 (
 SELECT
   e.stream_crossing_id,
-  e.wscode_ltree,
-  e.localcode_ltree,
+  e.wscode::ltree as wscode_ltree,
+  e.localcode::ltree as localcode_ltree,
   s.watershed_group_code,
   a.downstream_channel_width as channel_width_pscis
-FROM bcfishpass.pscis e
+FROM fwapg.pscis_crossings e
 LEFT OUTER JOIN whse_fish.pscis_assessment_svw a
 ON e.stream_crossing_id = a.stream_crossing_id
 LEFT OUTER JOIN whse_basemapping.fwa_watersheds_poly w
@@ -74,7 +74,7 @@ FULL OUTER JOIN pscis_measurements p
 ON f.wscode_ltree = p.wscode_ltree
 AND f.localcode_ltree = p.localcode_ltree)
 
-INSERT INTO bcfishpass.channel_width_measured
+INSERT INTO fwapg.channel_width_measured
 (
   stream_sample_site_ids,
   stream_crossing_ids,
@@ -96,7 +96,7 @@ GROUP BY
  localcode_ltree,
  watershed_group_code;
 
-CREATE INDEX ON bcfishpass.channel_width_measured USING GIST (wscode_ltree);
-CREATE INDEX ON bcfishpass.channel_width_measured USING BTREE (wscode_ltree);
-CREATE INDEX ON bcfishpass.channel_width_measured USING GIST (localcode_ltree);
-CREATE INDEX ON bcfishpass.channel_width_measured USING BTREE (localcode_ltree);
+CREATE INDEX ON fwapg.channel_width_measured USING GIST (wscode_ltree);
+CREATE INDEX ON fwapg.channel_width_measured USING BTREE (wscode_ltree);
+CREATE INDEX ON fwapg.channel_width_measured USING GIST (localcode_ltree);
+CREATE INDEX ON fwapg.channel_width_measured USING BTREE (localcode_ltree);
