@@ -8,11 +8,7 @@ WSGS=$($PSQL -AXt -c "SELECT watershed_group_code FROM whse_basemapping.fwa_wate
 #parallel $PSQL -XA -v wsg={1} -f sql/fwa_watersheds_upstream_area.sql ::: $WSGS
 
 # combine temp tables into output table
-$PSQL -c "DROP TABLE IF EXISTS whse_basemapping.fwa_watersheds_upstream_area;
-          CREATE TABLE whse_basemapping.fwa_watersheds_upstream_area (
-            watershed_feature_id integer primary key,
-            upstream_area_ha double precision);"
-
+$PSQL -c "truncate whse_basemapping.fwa_watersheds_upstream_area;"
 for WSG in $WSGS
 do
   echo 'Loading '$WSG

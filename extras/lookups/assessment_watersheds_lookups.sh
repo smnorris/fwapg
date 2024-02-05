@@ -42,7 +42,6 @@ do
   echo 'Loading '$WSG
   $PSQL -c "INSERT INTO whse_basemapping.fwa_assessment_watersheds_streams_lut SELECT * FROM fwapg.fwa_assessment_watersheds_streams_lut_"$WSG
 done
-$PSQL -c "CREATE INDEX ON whse_basemapping.fwa_assessment_watersheds_streams_lut (watershed_feature_id)"
 
 # drop the temp tables
 for WSG in $WSGS
