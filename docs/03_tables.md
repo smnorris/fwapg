@@ -1,4 +1,4 @@
-# Table reference
+# Value added table/view reference
 
 ## fwa_approx_borders
 
@@ -61,6 +61,39 @@ Named streams of BC, aggregated per watershed group and simplified using a 25m t
 | `stream_order` | `integer` | The maximum stream order associated with the stream name |
 | `watershed_group_code` | `text` | The watershed group code associated with the named stream |
 | `geom` | `geometry(MultiLineString,3005)` | The geometry of the named stream, an aggregation of the source features and simpified by 25m |
+
+
+## whse_basemapping.fwa_streams_vw
+
+View of FWA stream networks and value-added attributes
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `linear_feature_id` | `bigint` | See FWA documentation |
+| `edge_type` | `integer` | See FWA documentation |
+| `blue_line_key` | `integer` | See FWA documentation |
+| `watershed_key` | `integer` | See FWA documentation |
+| `wscode` | `ltree` | FWA watershed code as postgres ltree type, with trailing -000000 strings removed |
+| `localcode` | `ltree` | FWA local watershed code as postgres ltree type, with trailing -000000 strings removed |
+| `watershed_group_code` | `character varying(4)` | See FWA documentation |
+| `downstream_route_measure` | `double precision` | See FWA documentation |
+| `upstream_route_measure` | `double precision` | See FWA documentation |
+| `length_metre` | `double precision` | See FWA documentation |
+| `waterbody_key` | `integer` | See FWA documentation |
+| `gnis_name` | `character varying(80)` | See FWA documentation |
+| `stream_order` | `integer` | See FWA documentation |
+| `stream_magnitude` | `integer` | See FWA documentation |
+| `feature_code` | `character varying(10)` | See FWA documentation |
+| `gradient` | `double precision` | See FWA documentation |
+| `left_right_tributary` | `character varying(7)` | See FWA documentation |
+| `stream_order_parent` | `integer` | Stream order of parent stream at confluence with stream having `blue_line_key` of the stream segment |
+| `stream_order_max` | `integer` | Maxiumum order of the stream with equivalent `blue_line_key` as given segment) |
+| `upstream_area_ha` | `double precision` | Area (ha) upstream of the stream segment (including all fundamental watersheds with equivalent watershed code) |
+| `map_upstream` | `integer` | Area weighted average mean annual precipitation upstream of the stream segment, source ClimateBC |
+| `channel_width` | `double precision` | Channel width of the stream segment in metres, with source as per channel_width_source |
+| `channel_width_source` | `text` | Data source for channel_width at given segment, with values (FIELD_MEASURMENT, FWA_RIVERS_POLY, MODELLED). FIELD_MEASUREMENT is derived from PSCIS and FISS data, MODELLED is taken from Thorley et al, 2021 |
+| `mad_m3s` | `double precision` | Modelled mean annual discharge at the stream segment (Pacific Climate Impacts Consortium, University of Victoria, (January 2020) VIC-GL BCCAQ CMIP5: Gridded Hydrologic Model Output) |
+| `geom` | `geometry(LineStringZM,3005)` |  |
 
 ## fwa_streams_watersheds_lut
 
