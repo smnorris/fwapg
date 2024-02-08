@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'fwapg'
-copyright = '2023, Simon Norris'
+copyright = '2024, Simon Norris'
 author = 'Simon Norris'
 
 # The full version, including alpha/beta/rc tags
-release = '0.5.1'
+release = '0.6.0dev0'
 
 
 # -- General configuration ---------------------------------------------------
