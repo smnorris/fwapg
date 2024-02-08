@@ -38,20 +38,32 @@ The full load takes some time - but once complete, you can run `fwapg` enabled q
 
 *Locate the nearest point on the FWA stream network to a X,Y location on Highway 14:*
 
-        SELECT gnis_name, blue_line_key, downstream_route_measure
-        FROM FWA_IndexPoint(-123.7028, 48.3858, 4326);
+        SELECT 
+          gnis_name, 
+          blue_line_key, 
+          downstream_route_measure
+        FROM FWA_IndexPoint(ST_Transform(ST_GeomFromText('POINT(-123.7028 48.3858)', 4326), 3005));
 
           gnis_name  | blue_line_key | downstream_route_measure
         -------------+---------------+--------------------------
          Sooke River |     354153927 |        350.2530543284006
 
-*Generate the watershed upstream of above location:*
+*Generate the watershed upstream of this location:*
 
         SELECT ST_ASText(geom) FROM FWA_WatershedAtMeasure(354153927, 350);
 
          st_astext
         --------------
         POLYGON((...
+
+*Select all stream upstream of this location:*
+
+        SELECT ST_ASText(geom)
+        FROM FWA_UpstreamTrace(354153927, 350);
+
+         st_astext
+        --------------
+        LINESTRINGZM((...
 
 
 See [Usage](https://smnorris.github.io/fwapg/02_usage.html) for more examples.

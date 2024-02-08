@@ -58,6 +58,8 @@ clean_db:
 	$(PSQL) -f db/functions/ST_Safe_Repair.sql
 	$(PSQL) -f db/functions/FWA_Downstream.sql
 	$(PSQL) -f db/functions/FWA_Upstream.sql
+	$(PSQL) -f db/functions/huc12.sql
+	$(PSQL) -f db/functions/hydroshed.sql
 	echo "ALTER DATABASE :db SET search_path TO public,whse_basemapping,usgs,hydrosheds" | \
 	  $(PSQL) -v db=$(shell echo $(DATABASE_URL) | cut -d "/" -f 4)
 	touch $@
@@ -216,6 +218,7 @@ data/WBD_National_GDB.zip:
 		OR states LIKE '%%MT%%'" \
 		data/WBD_National_GDB.zip \
 		WBDHU12
+
 	touch $@
 
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
@@ -235,7 +238,6 @@ data/WBD_National_GDB.zip:
 		-where "hybas_id is not null" \
 		-nlt PROMOTE_TO_MULTI \
 		/vsizip/vsicurl/https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.gpkg.zip
-	$(PSQL) -f db/functions/hydroshed.sql  # internal function, hydroshed id as input
 	touch $@
 
 # additional FWA functions
