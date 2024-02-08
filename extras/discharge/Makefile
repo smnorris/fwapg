@@ -36,11 +36,12 @@ clean:
 ## Download baseflow from PCIC
 data/baseflow.nc:
 	mkdir -p data
-	curl -o $@ 'https://data.pacificclimate.org/data/hydro_model_out/allwsbc.TPS_gridded_obs_init.1945to2099.BASEFLOW.nc.nc?BASEFLOW'$(printf %s '[13149:24105][][]'|jq -sRr @uri)
+	curl -o $@ 'https://data.pacificclimate.org/data/hydro_model_out/allwsbc.TPS_gridded_obs_init.1945to2099.BASEFLOW.nc.nc?BASEFLOW$(shell echo '[13149:24105][][]'|jq -sRr @uri)'
 
 ## Download runoff from PCIC
 data/runoff.nc:
-	curl -o $@ 'https://data.pacificclimate.org/data/hydro_model_out/allwsbc.TPS_gridded_obs_init.1945to2099.RUNOFF.nc.nc?RUNOFF'$(printf %s '[13149:24105][][]'|jq -sRr @uri)
+	mkdir -p data
+	curl -o $@ 'https://data.pacificclimate.org/data/hydro_model_out/allwsbc.TPS_gridded_obs_init.1945to2099.RUNOFF.nc.nc?RUNOFF$(shell echo '[13149:24105][][]'|jq -sRr @uri)'
 
 ## Create mean annual baseflow
 data/baseflow_yearsum_mean.nc: data/baseflow.nc
