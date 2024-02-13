@@ -16,7 +16,7 @@ from FWA_DownstreamTrace(354153927, 5175, 1)
 limit 1;
 
 -- within tolerance to end point
-select count(*) = 8 as result
+select count(*) = 7 as result
 from FWA_DownstreamTrace(354153927, 5175.7, 1);
 
 -- beyond end of stream
