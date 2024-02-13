@@ -1,5 +1,5 @@
 create view whse_basemapping.fwa_streams_vw as
-  SELECT
+select
   s.linear_feature_id,
   s.edge_type,
   s.blue_line_key,
@@ -25,16 +25,14 @@ create view whse_basemapping.fwa_streams_vw as
   cw.channel_width_source,
   mad.mad_m3s,
   s.geom
-FROM whse_basemapping.fwa_stream_networks_sp s
-LEFT OUTER JOIN whse_basemapping.fwa_streams_watersheds_lut l
-ON s.linear_feature_id = l.linear_feature_id
-INNER JOIN whse_basemapping.fwa_watersheds_upstream_area ua
-ON l.watershed_feature_id = ua.watershed_feature_id
-LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_order_parent op ON s.blue_line_key = op.blue_line_key
-LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_order_max om ON s.blue_line_key_50k = om.blue_line_key
-LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_mean_annual_precip p ON s.wscode_ltree = p.wscode_ltree AND s.localcode_ltree = p.localcode_ltree
-LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_channel_width cw ON s.linear_feature_id = cw.linear_feature_id
-LEFT OUTER JOIN whse_basemapping.fwa_stream_networks_discharge mad ON s.linear_feature_id = mad.linear_feature_id;
+from whse_basemapping.fwa_stream_networks_sp s
+left outer join whse_basemapping.fwa_streams_watersheds_lut l on s.linear_feature_id = l.linear_feature_id
+inner join whse_basemapping.fwa_watersheds_upstream_area ua on l.watershed_feature_id = ua.watershed_feature_id
+left outer join whse_basemapping.fwa_stream_networks_order_parent op on s.blue_line_key = op.blue_line_key
+left outer join whse_basemapping.fwa_stream_networks_order_max om on s.blue_line_key_50k = om.blue_line_key
+left outer join whse_basemapping.fwa_stream_networks_mean_annual_precip p on s.wscode_ltree = p.wscode_ltree and s.localcode_ltree = p.localcode_ltree
+left outer join whse_basemapping.fwa_stream_networks_channel_width cw on s.linear_feature_id = cw.linear_feature_id
+left outer join whse_basemapping.fwa_stream_networks_discharge mad on s.linear_feature_id = mad.linear_feature_id;
 
 comment on view whse_basemapping.fwa_streams_vw is 'View of FWA stream networks and value-added attributes';
 comment on column whse_basemapping.fwa_streams_vw.linear_feature_id is 'See FWA documentation';

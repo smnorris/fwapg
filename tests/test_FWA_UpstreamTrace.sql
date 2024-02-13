@@ -6,6 +6,11 @@ from FWA_UpstreamTrace(354153927, 100);
 select count(*) = 1505 as result
 from FWA_UpstreamTrace(354153927, 1, 2);
 
+-- within tolerance to start point, check output measure (nothing cut)
+select round(downstream_route_measure::numeric, 2) = 5175.50 as result
+from FWA_UpstreamTrace(354153927, 5175, 1)
+limit 1;
+
 -- within tolerance to end point
 select count(*) = 1504 as result
 from FWA_UpstreamTrace(354153927, 694);
