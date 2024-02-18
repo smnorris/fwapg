@@ -21,6 +21,6 @@ RUN apt-get update && apt-get --assume-yes upgrade \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/fwapg
-COPY ["sql", "sql/"]
+COPY ["db", "db/"]
 COPY ["extras", "extras/"]
 COPY [".env.docker", "Makefile", "./"]
