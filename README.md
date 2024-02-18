@@ -10,7 +10,7 @@
 - provide `gradient` values for every FWA stream
 - enable quickly serving FWA features as vector tiles (MVT)
 - enable quickly serving FWA features and custom fwapg functions
-- using [`bcdata`](https://github.com/smnorris/bcdata), extract FWA data from DataBC WFS for easy data updates
+- link additional data to FWA streams (PCIC mean annual discharge, modelled channel width, upstream precipitation)
 
 See [documentation](https://smnorris.github.io/fwapg/) for setup and usage details, plus table and function references.
 
@@ -34,18 +34,21 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
         cd fwapg
         make
 
-The full load takes about 2 hours - but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
+The full load takes some time - but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
 
 *Locate the nearest point on the FWA stream network to a X,Y location on Highway 14:*
 
-        SELECT gnis_name, blue_line_key, downstream_route_measure
-        FROM FWA_IndexPoint(-123.7028, 48.3858, 4326);
+        SELECT 
+          gnis_name, 
+          blue_line_key, 
+          downstream_route_measure
+        FROM FWA_IndexPoint(ST_Transform(ST_GeomFromText('POINT(-123.7028 48.3858)', 4326), 3005));
 
           gnis_name  | blue_line_key | downstream_route_measure
         -------------+---------------+--------------------------
          Sooke River |     354153927 |        350.2530543284006
 
-*Generate the watershed upstream of above location:*
+*Generate the watershed upstream of this location:*
 
         SELECT ST_ASText(geom) FROM FWA_WatershedAtMeasure(354153927, 350);
 
@@ -53,39 +56,17 @@ The full load takes about 2 hours - but once complete, you can run `fwapg` enabl
         --------------
         POLYGON((...
 
+*Select all stream upstream of this location:*
+
+        SELECT ST_ASText(geom)
+        FROM FWA_UpstreamTrace(354153927, 350);
+
+         st_astext
+        --------------
+        LINESTRINGZM((...
+
 
 See [Usage](https://smnorris.github.io/fwapg/02_usage.html) for more examples.
-
-
-## Docker
-
-Download the repo, create containers, create database, load fwa data:
-
-    git clone https://github.com/smnorris/fwapg.git
-    cd fwapg
-    docker-compose build
-    docker-compose up -d
-    docker-compose run --rm loader psql -c "CREATE DATABASE fwapg" postgres
-    docker-compose run --rm loader make --debug=basic
-
-Note that docker images specified in `docker-compose.yml` may not be available on ARM based systems.
-As long as you do not remove the container `fwapg-db`, it will retain all the data you put in it.
-If you have shut down Docker or the container, start it up again with this command:
-
-    docker-compose up -d
-
-Connect to the db from your host OS via the port specified in `docker-compose.yml`:
-
-    psql -p 8000 -U postgres fwapg
-
-Or see the FWA data in the browser as vector tiles/geojson features:
-
-    http://localhost:7800/
-    http://localhost:9000/
-
-Delete the containers (and associated fwa data):
-
-    docker-compose down
 
 
 ## Tile and feature services

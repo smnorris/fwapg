@@ -25,5 +25,5 @@ fwapg
 
    01_setup
    02_usage
-   03_tables
+   03_tables_views
    04_functions
