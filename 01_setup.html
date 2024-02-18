@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Setup and data load &mdash; fwapg 0.5.1 documentation</title>
+  <title>Setup and data load &mdash; fwapg 0.6.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=b9afe91b"></script>
+        <script src="_static/documentation_options.js?v=ff7cc775"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -47,17 +47,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setup and data load</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-the-database">Create the database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#adjust-search-path">Adjust search path</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#data-load">Data load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#schema-and-data-load">Schema and data load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#updates">Updates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-currency">Data currency</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="02_usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_tables.html">Table reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_tables_views.html">Value added table/view reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04_functions.html">Function reference</a></li>
 </ul>
 
@@ -87,30 +85,13 @@
              
   <section id="setup-and-data-load">
 <h1>Setup and data load<a class="headerlink" href="#setup-and-data-load" title="Link to this heading"></a></h1>
-<section id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="https://www.postgresql.org">PostgreSQL</a> (&gt;=13)</p></li>
-<li><p><a class="reference external" href="https://postgis.net/">PostGIS</a> (&gt;=v3.1 with GEOS &gt;=3.9)</p></li>
-<li><p><a class="reference external" href="https://gdal.org/index.html">GDAL</a> (tested with v3.5)</p></li>
-<li><p>Python 3</p></li>
-<li><p><a class="reference external" href="https://github.com/smnorris/bcdata"><code class="docutils literal notranslate"><span class="pre">bcdata</span></code></a> &gt;= 0.6.3</p></li>
-<li><p><a class="reference external" href="https://www.gnu.org/software/parallel/">GNU parallel</a></p></li>
-<li><p><a class="reference external" href="https://www.gnu.org/software/make/"><code class="docutils literal notranslate"><span class="pre">make</span></code></a>/<code class="docutils literal notranslate"><span class="pre">unzip</span></code>/<code class="docutils literal notranslate"><span class="pre">wget</span></code>/etc</p></li>
-</ul>
-<p>The instructions below presume above requirements are installed and postgres is accepting connections.</p>
-</section>
+<p>The instructions below presume all requirements listed in the README are installed and postgres is accepting connections.</p>
 <section id="create-the-database">
 <h2>Create the database<a class="headerlink" href="#create-the-database" title="Link to this heading"></a></h2>
 <p>If you are not loading to an existing database, create a new one (adjusting the database name as required):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb<span class="w"> </span>fwapg
 </pre></div>
 </div>
-</section>
-<section id="adjust-search-path">
-<h2>Adjust search path<a class="headerlink" href="#adjust-search-path" title="Link to this heading"></a></h2>
-<p>Functions are loaded to schemas <code class="docutils literal notranslate"><span class="pre">whse_basemapping</span></code>, <code class="docutils literal notranslate"><span class="pre">usgs</span></code>, and <code class="docutils literal notranslate"><span class="pre">hydrosheds</span></code>. Ensure they are found by altering the <code class="docutils literal notranslate"><span class="pre">search_path</span></code> something like this:</p>
-<p>psql -c “ALTER DATABASE fwapg SET search_path TO public,whse_basemapping,usgs,hydrosheds”</p>
 </section>
 <section id="environment-variables">
 <h2>Environment variables<a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h2>
@@ -128,38 +109,36 @@ Type<span class="w"> </span><span class="s2">&quot;help&quot;</span><span class=
 </pre></div>
 </div>
 </section>
-<section id="data-load">
-<h2>Data load<a class="headerlink" href="#data-load" title="Link to this heading"></a></h2>
-<p>Get the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> scripts by either downloading and unzipping the <a class="reference external" href="https://github.com/smnorris/fwapg/releases">latest release</a>, or downloading the development version:</p>
+<section id="schema-and-data-load">
+<h2>Schema and data load<a class="headerlink" href="#schema-and-data-load" title="Link to this heading"></a></h2>
+<p>Get the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> scripts by either downloading and unzipping the <a class="reference external" href="https://github.com/smnorris/fwapg/tags">latest tag</a>, or downloading the development version:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/smnorris/fwapg.git
 </pre></div>
 </div>
-<p>Load and optimize the data:</p>
+<p>Create output schema in the target database:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd fwapg
-make
+make .make/db
 </pre></div>
 </div>
-<p>For a given spatial FWA table, the load sequence is generally:</p>
-<ul class="simple">
-<li><p>download .gdb from FWA ftp</p></li>
-<li><p>load data to temp table in <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> schema</p></li>
-<li><p>copy data from the load table to output <code class="docutils literal notranslate"><span class="pre">whse_basemapping</span></code> table, adding custom types and columns</p></li>
-</ul>
+<p>Download source FWA files, load to target database:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make all
+</pre></div>
+</div>
 </section>
 <section id="updates">
 <h2>Updates<a class="headerlink" href="#updates" title="Link to this heading"></a></h2>
-<p>No tracking of changes to source FWA data changes is available. To apply updates, full table refreshes are required.</p>
+<p>To apply updates, full table refreshes are generally required.</p>
 <p>To drop all <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> managed data and functions and re-load:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>make clean_targets
 make clean_db
 make
 </pre></div>
 </div>
+<p>If the source data has changed sufficiently, re-building the various datasets in <code class="docutils literal notranslate"><span class="pre">extras</span></code> will be necessary - see the various READMEs for each dataset.</p>
 </section>
 <section id="data-currency">
 <h2>Data currency<a class="headerlink" href="#data-currency" title="Link to this heading"></a></h2>
-<p>All data are downloaded from GeoBC FWA FTP and will thus be as current as the latest publication of the data to FTP.
-Note that the ftp data is not automatically synced with the BCGW - it is manually refreshed by GeoBC.</p>
+<p>All data are downloaded from the latest posted to GeoBC FWA FTP.</p>
 </section>
 </section>
 
@@ -174,7 +153,7 @@ Note that the ftp data is not automatically synced with the BCGW - it is manuall
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Simon Norris.</p>
+    <p>&#169; Copyright 2024, Simon Norris.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
