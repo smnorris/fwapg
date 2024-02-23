@@ -10,7 +10,7 @@ TARGETS = data/baseflow.nc \
 	.make/discharge01_raster \
 	.make/discharge02_load \
 	.make/discharge03_wsd \
-	.make/discharge
+	fwa_stream_networks_discharge.gz
 
 TABLES = fwapg.discharge01_raster \
 	fwapg.discharge02_load \
@@ -96,7 +96,7 @@ data/discharge.nc: data/runoff_yearsum_mean.nc data/baseflow_yearsum_mean.nc
 	touch $@
 
 ## For habitat modelling, it is easier if discharge is per-stream
-fwa_stream_networks_discharge.zip: .make/discharge03_wsd
+fwa_stream_networks_discharge.gz: .make/discharge03_wsd
 	# Transfer per-watershed discharge data to per-stream
 	$(PSQL) -c "truncate whse_basemapping.fwa_stream_networks_discharge"
 	for wsg in $(WSGS) ; do \

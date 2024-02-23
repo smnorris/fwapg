@@ -9,12 +9,11 @@ PSQL=psql $(DATABASE_URL) -v ON_ERROR_STOP=1
 
 WSG = $(shell $(PSQL) -AtX -c "SELECT watershed_group_code FROM whse_basemapping.fwa_watershed_groups_poly ORDER BY watershed_group_code")
 
-GENERATED_FILES = .make/bcdata \
-	.make/channel_width_measured \
+GENERATED_FILES = .make/channel_width_measured \
 	.make/channel_width_mapped \
 	channel_width_analysis.csv \
 	.make/channel_width_modelled \
-	fwa_stream_networks_channel_width.zip
+	fwa_stream_networks_channel_width.gz
 
 GENERATED_TABLES =  whse_fish.fiss_stream_sample_sites_sp\
 	fwapg.channel_width_measured \
@@ -25,13 +24,13 @@ GENERATED_TABLES =  whse_fish.fiss_stream_sample_sites_sp\
 all: $(GENERATED_FILES)
 
 # --------
-# download BC data containing channel width measurements, plus bcfishpass pscis table linking assessments to streams
+# MEASURED
 # --------
-.make/bcdata:
+.make/channel_width_measured: sql/channel_width_measured.sql sql/fiss_stream_sample_sites_events.sql
 	mkdir -p .make
-	bcdata bc2pg WHSE_FISH.FISS_STREAM_SAMPLE_SITES_SP
-	$(PSQL) -c "CREATE INDEX ON whse_fish.fiss_stream_sample_sites_sp (new_watershed_code)"
-	bcdata bc2pg WHSE_FISH.PSCIS_ASSESSMENT_SVW
+	# load to fwapg schema, these are just used temporarily
+	bcdata bc2pg --schema fwapg WHSE_FISH.FISS_STREAM_SAMPLE_SITES_SP
+	bcdata bc2pg --schema fwapg WHSE_FISH.PSCIS_ASSESSMENT_SVW
 	# bcfishpass crossings should be separated from streams to make this much more efficient
 	curl -o bcfishpass.gpkg.zip https://bcfishpass.s3.us-west-2.amazonaws.com/freshwater_fish_habitat_accessibility_MODEL.gpkg.zip
 	ogr2ogr \
@@ -43,17 +42,13 @@ all: $(GENERATED_FILES)
 		/vsizip/bcfishpass.gpkg.zip \
 		crossings
 	rm bcfishpass.gpkg.zip
-	touch $@
-
-# --------
-# MEASURED
-# --------
-.make/channel_width_measured: .make/bcdata sql/channel_width_measured.sql sql/fiss_stream_sample_sites_events.sql
 	# match stream sample sites to streams
 	$(PSQL) -f sql/fiss_stream_sample_sites_events.sql
 	# Now load the measured channel widths where we have them, averaging measurements on the same stream
-	# NOTE - this presumes PSCIS data is already loaded
 	$(PSQL) -f sql/channel_width_measured.sql
+	# drop the source tables
+	$(PSQL) -c "drop table fwapg.fiss_stream_sample_sites_sp"
+	$(PSQL) -c "drop table fwapg.pscis_assessment_svw"
 	touch $@
 
 # --------
@@ -91,7 +86,7 @@ channel_width_analysis.csv: .make/channel_width_mapped .make/channel_width_measu
 # OUTPUT TABLE
 # --------
 # combine the measured/mapped/modelled data into a single table for easy relating to streams table
-fwa_stream_networks_channel_width.zip: .make/channel_width_modelled sql/channel_width.sql
+fwa_stream_networks_channel_width.gz: .make/channel_width_modelled sql/channel_width.sql
 	$(PSQL) -c "truncate whse_basemapping.fwa_stream_networks_channel_width;"
 	parallel $(PSQL) -f sql/channel_width.sql -v wsg={1} ::: $(WSG)
 	# dump output to file

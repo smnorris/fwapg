@@ -8,7 +8,7 @@ CREATE TABLE fwapg.fiss_stream_sample_sites_events_sp AS
 WITH pts AS
 (
   SELECT pt.stream_sample_site_id, pt.geom
-  FROM whse_fish.fiss_stream_sample_sites_sp as pt
+  FROM fwapg.fiss_stream_sample_sites_sp as pt
   INNER JOIN whse_basemapping.fwa_watershed_groups_poly wsd
   ON ST_Intersects(pt.geom, wsd.geom)
 ),
@@ -85,7 +85,7 @@ FROM bluelines
 INNER JOIN candidates ON bluelines.stream_sample_site_id = candidates.stream_sample_site_id
 AND bluelines.blue_line_key = candidates.blue_line_key
 AND bluelines.distance_to_stream = candidates.distance_to_stream
-INNER JOIN whse_fish.fiss_stream_sample_sites_sp pts
+INNER JOIN fwapg.fiss_stream_sample_sites_sp pts
 ON bluelines.stream_sample_site_id = pts.stream_sample_site_id
 INNER JOIN whse_basemapping.fwa_stream_networks_sp s
 ON candidates.linear_feature_id = s.linear_feature_id
@@ -107,7 +107,7 @@ WITH pts AS
   SELECT
     pt.stream_sample_site_id,
     pt.geom
-  FROM whse_fish.fiss_stream_sample_sites_sp as pt
+  FROM fwapg.fiss_stream_sample_sites_sp as pt
   INNER JOIN whse_basemapping.fwa_watershed_groups_poly wsd
   ON ST_Intersects(pt.geom, wsd.geom)
   LEFT OUTER JOIN fwapg.fiss_stream_sample_sites_events_sp e
@@ -171,7 +171,7 @@ indexed AS
     )
   )).geom::geometry(PointZM, 3005) as geom
 FROM candidates c
-INNER JOIN whse_fish.fiss_stream_sample_sites_sp pts
+INNER JOIN fwapg.fiss_stream_sample_sites_sp pts
 ON c.stream_sample_site_id = pts.stream_sample_site_id
 INNER JOIN whse_basemapping.fwa_stream_networks_sp s
 ON c.linear_feature_id = s.linear_feature_id

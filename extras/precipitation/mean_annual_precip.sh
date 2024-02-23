@@ -139,5 +139,4 @@ rm data/MAP.tif*
 
 # dump output to file
 $PSQL -c "\copy whse_basemapping.fwa_stream_networks_mean_annual_precip TO 'fwa_stream_networks_mean_annual_precip.csv' DELIMITER ',' CSV HEADER;"
-zip -r fwa_stream_networks_mean_annual_precip.zip fwa_stream_networks_mean_annual_precip.csv
-rm fwa_stream_networks_mean_annual_precip.csv
+gzip fwa_stream_networks_mean_annual_precip.csv

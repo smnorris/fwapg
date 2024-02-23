@@ -26,7 +26,7 @@ WITH fiss_measurements AS
   w.watershed_group_code,
   p.channel_width as channel_width_fiss
 FROM fwapg.fiss_stream_sample_sites_events_sp e
-INNER JOIN whse_fish.fiss_stream_sample_sites_sp p
+INNER JOIN fwapg.fiss_stream_sample_sites_sp p
 ON e.stream_sample_site_id = p.stream_sample_site_id
 LEFT OUTER JOIN whse_basemapping.fwa_watersheds_poly w
 ON ST_Intersects(p.geom, w.geom)
@@ -48,7 +48,7 @@ SELECT
   s.watershed_group_code,
   a.downstream_channel_width as channel_width_pscis
 FROM fwapg.pscis_crossings e
-LEFT OUTER JOIN whse_fish.pscis_assessment_svw a
+LEFT OUTER JOIN fwapg.pscis_assessment_svw a
 ON e.stream_crossing_id = a.stream_crossing_id
 LEFT OUTER JOIN whse_basemapping.fwa_watersheds_poly w
 ON ST_Intersects(e.geom, w.geom)
