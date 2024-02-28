@@ -87,6 +87,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 		set -e; ogr2ogr \
 			-f PostgreSQL \
 			PG:$(DATABASE_URL) \
+			--config PG_USE_COPY YES \
 			-nln fwapg.fwa_stream_networks_sp \
 			-append \
 			-update \
@@ -111,6 +112,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 		set -e; ogr2ogr \
 			-f PostgreSQL \
 			PG:$(DATABASE_URL) \
+			--config PG_USE_COPY YES \
 			-nln fwapg.fwa_linear_boundaries_sp \
 			-append \
 			-update \
@@ -133,6 +135,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 		set -e; ogr2ogr \
 			-f PostgreSQL \
 			PG:$(DATABASE_URL) \
+			--config PG_USE_COPY YES \
 			-nln fwapg.fwa_watersheds_poly \
 			-append \
 			-update \
@@ -155,6 +158,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 	set -e; ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL) \
+		--config PG_USE_COPY YES \
 		-nln fwapg.$(subst .make/,,$@) \
 		-append \
 		-update \
@@ -172,6 +176,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip:
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL) \
+		--config PG_USE_COPY YES \
 		-nln $(subst .make/,fwapg.,$@) \
 		data/FWA_BC.gdb.zip \
 		$(shell echo $(subst .make/,,$@) | tr '[:lower:]' '[:upper:]')
@@ -208,6 +213,7 @@ data/WBD_National_GDB.zip:
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL)  \
+		--config PG_USE_COPY YES \
 		-t_srs EPSG:3005 \
 		-nln usgs.wbdhu12 \
 		-append \
@@ -230,6 +236,7 @@ data/WBD_National_GDB.zip:
 	ogr2ogr \
 		-f PostgreSQL \
 		PG:$(DATABASE_URL) \
+		--config PG_USE_COPY YES \
 		-t_srs EPSG:3005 \
 		-nln hydrosheds.hybas_lev12_v1c \
 		-append \
