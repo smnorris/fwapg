@@ -91,8 +91,10 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 	# drop/create load table
 	$(PSQL) -c "drop table if exists fwapg.fwa_stream_networks_sp"
 	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_stream_networks_sp
-	# load from file to staging table
+	# load from file to staging table to target table
 	for wsg in $(GROUPS) ; do \
+		set -e ; $(PSQL) -c "truncate fwapg.fwa_stream_networks_sp" ; \
+
 		set -e; ogr2ogr \
 			-f PostgreSQL \
 			PG:$(DATABASE_URL) \
@@ -102,11 +104,11 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 			-update \
 			data/FWA_STREAM_NETWORKS_SP.gdb.zip \
 			$$wsg  ; \
-	done
-	# load to target table, per group so inserts are in managable chunks
-	for wsg in $(GROUPS) ; do \
+
+	    # load to target table
 		set -e ; $(PSQL) -f load/spatial_chunked/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
 	done
+
 	$(PSQL) -c "drop table fwapg.fwa_stream_networks_sp"
 	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_stream_networks_sp"
 	# apply data fixes
