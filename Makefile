@@ -74,16 +74,16 @@ clean_db:
 	touch $@
 
 # download and rename (so we do not have to unzip)
-data/FWA_BC.gdb.zip:
+data/FWA_BC.gdb.zip: .make/db
 	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip
 
-data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip:
+data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip: .make/db
 	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
 
-data/FWA_WATERSHEDS_POLY.gdb.zip:
+data/FWA_WATERSHEDS_POLY.gdb.zip: .make/db
 	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_WATERSHEDS_POLY.zip
 
-data/FWA_STREAM_NETWORKS_SP.gdb.zip:
+data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
 
 # load the larger tables per watershed group
