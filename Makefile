@@ -51,6 +51,8 @@ clean_db:
 	mkdir -p data
 	$(PSQL) -f db/schemas.sql
 	$(PSQL) -f db/extensions.sql
+	echo "ALTER DATABASE :db SET search_path TO public,whse_basemapping,usgs,hydrosheds" | \
+	  $(PSQL) -v db=$(shell echo $(DATABASE_URL) | cut -d "/" -f 4)
 	$(PSQL) -f db/tables.sql
 	$(PSQL) -f db/views.sql
 	$(PSQL) -f db/functions/CDB_MakeHexagon.sql
@@ -69,8 +71,6 @@ clean_db:
 	$(PSQL) -f db/functions/FWA_LocateAlongInterval.sql
 	$(PSQL) -f db/functions/FWA_UpstreamTrace.sql
 	$(PSQL) -f db/functions/postgisftw.sql  # pg_fs/pg_ts functions
-	echo "ALTER DATABASE :db SET search_path TO public,whse_basemapping,usgs,hydrosheds" | \
-	  $(PSQL) -v db=$(shell echo $(DATABASE_URL) | cut -d "/" -f 4)
 	touch $@
 
 # download and rename (so we do not have to unzip)
