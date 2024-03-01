@@ -31,7 +31,6 @@ ALL_TARGETS = .make/db \
 	$(VALUE_ADDED) \
 	$(VALUE_ADDED_CHUNKED) \
 	.make/fwa_streams_watersheds_lut \
-	.make/fwa_functions \
 	.make/extras
 
 all: $(ALL_TARGETS)
@@ -60,6 +59,16 @@ clean_db:
 	$(PSQL) -f db/functions/FWA_Upstream.sql
 	$(PSQL) -f db/functions/huc12.sql
 	$(PSQL) -f db/functions/hydroshed.sql
+	$(PSQL) -f db/functions/FWA_SliceWatershedAtPoint.sql
+	$(PSQL) -f db/functions/FWA_WatershedAtMeasure.sql
+	$(PSQL) -f db/functions/FWA_WatershedHex.sql
+	$(PSQL) -f db/functions/FWA_WatershedStream.sql
+	$(PSQL) -f db/functions/FWA_UpstreamBorderCrossings.sql
+	$(PSQL) -f db/functions/FWA_IndexPoint.sql
+	$(PSQL) -f db/functions/FWA_LocateAlong.sql
+	$(PSQL) -f db/functions/FWA_LocateAlongInterval.sql
+	$(PSQL) -f db/functions/FWA_UpstreamTrace.sql
+	$(PSQL) -f db/functions/postgisftw.sql  # pg_fs/pg_ts functions
 	echo "ALTER DATABASE :db SET search_path TO public,whse_basemapping,usgs,hydrosheds" | \
 	  $(PSQL) -v db=$(shell echo $(DATABASE_URL) | cut -d "/" -f 4)
 	touch $@
@@ -245,22 +254,6 @@ data/WBD_National_GDB.zip:
 		-where "hybas_id is not null" \
 		-nlt PROMOTE_TO_MULTI \
 		/vsizip/vsicurl/https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.gpkg.zip
-	touch $@
-
-# additional FWA functions
-.make/fwa_functions: $(SPATIAL) $(SPATIAL_CHUNKED) $(NON_SPATIAL) $(VALUE_ADDED) $(VALUE_ADDED_CHUNKED) .make/fwa_streams_watersheds_lut \
-	.make/hydrosheds \
-	.make/wbdhu12
-	$(PSQL) -f db/functions/FWA_SliceWatershedAtPoint.sql
-	$(PSQL) -f db/functions/FWA_WatershedAtMeasure.sql
-	$(PSQL) -f db/functions/FWA_WatershedHex.sql
-	$(PSQL) -f db/functions/FWA_WatershedStream.sql
-	$(PSQL) -f db/functions/FWA_UpstreamBorderCrossings.sql
-	$(PSQL) -f db/functions/FWA_IndexPoint.sql
-	$(PSQL) -f db/functions/FWA_LocateAlong.sql
-	$(PSQL) -f db/functions/FWA_LocateAlongInterval.sql
-	$(PSQL) -f db/functions/FWA_UpstreamTrace.sql
-	$(PSQL) -f db/functions/postgisftw.sql  # pg_fs/pg_ts functions
 	touch $@
 
 # rather than generating these lookups/datasets (scripts in /extras), download pre-generated data
