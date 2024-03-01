@@ -94,7 +94,6 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 	# load from file to staging table to target table
 	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -c "truncate fwapg.fwa_stream_networks_sp" ; \
-
 		set -e; ogr2ogr \
 			-f PostgreSQL \
 			PG:$(DATABASE_URL) \
@@ -104,8 +103,6 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 			-update \
 			data/FWA_STREAM_NETWORKS_SP.gdb.zip \
 			$$wsg  ; \
-
-	    # load to target table
 		set -e ; $(PSQL) -f load/spatial_chunked/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
 	done
 
@@ -120,6 +117,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_linear_boundaries_sp
 	# load from file to staging table
 	for wsg in $(GROUPS) ; do \
+		set -e ; $(PSQL) -c "truncate fwapg.fwa_linear_boundaries_sp" ; \
 		set -e; ogr2ogr \
 			-f PostgreSQL \
 			PG:$(DATABASE_URL) \
@@ -129,9 +127,6 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 			-update \
 			data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip \
 			$$wsg  ; \
-	done
-	# load from staging to target
-	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f load/spatial_chunked/fwa_linear_boundaries_sp.sql -v wsg=$$wsg ; \
 	done
 	$(PSQL) -c "drop table fwapg.fwa_linear_boundaries_sp"
@@ -143,6 +138,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_watersheds_poly
 	# load from file to staging table
 	for wsg in $(GROUPS) ; do \
+		set -e ; $(PSQL) -c "truncate fwapg.fwa_watersheds_poly" ; \
 		set -e; ogr2ogr \
 			-f PostgreSQL \
 			PG:$(DATABASE_URL) \
@@ -152,8 +148,6 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 			-update \
 			data/FWA_WATERSHEDS_POLY.gdb.zip \
 			$$wsg  ; \
-	done
-	for wsg in $(GROUPS) ; do \
 		set -e ; $(PSQL) -f load/spatial_chunked/fwa_watersheds_poly.sql -v wsg=$$wsg ; \
 	done
 	$(PSQL) -c "drop table fwapg.fwa_watersheds_poly"
