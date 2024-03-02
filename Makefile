@@ -105,8 +105,6 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 			$$wsg  ; \
 		set -e ; $(PSQL) -f load/spatial_chunked/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
 	done
-	# remove file
-	rm -rf data/FWA_STREAM_NETWORKS_SP.gdb.zip
 	$(PSQL) -c "drop table fwapg.fwa_stream_networks_sp"
 	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_stream_networks_sp"
 	# apply data fixes
