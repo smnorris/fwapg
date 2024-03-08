@@ -209,7 +209,8 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 # note that this is possbile to download via /vsizip/vsicurl but a direct download seems faster
 data/WBD_National_GDB.zip:
 	mkdir -p data
-	wget --trust-server-names -qN https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip -P data
+	curl -o data/WBD_National_GDB.zip \
+	  https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip
 
 # load washington, idaho, montana and alaska
 .make/wbdhu12: data/WBD_National_GDB.zip
