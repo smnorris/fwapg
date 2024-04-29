@@ -60,6 +60,7 @@ drop function if exists whse_basemapping.fwa_upstream(ltree,ltree,ltree,ltree);
 drop function if exists whse_basemapping.fwa_upstream(integer,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
 drop function if exists whse_basemapping.fwa_upstream(integer,double precision,double precision,ltree,ltree,integer,double precision,ltree,ltree,boolean,double precision);
 drop function if exists whse_basemapping.fwa_upstreambordercrossings;
+drop function if exists whse_basemapping.fwa_upstreamtrace;
 drop function if exists whse_basemapping.fwa_watershedatmeasure;
 drop function if exists whse_basemapping.fwa_watershedhex;
 drop function if exists whse_basemapping.fwa_watershedstream;
