@@ -26,7 +26,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
 2. Ensure you have a `DATABASE_URL` environment variable set to point to your database, for example:
 
-        export DATABASE_URL=postgres://username:password@localhost:5432/fwapg
+        export DATABASE_URL=postgresql://username:password@localhost:5432/fwapg
 
 3. Get scripts, load and optimize the data:
 
