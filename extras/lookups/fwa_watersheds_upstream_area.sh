@@ -5,7 +5,7 @@ PSQL="psql $DATABASE_URL -v ON_ERROR_STOP=1"
 WSGS=$($PSQL -AXt -c "SELECT watershed_group_code FROM whse_basemapping.fwa_watershed_groups_poly")
 
 # load watershed groups individually into seperate tables in fwapg schema
-#parallel $PSQL -XA -v wsg={1} -f sql/fwa_watersheds_upstream_area.sql ::: $WSGS
+parallel $PSQL -XA -v wsg={1} -f sql/fwa_watersheds_upstream_area.sql ::: $WSGS
 
 # combine temp tables into output table
 $PSQL -c "truncate whse_basemapping.fwa_watersheds_upstream_area;"
