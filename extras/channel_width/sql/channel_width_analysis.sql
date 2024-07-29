@@ -52,7 +52,7 @@ SELECT
   p.channel_width,
   (st_dump(p.geom)).geom as geom
 FROM fwapg.fiss_stream_sample_sites_events_sp e
-INNER JOIN whse_fish.fiss_stream_sample_sites_sp p
+INNER JOIN fwapg.fiss_stream_sample_sites_sp p
 ON e.stream_sample_site_id = p.stream_sample_site_id
 WHERE p.channel_width IS NOT NULL
 UNION ALL
@@ -67,7 +67,7 @@ SELECT
   a.downstream_channel_width as channel_width,
   (st_dump(e.geom)).geom as geom
 FROM fwapg.pscis_crossings e
-LEFT OUTER JOIN whse_fish.pscis_assessment_svw a
+LEFT OUTER JOIN fwapg.pscis_assessment_svw a
 ON e.stream_crossing_id = a.stream_crossing_id
 WHERE a.downstream_channel_width IS NOT NULL
 UNION ALL

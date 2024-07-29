@@ -46,9 +46,6 @@ all: $(GENERATED_FILES)
 	$(PSQL) -f sql/fiss_stream_sample_sites_events.sql
 	# Now load the measured channel widths where we have them, averaging measurements on the same stream
 	$(PSQL) -f sql/channel_width_measured.sql
-	# drop the source tables
-	$(PSQL) -c "drop table fwapg.fiss_stream_sample_sites_sp"
-	$(PSQL) -c "drop table fwapg.pscis_assessment_svw"
 	touch $@
 
 # --------
@@ -100,3 +97,6 @@ clean:
 	for table in $(GENERATED_TABLES); do \
 		$(PSQL) -c "DROP TABLE IF EXISTS "$$table ;\
 	done
+	# drop the source tables
+	$(PSQL) -c "drop table fwapg.fiss_stream_sample_sites_sp"
+	$(PSQL) -c "drop table fwapg.pscis_assessment_svw"
