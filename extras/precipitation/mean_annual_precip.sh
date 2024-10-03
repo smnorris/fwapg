@@ -10,7 +10,7 @@ mkdir -p data
 # Download cached ClimateBC Normals 1991-2020 MAP raster from S3
 # todo - is this available from climr db or some other more-easily downloaded source?
 # ----------
-wget --trust-server-names -qNP data https://bcfishpass.s3.us-west-2.amazonaws.com/MAP.tif
+wget --trust-server-names -qNP data https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/MAP.tif
 
 # ----------
 # Derive MAP per fundamental watershed poly
