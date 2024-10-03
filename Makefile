@@ -257,6 +257,6 @@ data/WBD_National_GDB.zip:
 	for table in $(EXTRAS) ; do \
 		echo $$table ;\
 		set -e; $(PSQL) -c "truncate whse_basemapping.$$table" ; \
-		set -e; $(PSQL) -c "\copy whse_basemapping.$$table FROM PROGRAM 'curl -s https://www.hillcrestgeo.ca/outgoing/public/fwapg/$$table.csv.gz | gunzip' delimiter ',' csv header" ; \
+		set -e; $(PSQL) -c "\copy whse_basemapping.$$table FROM PROGRAM 'curl -s https://nrs.objectstore.gov.bc.ca/bchamp/$$table.csv.gz | gunzip' delimiter ',' csv header" ; \
 	done
 	touch $@
