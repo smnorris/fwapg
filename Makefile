@@ -233,7 +233,7 @@ data/WBD_National_GDB.zip:
 	touch $@
 
 # For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
-# Source hydrosheds shapefiles must be manually downloaded, so I've cached them at hillcrestgeo
+# Source hydrosheds shapefiles must be manually downloaded, this downloads a cached copy
 .make/hydrosheds: .make/db
 	# clear any existing data
 	$(PSQL) -c "truncate hydrosheds.hybas_lev12_v1c"
@@ -249,7 +249,7 @@ data/WBD_National_GDB.zip:
 		-preserve_fid \
 		-where "hybas_id is not null" \
 		-nlt PROMOTE_TO_MULTI \
-		/vsizip/vsicurl/https://www.hillcrestgeo.ca/outgoing/public/fwapg/hydrosheds.gpkg.zip
+		/vsizip/vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/hydrosheds.gpkg.zip
 	touch $@
 
 # rather than generating these lookups/datasets (scripts in /extras), download pre-generated data
@@ -257,6 +257,6 @@ data/WBD_National_GDB.zip:
 	for table in $(EXTRAS) ; do \
 		echo $$table ;\
 		set -e; $(PSQL) -c "truncate whse_basemapping.$$table" ; \
-		set -e; $(PSQL) -c "\copy whse_basemapping.$$table FROM PROGRAM 'curl -s https://nrs.objectstore.gov.bc.ca/bchamp/$$table.csv.gz | gunzip' delimiter ',' csv header" ; \
+		set -e; $(PSQL) -c "\copy whse_basemapping.$$table FROM PROGRAM 'curl -s https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/$$table.csv.gz | gunzip' delimiter ',' csv header" ; \
 	done
 	touch $@
