@@ -1,4 +1,3 @@
--- extract coordinates from streams
 insert into whse_basemapping.fwa_stream_profiles (
   blue_line_key,
   downstream_route_measure,
@@ -7,6 +6,7 @@ insert into whse_basemapping.fwa_stream_profiles (
   upstream_elevation
 )
 
+-- extract coordinates from streams
 with coordinates as (
   select
     blue_line_key,
@@ -28,8 +28,8 @@ lengths as (
     edge_type,
     node_id,
     st_z(geom) as elevation_from,
-    st_z(lead(geom) OVER(ORDER BY blue_line_key, downstream_route_measure, node_id)) as elevation_to,
-    st_distance(geom, lead(geom) OVER(ORDER BY blue_line_key, downstream_route_measure, node_id)) as length
+    st_z(lead(geom) OVER(partition by blue_line_key ORDER BY blue_line_key, downstream_route_measure, node_id)) as elevation_to,
+    st_distance(geom, lead(geom) OVER(partition by blue_line_key ORDER BY blue_line_key, downstream_route_measure, node_id)) as length
   from coordinates
   order by blue_line_key, downstream_route_measure, node_id
 ),
@@ -43,7 +43,7 @@ tidy as (
     blue_line_key,
     linear_feature_id,
     edge_type,
-    round((downstream_route_measure + sum(length) over (order by blue_line_key, downstream_route_measure, node_id))::numeric, 2) as upstream_route_measure,
+    round((downstream_route_measure + sum(length) over (partition by blue_line_key order by blue_line_key, downstream_route_measure, node_id))::numeric, 2) as upstream_route_measure,
     round(elevation_from::numeric, 2) as elevation_from,
     round(elevation_to::numeric, 2) as elevation_to
   from lengths
@@ -51,9 +51,10 @@ tidy as (
   order by blue_line_key, downstream_route_measure, node_id
 )
 
+-- and finally, get downstream measure
 select
   blue_line_key,
-  lag(upstream_route_measure, 1, 0) over (order by id) as downstream_route_measure,
+  lag(upstream_route_measure, 1, 0) over (partition by blue_line_key order by id) as downstream_route_measure,
   upstream_route_measure,
   elevation_from as downstream_elevation,
   elevation_to as upstream_elevation
