@@ -1,5 +1,6 @@
 insert into whse_basemapping.fwa_stream_profiles (
   blue_line_key,
+  segment_id,
   downstream_route_measure,
   upstream_route_measure,
   downstream_elevation,
@@ -39,7 +40,7 @@ lengths as (
 -- drop the final vertex (where length is null)
 tidy as (
   select
-    row_number() over() as id,
+    row_number() over(partition by blue_line_key) as segment_id,
     blue_line_key,
     linear_feature_id,
     edge_type,
@@ -54,7 +55,8 @@ tidy as (
 -- and finally, get downstream measure
 select
   blue_line_key,
-  lag(upstream_route_measure, 1, 0) over (partition by blue_line_key order by id) as downstream_route_measure,
+  segment_id,
+  lag(upstream_route_measure, 1, 0) over (partition by blue_line_key order by segment_id) as downstream_route_measure,
   upstream_route_measure,
   elevation_from as downstream_elevation,
   elevation_to as upstream_elevation
