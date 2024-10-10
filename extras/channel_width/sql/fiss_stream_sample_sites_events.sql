@@ -180,6 +180,7 @@ ON c.linear_feature_id = s.linear_feature_id
 INSERT INTO fwapg.fiss_stream_sample_sites_events_sp
 (
   stream_sample_site_id,
+  blue_line_key,
   linear_feature_id,
   wscode_ltree,
   localcode_ltree,
@@ -190,6 +191,7 @@ INSERT INTO fwapg.fiss_stream_sample_sites_events_sp
 )
 SELECT
   stream_sample_site_id,
+  blue_line_key,
   linear_feature_id,
   wscode_ltree,
   localcode_ltree,
