@@ -29,22 +29,23 @@ lengths as (
     edge_type,
     node_id,
     st_z(geom) as elevation_from,
-    st_z(lead(geom) OVER(partition by blue_line_key ORDER BY blue_line_key, downstream_route_measure, node_id)) as elevation_to,
-    st_distance(geom, lead(geom) OVER(partition by blue_line_key ORDER BY blue_line_key, downstream_route_measure, node_id)) as length
+    st_z(lead(geom) OVER(partition by linear_feature_id ORDER BY node_id)) as elevation_to,
+    st_distance(geom, lead(geom) OVER(partition by linear_feature_id ORDER BY node_id)) as length
   from coordinates
   order by blue_line_key, downstream_route_measure, node_id
 ),
 
--- derive measure of at upstream point
+-- derive measure of upstream point
 -- drop duplicates at geometry endpoints (where length is 0)
 -- drop the final vertex (where length is null)
 tidy as (
   select
-    row_number() over(partition by blue_line_key) as segment_id,
-    blue_line_key,
     linear_feature_id,
+    node_id,
+    blue_line_key,
+    downstream_route_measure,
     edge_type,
-    round((downstream_route_measure + sum(length) over (partition by blue_line_key order by blue_line_key, downstream_route_measure, node_id))::numeric, 2) as upstream_route_measure,
+    round((downstream_route_measure + sum(length) over (partition by linear_feature_id order by node_id))::numeric, 2) as upstream_route_measure,
     round(elevation_from::numeric, 2) as elevation_from,
     round(elevation_to::numeric, 2) as elevation_to
   from lengths
@@ -52,12 +53,12 @@ tidy as (
   order by blue_line_key, downstream_route_measure, node_id
 )
 
--- and finally, get downstream measure
 select
   blue_line_key,
-  segment_id,
-  lag(upstream_route_measure, 1, 0) over (partition by blue_line_key order by segment_id) as downstream_route_measure,
+  row_number() over() as segment_id,
+  lag(upstream_route_measure, 1, 0) over (partition by blue_line_key order by downstream_route_measure, node_id) as downstream_route_measure,
   upstream_route_measure,
   elevation_from as downstream_elevation,
   elevation_to as upstream_elevation
-from tidy;
+from tidy
+order by blue_line_key, downstream_route_measure, node_id;
