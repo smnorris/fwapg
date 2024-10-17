@@ -1,5 +1,6 @@
 insert into whse_basemapping.fwa_stream_profiles (
   blue_line_key,
+  linear_feature_id,
   segment_id,
   downstream_route_measure,
   upstream_route_measure,
@@ -54,6 +55,7 @@ tidy as (
 )
 
 select
+  linear_feature_id,
   blue_line_key,
   row_number() over() as segment_id,
   lag(upstream_route_measure, 1, 0) over (partition by blue_line_key order by downstream_route_measure, node_id) as downstream_route_measure,

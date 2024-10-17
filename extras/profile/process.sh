@@ -6,6 +6,7 @@ WSGS=$($PSQL -AXt -c "SELECT watershed_group_code FROM whse_basemapping.fwa_wate
 $PSQL -c "drop table if exists whse_basemapping.fwa_stream_profiles"
 $PSQL -c "create table whse_basemapping.fwa_stream_profiles (
   blue_line_key integer,
+  linear_feature_id bigint,
   segment_id integer,
   downstream_route_measure double precision,
   upstream_route_measure double precision,
@@ -16,3 +17,4 @@ $PSQL -c "create table whse_basemapping.fwa_stream_profiles (
 
 parallel $PSQL -f sql/fwa_stream_profiles.sql -v wsg={1} ::: $WSGS
 $PSQL -c "create index fwa_streamprofiles_blue_line_key_idx on whse_basemapping.fwa_stream_profiles (blue_line_key)"
+$PSQL -c "create index fwa_streamprofiles_linear_feature_id_idx on whse_basemapping.fwa_stream_profiles (linear_feature_id)"
