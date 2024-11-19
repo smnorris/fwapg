@@ -75,16 +75,16 @@ clean_db:
 
 # download and rename (so we do not have to unzip)
 data/FWA_BC.gdb.zip: .make/db
-	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip
+	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/FWA_BC.zip
 
 data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip: .make/db
-	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
+	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/FWA_LINEAR_BOUNDARIES_SP.zip
 
 data/FWA_WATERSHEDS_POLY.gdb.zip: .make/db
-	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_WATERSHEDS_POLY.zip
+	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/FWA_WATERSHEDS_POLY.zip
 
 data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
-	curl -o $@ ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
+	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/FWA_STREAM_NETWORKS_SP.zip
 
 # load the larger tables per watershed group
 .make/fwa_stream_networks_sp: data/FWA_STREAM_NETWORKS_SP.gdb.zip .make/db
