@@ -44,33 +44,11 @@ clean_db:
 	rm -Rf .make/db
 	$(PSQL) -f db/clean.sql
 
-# create database objects
-# ** the database must already exist **
+# create extensions/schemas/tables/views/functions
 .make/db:
 	mkdir -p .make
 	mkdir -p data
-	$(PSQL) -f db/schemas.sql
-	$(PSQL) -f db/extensions.sql
-	echo "ALTER DATABASE :db SET search_path TO public,whse_basemapping,usgs,hydrosheds" | \
-	  $(PSQL) -v db=$(shell echo $(DATABASE_URL) | cut -d "/" -f 4)
-	$(PSQL) -f db/tables.sql
-	$(PSQL) -f db/views.sql
-	$(PSQL) -f db/functions/CDB_MakeHexagon.sql
-	$(PSQL) -f db/functions/ST_Safe_Repair.sql
-	$(PSQL) -f db/functions/FWA_Downstream.sql
-	$(PSQL) -f db/functions/FWA_Upstream.sql
-	$(PSQL) -f db/functions/huc12.sql
-	$(PSQL) -f db/functions/hydroshed.sql
-	$(PSQL) -f db/functions/FWA_SliceWatershedAtPoint.sql
-	$(PSQL) -f db/functions/FWA_WatershedAtMeasure.sql
-	$(PSQL) -f db/functions/FWA_WatershedHex.sql
-	$(PSQL) -f db/functions/FWA_WatershedStream.sql
-	$(PSQL) -f db/functions/FWA_UpstreamBorderCrossings.sql
-	$(PSQL) -f db/functions/FWA_IndexPoint.sql
-	$(PSQL) -f db/functions/FWA_LocateAlong.sql
-	$(PSQL) -f db/functions/FWA_LocateAlongInterval.sql
-	$(PSQL) -f db/functions/FWA_UpstreamTrace.sql
-	$(PSQL) -f db/functions/postgisftw.sql  # pg_fs/pg_ts functions
+	cd db && ./create.sh && cd ..
 	touch $@
 
 # download
