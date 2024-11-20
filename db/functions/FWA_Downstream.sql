@@ -65,7 +65,8 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Downstream(
     localcode_ltree_b ltree
 )
 
-RETURNS boolean AS $$
+RETURNS boolean language sql set search_path = public AS $$
+
 
 SELECT
 -- watershed code a is a descendant of watershed code b
@@ -87,7 +88,7 @@ SELECT
   )
 
 $$
-language 'sql' immutable parallel safe;
+immutable parallel safe;
 
 
 
@@ -105,9 +106,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Downstream(
     tolerance double precision default .001
 )
 
-RETURNS boolean AS $$
-
-
+RETURNS boolean language sql set search_path = public AS $$
 
   SELECT
 
@@ -186,7 +185,7 @@ RETURNS boolean AS $$
 END
 
 $$
-language 'sql' immutable parallel safe;
+immutable parallel safe;
 
 CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Downstream(
     blue_line_key_a integer,
@@ -201,7 +200,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Downstream(
     tolerance double precision default .001
 )
 
-RETURNS boolean AS $$
+RETURNS boolean language sql set search_path = public AS $$
 
 SELECT
   whse_basemapping.FWA_Downstream(
@@ -219,6 +218,6 @@ SELECT
   )
 
 $$
-language 'sql' immutable parallel safe;
+immutable parallel safe;
 
 --COMMENT ON FUNCTION FWA_Downstream IS 'Compare input watershed codes and/or linear positions A and B, return TRUE if codes/positions A are downstream of codes/positions B';

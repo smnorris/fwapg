@@ -62,8 +62,6 @@ return TRUE when the values for b are upstream of the values for a.
 
 */
 
--- ensure the functions are created in the public schema
-set search_path to public;
 
 -- watershed code comparison only
 CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
@@ -74,6 +72,8 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
 )
 
 RETURNS boolean AS $$
+
+SET search_path TO public,whse_basemapping,usgs,hydrosheds;
 
 SELECT
   -- Simple case, where watershed code and local code of (a) are equivalent.
@@ -130,7 +130,8 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
     tolerance double precision default .001
 )
 
-RETURNS boolean AS $$
+RETURNS boolean language sql set search_path = public AS $$
+
 
 SELECT
   -- b is a child of a, always
@@ -222,7 +223,7 @@ SELECT
     END
   )
 $$
-language 'sql' immutable parallel safe;
+immutable parallel safe;
 
 
 -- shortcut for points, dnstr measure a and upstr measure are equivalent
@@ -239,7 +240,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
     tolerance double precision default .001
 )
 
-RETURNS boolean AS $$
+RETURNS boolean language sql set search_path = public AS $$
 
 SELECT
   whse_basemapping.FWA_Upstream(
@@ -256,7 +257,7 @@ SELECT
     tolerance
   )
 $$
-language 'sql' immutable parallel safe;
+immutable parallel safe;
 
 
 --COMMENT ON FUNCTION FWA_Upstream IS 'Compare input watershed codes and/or linear positions A and B, return TRUE if codes/positions A are upstream of codes/positions B';
