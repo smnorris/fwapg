@@ -73,8 +73,6 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
 
 RETURNS boolean AS $$
 
-SET search_path TO public,whse_basemapping,usgs,hydrosheds;
-
 SELECT
   -- Simple case, where watershed code and local code of (a) are equivalent.
   -- Return TRUE for all records in (b) that are children of (a)
@@ -130,7 +128,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
     tolerance double precision default .001
 )
 
-RETURNS boolean language sql set search_path = public AS $$
+RETURNS boolean language sql AS $$
 
 
 SELECT
@@ -240,7 +238,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Upstream(
     tolerance double precision default .001
 )
 
-RETURNS boolean language sql set search_path = public AS $$
+RETURNS boolean language sql AS $$
 
 SELECT
   whse_basemapping.FWA_Upstream(

@@ -65,7 +65,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Downstream(
     localcode_ltree_b ltree
 )
 
-RETURNS boolean language sql set search_path = public AS $$
+RETURNS boolean language sql AS $$
 
 
 SELECT
@@ -106,7 +106,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Downstream(
     tolerance double precision default .001
 )
 
-RETURNS boolean language sql set search_path = public AS $$
+RETURNS boolean language sql AS $$
 
   SELECT
 
@@ -200,7 +200,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_Downstream(
     tolerance double precision default .001
 )
 
-RETURNS boolean language sql set search_path = public AS $$
+RETURNS boolean language sql AS $$
 
 SELECT
   whse_basemapping.FWA_Downstream(
