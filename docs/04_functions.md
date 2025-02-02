@@ -256,8 +256,8 @@ Create a point geometry at measure 25,000 on the Skeena River:
 ```sql
 FWA_LocateAlongInterval(
   blue_line_key integer,
-  start_measure integer DEFAULT 0,
   interval_length integer DEFAULT 1000,
+  start_measure integer DEFAULT 0,
   end_measure integer DEFAULT NULL
 )
 ```
@@ -283,8 +283,8 @@ Return points at a 1km interval along the Peace between Site C and Bennet dams:
      ST_AsText(geom)
   FROM FWA_LocateAlongInterval(
     359572348,
-    1597489,
     1000,
+    1597489,
     1706733
     );
 ```
@@ -307,6 +307,67 @@ Mapping the returned features:
 
 Make the same request as the example above, but
 [at 10km](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100)
+
+
+## FWA_SegmentAlongInterval
+
+### Synopsis
+
+```sql
+FWA_SegmentAlongInterval(
+  blue_line_key integer,
+  interval_length integer DEFAULT 100,
+  start_measure integer DEFAULT 0,
+  end_measure integer DEFAULT NULL
+)
+```
+
+### Description
+
+Return a table representing segments of given equal interval along a stream, between input locations.
+Note that final stream segment is the remainder of the stream under the given interval.
+
+| field                     | type                  | description                                 |
+| :-------------------------| --------------------- |-------------------------------------------- |
+| `index`                   | integer               | 0 based index of returned features          |
+| `downstream_route_measure`| double precision      | measure value of start point of segment     |
+| `upstream_route_measure`  | double precision      | measure value of end point of segment       |
+| `geom`                    | geometry(MultiLineString, 3005) | Geometry of stream between the given measures |
+
+### Example
+
+Return stream segments at a 100m interval along the entire Goldstream river:
+
+```sql
+  SELECT
+     index as id,
+     downstream_route_measure,
+     upstream_route_measure, 
+     ST_AsText(geom)
+  FROM FWA_SegmentAlongInterval(
+    354152425, 
+    100
+    );
+```
+```
+  id  | downstream_route_measure | upstream_route_measure | st_astext            
+-----+--------------------------+------------------------+-------------------
+   0 |                      100 |                    200 | MULTILINESTRING Z ((
+   1 |                      200 |                    300 | MULTILINESTRING Z ((
+   2 |                      300 |                    400 | MULTILINESTRING Z ((
+ 
+...
+```
+Mapping the returned features:
+
+![watershed](images/segmentalonginterval.png)
+
+### Web service
+
+[FWA_SegmentAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/fwa_segmentalonginterval.html)
+
+Make the same request as the example above, but
+[at 1km](https://features.hillcrestgeo.ca/fwa/functions/fwa_segmentalonginterval/items.html?blue_line_key=354152425&interval_length=1000&limit=100)
 
 
 ## FWA_StreamsAsMVT

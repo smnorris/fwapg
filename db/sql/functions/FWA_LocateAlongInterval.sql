@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION whse_basemapping.FWA_LocateAlongInterval(blue_line_key integer, start_measure integer DEFAULT 0, interval_length integer DEFAULT 1000, end_measure integer DEFAULT NULL)
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_LocateAlongInterval(blue_line_key integer, interval_length integer DEFAULT 1000, start_measure integer DEFAULT 0, end_measure integer DEFAULT NULL)
 
 RETURNS TABLE
     (
@@ -90,4 +90,4 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
-COMMENT ON FUNCTION whse_basemapping.FWA_LocateAlongInterval IS 'Return a table (index, measure, geom), representing points along a stream between specified locations at specified interval'
+COMMENT ON FUNCTION whse_basemapping.FWA_LocateAlongInterval IS 'Return a table (index, measure, geom), representing points along a stream at a specified interval between specified locations'
