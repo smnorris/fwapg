@@ -18,11 +18,11 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 ## Quickstart
 
 1. Ensure all requirements/dependencies are met/installed:
-    - access to a PostgreSQL (>=13) database with the PostGIS extension (>=3.1) installed
+    - access to a PostgreSQL (13-16, 17 is not yet supported) database with the PostGIS extension (>=3.1) installed
     - GDAL >=3.4
     - Python 3
     - [`bcdata`](https://github.com/smnorris/bcdata)
-    - [`make`](https://www.gnu.org/software/make/)/`unzip`/`wget`/etc
+    - [`make`](https://www.gnu.org/software/make/)/`unzip`/`curl`/`awscli`/ etc (see Dockerfile)
 
 2. Ensure you have a `DATABASE_URL` environment variable set to point to your database, for example:
 
