@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION whse_basemapping.FWA_SegmentAlongInterval(
     blue_line_key integer, 
-    start_measure integer DEFAULT 0, 
-    interval_length integer DEFAULT 100, 
+    interval_length integer DEFAULT 100,
+    start_measure integer DEFAULT 0,
     end_measure integer DEFAULT NULL
 )
 

@@ -1,4 +1,9 @@
-CREATE OR REPLACE FUNCTION whse_basemapping.FWA_LocateAlongInterval(blue_line_key integer, interval_length integer DEFAULT 1000, start_measure integer DEFAULT 0, end_measure integer DEFAULT NULL)
+CREATE OR REPLACE FUNCTION whse_basemapping.FWA_LocateAlongInterval(
+  blue_line_key integer,
+  interval_length integer DEFAULT 1000,
+  start_measure integer DEFAULT 0,
+  end_measure integer DEFAULT NULL
+)
 
 RETURNS TABLE
     (
