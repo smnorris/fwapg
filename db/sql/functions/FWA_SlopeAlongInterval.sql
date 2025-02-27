@@ -100,4 +100,4 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
-COMMENT ON FUNCTION whse_basemapping.FWA_SlopeAlongInterval IS 'Return a table (n, downstream_route_measure, downstream_z, upstream_route_measure, upstream_z, gradient), measuring slope at equal intervals'
+COMMENT ON FUNCTION whse_basemapping.FWA_SlopeAlongInterval IS 'Return a table (n, downstream_route_measure, downstream_z, upstream_route_measure, upstream_z, gradient), measuring slope at equal intervals';

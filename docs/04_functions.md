@@ -358,10 +358,6 @@ Return stream segments at a 100m interval along the entire Goldstream river:
  
 ...
 ```
-Mapping the returned features:
-
-![watershed](images/segmentalonginterval.png)
-
 
 ## FWA_SlopeAlongInterval
 
@@ -428,9 +424,9 @@ Return upstream 100m slopes at 100m intervals along the Bonaparte River, from 10
 
 ### Web service
 
-[FWA_SlopeAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/fwa_slopealonginterval.html)
+[FWA_SlopeAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_slopealonginterval.html)
 
-Make the same request as the [example above](https://features.hillcrestgeo.ca/fwa/functions/fwa_slopealonginterval/items.html?blue_line_key=356363594&interval_length=100&distance_upstream=100&start_measure=1000&end_measure=2000)
+Make the same request as the [example above](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_slopealonginterval/items.html?blue_line_key=356363594&interval_length=100&distance_upstream=100&start_measure=1000&end_measure=2000)
 
 
 ## FWA_StreamsAsMVT

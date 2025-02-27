@@ -100,4 +100,4 @@ END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
-COMMENT ON FUNCTION whse_basemapping.FWA_SegmentAlongInterval IS 'Return a table (index, downstream_route_measure, upstream_route_measure, geom), representing segments along a stream between specified locations at specified interval'
+COMMENT ON FUNCTION whse_basemapping.FWA_SegmentAlongInterval IS 'Return a table (index, downstream_route_measure, upstream_route_measure, geom), representing segments along a stream between specified locations at specified interval';
