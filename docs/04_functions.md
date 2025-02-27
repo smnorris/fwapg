@@ -256,8 +256,8 @@ Create a point geometry at measure 25,000 on the Skeena River:
 ```sql
 FWA_LocateAlongInterval(
   blue_line_key integer,
-  start_measure integer DEFAULT 0,
   interval_length integer DEFAULT 1000,
+  start_measure integer DEFAULT 0,
   end_measure integer DEFAULT NULL
 )
 ```
@@ -283,8 +283,8 @@ Return points at a 1km interval along the Peace between Site C and Bennet dams:
      ST_AsText(geom)
   FROM FWA_LocateAlongInterval(
     359572348,
-    1597489,
     1000,
+    1597489,
     1706733
     );
 ```
@@ -307,6 +307,130 @@ Mapping the returned features:
 
 Make the same request as the example above, but
 [at 10km](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100)
+
+
+## FWA_SegmentAlongInterval
+
+### Synopsis
+
+```sql
+FWA_SegmentAlongInterval(
+  blue_line_key integer,
+  interval_length integer DEFAULT 100,
+  start_measure integer DEFAULT 0,
+  end_measure integer DEFAULT NULL
+)
+```
+
+### Description
+
+Return a table representing segments of given equal interval along a stream, between input locations.
+Note that final stream segment is the remainder of the stream under the given interval.
+
+| field                     | type                  | description                                 |
+| :-------------------------| --------------------- |-------------------------------------------- |
+| `index`                   | integer               | 0 based index of returned features          |
+| `downstream_route_measure`| double precision      | measure value of start point of segment     |
+| `upstream_route_measure`  | double precision      | measure value of end point of segment       |
+| `geom`                    | geometry(MultiLineString, 3005) | Geometry of stream between the given measures |
+
+### Example
+
+Return stream segments at a 100m interval along the entire Goldstream river:
+
+```sql
+  SELECT
+     index as id,
+     downstream_route_measure,
+     upstream_route_measure, 
+     ST_AsText(geom)
+  FROM FWA_SegmentAlongInterval(
+    354152425, 
+    100
+    );
+```
+```
+  id  | downstream_route_measure | upstream_route_measure | st_astext            
+-----+--------------------------+------------------------+-------------------
+   0 |                      100 |                    200 | MULTILINESTRING Z ((
+   1 |                      200 |                    300 | MULTILINESTRING Z ((
+   2 |                      300 |                    400 | MULTILINESTRING Z ((
+ 
+...
+```
+Mapping the returned features:
+
+![watershed](images/segmentalonginterval.png)
+
+
+## FWA_SlopeAlongInterval
+
+### Synopsis
+
+```sql
+FWA_SlopeAlongInterval(
+  blue_line_key integer,
+  interval_length integer DEFAULT 100,
+  distance_upstream integer DEFAULT 100,
+  start_measure integer DEFAULT 0,
+  end_measure integer DEFAULT NULL
+)
+```
+
+### Description
+
+Return a table representing measures, elevations and slope at equal interval along a stream, between start/end measures.
+
+| field                     | type                  | description                                 |
+| :-------------------------| --------------------- |-------------------------------------------- |
+| `idx`                     | integer               | 0 based index of returned features          |
+| `downstream_route_measure`| numeric               | measure value of start point of slope measurement     |
+| `downstream_z`            | numeric               | elevation value at start point of slope measurement   |
+| `upstream_route_measure`  | numeric               | measure value of end point of slope measurement     |
+| `upstream_z`              | numeric               | elevation value at end point of slope measurement   |
+| `gradient`                | numeric               | slope of stream between downstream and upstream locations |
+
+
+### Example
+
+Return upstream 100m slopes at 100m intervals along the Bonaparte River, from 1000m to 2000m.
+
+```sql
+  SELECT
+     idx + 1 as id,
+     downstream_measure,
+     downstream_z,
+     upstream_measure,
+     upstream_z,
+     gradient
+  FROM FWA_SlopeAlongInterval(
+    356363594,
+    100,
+    100,
+    1000,
+    2000
+    );
+```
+```
+ id | downstream_measure | downstream_z | upstream_measure | upstream_z | gradient
+----+--------------------+--------------+------------------+------------+----------
+  1 |               1000 |       308.11 |             1100 |     309.00 |    0.009
+  2 |               1100 |       309.00 |             1200 |     309.47 |    0.005
+  3 |               1200 |       309.47 |             1300 |     310.00 |    0.005
+  4 |               1300 |       310.00 |             1400 |     310.82 |    0.008
+  5 |               1400 |       310.82 |             1500 |     313.82 |    0.030
+  6 |               1500 |       313.82 |             1600 |     315.62 |    0.018
+  7 |               1600 |       315.62 |             1700 |     317.26 |    0.016
+  8 |               1700 |       317.26 |             1800 |     318.78 |    0.015
+  9 |               1800 |       318.78 |             1900 |     320.32 |    0.015
+ 10 |               1900 |       320.32 |             2000 |     322.39 |    0.021
+```
+
+### Web service
+
+[FWA_SlopeAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/fwa_slopealonginterval.html)
+
+Make the same request as the [example above](https://features.hillcrestgeo.ca/fwa/functions/fwa_slopealonginterval/items.html?blue_line_key=356363594&interval_length=100&distance_upstream=100&start_measure=1000&end_measure=2000)
 
 
 ## FWA_StreamsAsMVT
