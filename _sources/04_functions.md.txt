@@ -362,12 +362,75 @@ Mapping the returned features:
 
 ![watershed](images/segmentalonginterval.png)
 
+
+## FWA_SlopeAlongInterval
+
+### Synopsis
+
+```sql
+FWA_SlopeAlongInterval(
+  blue_line_key integer,
+  interval_length integer DEFAULT 100,
+  distance_upstream integer DEFAULT 100,
+  start_measure integer DEFAULT 0,
+  end_measure integer DEFAULT NULL
+)
+```
+
+### Description
+
+Return a table representing measures, elevations and slope at equal interval along a stream, between start/end measures.
+
+| field                     | type                  | description                                 |
+| :-------------------------| --------------------- |-------------------------------------------- |
+| `idx`                     | integer               | 0 based index of returned features          |
+| `downstream_route_measure`| numeric               | measure value of start point of slope measurement     |
+| `downstream_z`            | numeric               | elevation value at start point of slope measurement   |
+| `upstream_route_measure`  | numeric               | measure value of end point of slope measurement     |
+| `upstream_z`              | numeric               | elevation value at end point of slope measurement   |
+| `gradient`                | numeric               | slope of stream between downstream and upstream locations |
+
+
+### Example
+
+Return upstream 100m slopes at 100m intervals along the Bonaparte River, from 1000m to 2000m.
+
+```sql
+  SELECT
+     idx + 1 as id,
+     downstream_measure,
+     downstream_z,
+     upstream_measure,
+     upstream_z,
+     gradient
+  FROM FWA_SlopeAlongInterval(
+    356363594,
+    100,
+    100,
+    1000,
+    2000
+    );
+```
+```
+ id | downstream_measure | downstream_z | upstream_measure | upstream_z | gradient
+----+--------------------+--------------+------------------+------------+----------
+  1 |               1000 |       308.11 |             1100 |     309.00 |    0.009
+  2 |               1100 |       309.00 |             1200 |     309.47 |    0.005
+  3 |               1200 |       309.47 |             1300 |     310.00 |    0.005
+  4 |               1300 |       310.00 |             1400 |     310.82 |    0.008
+  5 |               1400 |       310.82 |             1500 |     313.82 |    0.030
+  6 |               1500 |       313.82 |             1600 |     315.62 |    0.018
+  7 |               1600 |       315.62 |             1700 |     317.26 |    0.016
+  8 |               1700 |       317.26 |             1800 |     318.78 |    0.015
+  9 |               1800 |       318.78 |             1900 |     320.32 |    0.015
+ 10 |               1900 |       320.32 |             2000 |     322.39 |    0.021
+```
+
 ### Web service
 
-[FWA_SegmentAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/fwa_segmentalonginterval.html)
+[FWA_SlopeAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/fwa_slopealonginterval.html)
 
-Make the same request as the example above, but
-[at 1km](https://features.hillcrestgeo.ca/fwa/functions/fwa_segmentalonginterval/items.html?blue_line_key=354152425&interval_length=1000&limit=100)
+Make the same request as the [example above](https://features.hillcrestgeo.ca/fwa/functions/fwa_slopealonginterval/items.html?blue_line_key=356363594&interval_length=100&distance_upstream=100&start_measure=1000&end_measure=2000)
 
 
 ## FWA_StreamsAsMVT
