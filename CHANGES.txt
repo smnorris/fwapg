@@ -3,14 +3,14 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.7.0 (2025-02-)
+0.7.0 (2025-)
 ------------------
-- add new function FWA_SegmentAlongInterval, generating regularly spaced stream segments
+- add new function FWA_SegmentAlongInterval, returning regularly spaced stream segments
+- add new function FWA_SlopeAlongInterval, returning regularly spaced slope measurements
 - update dependencies in dockerfile
 - cache data on BC object storage for faster repeated downloads
-- bug fixes
+- misc bug fixes
 - note that PG17 is not yet supported
-
 
 0.6.1 (2024-04-08)
 ------------------
