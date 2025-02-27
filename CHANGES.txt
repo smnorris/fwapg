@@ -14,7 +14,7 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
 0.6.1 (2024-04-08)
 ------------------
-- download with for compatibility with bcfishpass image
+- download with curl for compatibility with bcfishpass image
 
 0.6.0 (2024-04-06)
 ------------------
