@@ -292,47 +292,45 @@
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
 <p>Return stream data downstream of Sheilds Lake:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>```sql
-SELECT
-  blue_line_key,
-  downstream_route_measure,
-  stream_order_parent,
-  channel_width
-FROM
-  FWA_DownstreamTrace(354146454, 3150)
-```
-```
-  blue_line_key | downstream_route_measure | stream_order_parent | channel_width
----------------+--------------------------+---------------------+---------------
-     354146454 |         3127.20524239473 |                   3 |
-     354146454 |         2965.37071386052 |                   3 |
-     354146454 |         2842.60982622329 |                   3 |
-     354146454 |         2679.16744750456 |                   3 |
-     354146454 |         2629.74618714613 |                   3 |
-     354146454 |         2609.65517389417 |                   3 |          2.15
-     354146454 |         2502.91937533387 |                   3 |          2.15
-     354146454 |         2394.95066476193 |                   3 |          2.15
-     354146454 |         2352.13213028193 |                   3 |          2.15
-     354146454 |         2240.02438811748 |                   3 |          2.15
-     354146454 |         2169.25535011117 |                   3 |          2.15
-     354146454 |         2138.31957468439 |                   3 |          2.62
-     354146454 |         2025.39804344686 |                   3 |          2.91
-     354146454 |         1992.73137196029 |                   3 |          2.91
-     354146454 |          1847.8788247426 |                   3 |          2.91
-     354146454 |         960.782490852403 |                   3 |          2.91
-     354146454 |         660.760737217136 |                   3 |          3.17
-     354146454 |                        0 |                   3 |          3.46
-     354148774 |          3059.9040521127 |                   5 |          5.94
-     354148774 |         2744.26659482523 |                   5 |          6.04
-     354148774 |         1431.17077828375 |                   5 |          6.28
-     354148774 |         1376.10785016488 |                   5 |           6.6
-     354148774 |         1243.32075546327 |                   5 |           6.6
-     354148774 |         710.353826210263 |                   5 |           6.6
-     354148774 |         15.1842503508841 |                   5 |           8.5
-     354148774 |                        0 |                   5 |           8.5
-     354153927 |         4568.48427688637 |                     |         32.26
-     ...
-```
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">blue_line_key</span><span class="p">,</span>
+<span class="w">  </span><span class="n">downstream_route_measure</span><span class="p">,</span>
+<span class="w">  </span><span class="n">stream_order_parent</span><span class="p">,</span>
+<span class="w">  </span><span class="n">channel_width</span>
+<span class="k">FROM</span>
+<span class="w">  </span><span class="n">FWA_DownstreamTrace</span><span class="p">(</span><span class="mi">354146454</span><span class="p">,</span><span class="w"> </span><span class="mi">3150</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">stream_order_parent</span> <span class="o">|</span> <span class="n">channel_width</span>
+<span class="o">---------------+--------------------------+---------------------+---------------</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">3127.20524239473</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2965.37071386052</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2842.60982622329</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2679.16744750456</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2629.74618714613</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2609.65517389417</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.15</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2502.91937533387</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.15</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2394.95066476193</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.15</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2352.13213028193</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.15</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2240.02438811748</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.15</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2169.25535011117</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.15</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2138.31957468439</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.62</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">2025.39804344686</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.91</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">1992.73137196029</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.91</span>
+     <span class="mi">354146454</span> <span class="o">|</span>          <span class="mf">1847.8788247426</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.91</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">960.782490852403</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">2.91</span>
+     <span class="mi">354146454</span> <span class="o">|</span>         <span class="mf">660.760737217136</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">3.17</span>
+     <span class="mi">354146454</span> <span class="o">|</span>                        <span class="mi">0</span> <span class="o">|</span>                   <span class="mi">3</span> <span class="o">|</span>          <span class="mf">3.46</span>
+     <span class="mi">354148774</span> <span class="o">|</span>          <span class="mf">3059.9040521127</span> <span class="o">|</span>                   <span class="mi">5</span> <span class="o">|</span>          <span class="mf">5.94</span>
+     <span class="mi">354148774</span> <span class="o">|</span>         <span class="mf">2744.26659482523</span> <span class="o">|</span>                   <span class="mi">5</span> <span class="o">|</span>          <span class="mf">6.04</span>
+     <span class="mi">354148774</span> <span class="o">|</span>         <span class="mf">1431.17077828375</span> <span class="o">|</span>                   <span class="mi">5</span> <span class="o">|</span>          <span class="mf">6.28</span>
+     <span class="mi">354148774</span> <span class="o">|</span>         <span class="mf">1376.10785016488</span> <span class="o">|</span>                   <span class="mi">5</span> <span class="o">|</span>           <span class="mf">6.6</span>
+     <span class="mi">354148774</span> <span class="o">|</span>         <span class="mf">1243.32075546327</span> <span class="o">|</span>                   <span class="mi">5</span> <span class="o">|</span>           <span class="mf">6.6</span>
+     <span class="mi">354148774</span> <span class="o">|</span>         <span class="mf">710.353826210263</span> <span class="o">|</span>                   <span class="mi">5</span> <span class="o">|</span>           <span class="mf">6.6</span>
+     <span class="mi">354148774</span> <span class="o">|</span>         <span class="mf">15.1842503508841</span> <span class="o">|</span>                   <span class="mi">5</span> <span class="o">|</span>           <span class="mf">8.5</span>
+     <span class="mi">354148774</span> <span class="o">|</span>                        <span class="mi">0</span> <span class="o">|</span>                   <span class="mi">5</span> <span class="o">|</span>           <span class="mf">8.5</span>
+     <span class="mi">354153927</span> <span class="o">|</span>         <span class="mf">4568.48427688637</span> <span class="o">|</span>                     <span class="o">|</span>         <span class="mf">32.26</span>
+     <span class="o">...</span>
 </pre></div>
 </div>
 </section>
