@@ -14,6 +14,7 @@ $PSQL -f sql/views.sql
 $PSQL -f sql/functions/CDB_MakeHexagon.sql
 $PSQL -f sql/functions/ST_Safe_Repair.sql
 $PSQL -f sql/functions/FWA_Downstream.sql
+$PSQL -f sql/functions/FWA_DownstreamTrace.sql
 $PSQL -f sql/functions/FWA_Upstream.sql
 $PSQL -f sql/functions/huc12.sql
 $PSQL -f sql/functions/hydroshed.sql
