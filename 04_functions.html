@@ -281,45 +281,59 @@
 </section>
 <section id="id2">
 <h3>Description<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
-<p>Return stream network downstream of provided location.</p>
-<p>Provides a simple interface to the basic use case of <code class="docutils literal notranslate"><span class="pre">FWA_Downstream()</span></code>, removing the need to work with watershed codes.</p>
-<p>Note that side channels downstream of the provided location are included in the result.</p>
+<p>Return data from streams_vw downstream of provided location.</p>
+<p>Provides a simple interface to the basic use case of <code class="docutils literal notranslate"><span class="pre">FWA_Downstream()</span></code>, removing the need to work joins or watershed codes.</p>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>this is a draft function that has not been extensively optimized/tested, performance may suffer when working with major rivers</p></li>
+<li><p>result will include side channels</p></li>
+</ul>
 </section>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
-<p>Return streams downstream of Sheilds Lake:</p>
+<p>Return stream data downstream of Sheilds Lake:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>```sql
 SELECT
   blue_line_key,
-  linear_feature_id,
-  downstream_route_measure
+  downstream_route_measure,
+  stream_order_parent,
+  channel_width
 FROM
   FWA_DownstreamTrace(354146454, 3150)
 ```
 ```
 </pre></div>
 </div>
-<p>blue_line_key | linear_feature_id | downstream_route_measure
-—————+——————-+————————–
-354146454 |         710511120 |         3127.20524239473
-354146454 |         710511195 |         2965.37071386052
-354146454 |         710511282 |         2842.60982622329
-354146454 |         710511313 |         2679.16744750456
-354146454 |         710511324 |         2629.74618714613
-354146454 |         710511335 |         2609.65517389417
-354146454 |         710511413 |         2502.91937533387
-354146454 |         710511434 |         2394.95066476193
-354146454 |         710511443 |         2352.13213028193
-354146454 |         710511455 |         2240.02438811748
-354146454 |         710511438 |         2169.25535011117
-354146454 |         710511396 |         2138.31957468439
-354146454 |         710511475 |         2025.39804344686
-354146454 |         710511486 |         1992.73137196029
-354146454 |         710511564 |          1847.8788247426
-354146454 |         710511982 |         960.782490852403
-354146454 |         710512166 |         660.760737217136
-354146454 |         710512400 |                        0
-354148774 |         710512484 |          3059.9040521127
+<p>blue_line_key | downstream_route_measure | stream_order_parent | channel_width
+—————+————————–+———————+—————
+354146454 |         3127.20524239473 |                   3 |
+354146454 |         2965.37071386052 |                   3 |
+354146454 |         2842.60982622329 |                   3 |
+354146454 |         2679.16744750456 |                   3 |
+354146454 |         2629.74618714613 |                   3 |
+354146454 |         2609.65517389417 |                   3 |          2.15
+354146454 |         2502.91937533387 |                   3 |          2.15
+354146454 |         2394.95066476193 |                   3 |          2.15
+354146454 |         2352.13213028193 |                   3 |          2.15
+354146454 |         2240.02438811748 |                   3 |          2.15
+354146454 |         2169.25535011117 |                   3 |          2.15
+354146454 |         2138.31957468439 |                   3 |          2.62
+354146454 |         2025.39804344686 |                   3 |          2.91
+354146454 |         1992.73137196029 |                   3 |          2.91
+354146454 |          1847.8788247426 |                   3 |          2.91
+354146454 |         960.782490852403 |                   3 |          2.91
+354146454 |         660.760737217136 |                   3 |          3.17
+354146454 |                        0 |                   3 |          3.46
+354148774 |          3059.9040521127 |                   5 |          5.94
+354148774 |         2744.26659482523 |                   5 |          6.04
+354148774 |         1431.17077828375 |                   5 |          6.28
+354148774 |         1376.10785016488 |                   5 |           6.6
+354148774 |         1243.32075546327 |                   5 |           6.6
+354148774 |         710.353826210263 |                   5 |           6.6
+354148774 |         15.1842503508841 |                   5 |           8.5
+354148774 |                        0 |                   5 |           8.5
+354153927 |         4568.48427688637 |                     |         32.26
+…
 ```</p>
 </section>
 </section>
