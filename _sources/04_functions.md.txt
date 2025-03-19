@@ -118,6 +118,62 @@ For point locations referenced to the stream network, use the form of the functi
                          576 | {426}
     ```
 
+## FWA_DownstreamTrace
+
+### Synopsis
+
+```sql
+FWA_DownstreamTrace(
+    start_blue_line_key integer,
+    start_measure float,
+    tolerance float default 1
+)
+```
+
+### Description
+
+Return stream network downstream of provided location.
+
+Provides a simple interface to the basic use case of `FWA_Downstream()`, removing the need to work with watershed codes.
+
+Note that side channels downstream of the provided location are included in the result.
+
+### Example
+
+Return streams downstream of Sheilds Lake:
+
+    ```sql
+    SELECT
+      blue_line_key,
+      linear_feature_id,
+      downstream_route_measure
+    FROM
+      FWA_DownstreamTrace(354146454, 3150)
+    ```
+    ```
+ blue_line_key | linear_feature_id | downstream_route_measure
+---------------+-------------------+--------------------------
+     354146454 |         710511120 |         3127.20524239473
+     354146454 |         710511195 |         2965.37071386052
+     354146454 |         710511282 |         2842.60982622329
+     354146454 |         710511313 |         2679.16744750456
+     354146454 |         710511324 |         2629.74618714613
+     354146454 |         710511335 |         2609.65517389417
+     354146454 |         710511413 |         2502.91937533387
+     354146454 |         710511434 |         2394.95066476193
+     354146454 |         710511443 |         2352.13213028193
+     354146454 |         710511455 |         2240.02438811748
+     354146454 |         710511438 |         2169.25535011117
+     354146454 |         710511396 |         2138.31957468439
+     354146454 |         710511475 |         2025.39804344686
+     354146454 |         710511486 |         1992.73137196029
+     354146454 |         710511564 |          1847.8788247426
+     354146454 |         710511982 |         960.782490852403
+     354146454 |         710512166 |         660.760737217136
+     354146454 |         710512400 |                        0
+     354148774 |         710512484 |          3059.9040521127
+    ```
+
 ## FWA_IndexPoint
 
 ### Synopsis
