@@ -7,7 +7,7 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 ------------------
 - add new function FWA_SegmentAlongInterval, returning regularly spaced stream segments
 - add new function FWA_SlopeAlongInterval, returning regularly spaced slope measurements
-- add new function FWA_DownstreamTrace, returning stream network downstream of a point location
+- add new function FWA_DownstreamTrace, returning streams_vw records downstream of a point location
 - update dependencies in dockerfile
 - cache data on BC object storage for faster repeated downloads
 - misc bug fixes
