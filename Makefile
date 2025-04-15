@@ -31,7 +31,9 @@ ALL_TARGETS = .make/db \
 	$(VALUE_ADDED) \
 	$(VALUE_ADDED_CHUNKED) \
 	.make/fwa_streams_watersheds_lut \
-	.make/extras
+	.make/extras \
+	.make/psf
+
 
 all: $(ALL_TARGETS)
 
@@ -237,4 +239,10 @@ data/WBD_National_GDB.zip:
 		set -e; $(PSQL) -c "truncate whse_basemapping.$$table" ; \
 		set -e; $(PSQL) -c "\copy whse_basemapping.$$table FROM PROGRAM 'curl -s https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/$$table.csv.gz | gunzip' delimiter ',' csv header" ; \
 	done
+
+# same with conservation unit to streams lookup table
+.make/psf:
+	echo "psf.pse_conservation_units_streams"
+	$(PSQL) -c "truncate psf.pse_conservation_units_streams"
+	$(PSQL) -c "\copy psf.pse_conservation_units_streams FROM PROGRAM 'curl -s https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/pse_conservation_units_streams.csv.gz | gunzip' delimiter ',' csv header" ; \
 	touch $@

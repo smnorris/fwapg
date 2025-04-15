@@ -802,3 +802,8 @@ create table whse_basemapping.fwa_stream_networks_channel_width (
     channel_width_source text,
     channel_width double precision
 );
+
+create table psf.pse_conservation_units_streams (
+    linear_feature_id bigint,
+    cuid integer
+);
