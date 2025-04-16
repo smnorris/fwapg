@@ -807,3 +807,6 @@ create table psf.pse_conservation_units_streams (
     linear_feature_id bigint,
     cuid integer
 );
+
+create index on psf.pse_conservation_units_streams (linear_feature_id);
+create index on psf.pse_conservation_units_streams (cuid);
