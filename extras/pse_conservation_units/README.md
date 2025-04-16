@@ -13,4 +13,4 @@
 
 ## Output
 
-See https://smnorris.github.io/fwapg/03_tables_views.html#psf.pse-conservation-units
+See [fwapg documentation](https://smnorris.github.io/fwapg/03_tables_views.html#psf.pse-conservation-units)
