@@ -171,18 +171,19 @@ Lookup relating Pacific Salmon Explorer Conservation Units to FWA streams
 For example, to find length of all streams associated with CU 289 (Morice) and CU 287 (Bulkley):
 
 ```
-  select 
+  SELECT
     cu.cuid,
-    round((sum(st_length(s.geom)) / 1000)::numeric, 2) as length_km
-  from bcfishpass.streams s
-  join dfo.pse_conservation_units_streams cu using (linear_feature_id)
-  where cu.cuid in (289, 287)
-  group by cu.cuid;
+    round((sum(st_length(s.geom)) / 1000)::numeric, 2) AS length_km
+  FROM whse_basemapping.fwa_streams_vw s
+  JOIN psf.pse_conservation_units_streams cu USING (linear_feature_id)
+  WHERE cu.cuid IN (289, 287)
+  GROUP BY cu.cuid;
 
-   cuid | length_km
+ cuid | length_km
 ------+-----------
-  287 |   9371.30
-  289 |  11538.96
-(2 rows)
+  287 |   9371.21
+  289 |  11534.82
+
+   
   
 ```  

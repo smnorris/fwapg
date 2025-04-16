@@ -518,19 +518,20 @@ ON l.watershed_feature_id = ua.watershed_feature_id
 </tbody>
 </table>
 <p>For example, to find length of all streams associated with CU 289 (Morice) and CU 287 (Bulkley):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">select</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">SELECT</span>
     <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span><span class="p">,</span>
-    <span class="nb">round</span><span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">length_km</span>
-  <span class="kn">from</span><span class="w"> </span><span class="nn">bcfishpass.streams</span> <span class="n">s</span>
-  <span class="n">join</span> <span class="n">dfo</span><span class="o">.</span><span class="n">pse_conservation_units_streams</span> <span class="n">cu</span> <span class="n">using</span> <span class="p">(</span><span class="n">linear_feature_id</span><span class="p">)</span>
-  <span class="n">where</span> <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">289</span><span class="p">,</span> <span class="mi">287</span><span class="p">)</span>
-  <span class="n">group</span> <span class="n">by</span> <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span><span class="p">;</span>
+    <span class="nb">round</span><span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="n">AS</span> <span class="n">length_km</span>
+  <span class="n">FROM</span> <span class="n">whse_basemapping</span><span class="o">.</span><span class="n">fwa_streams_vw</span> <span class="n">s</span>
+  <span class="n">JOIN</span> <span class="n">psf</span><span class="o">.</span><span class="n">pse_conservation_units_streams</span> <span class="n">cu</span> <span class="n">USING</span> <span class="p">(</span><span class="n">linear_feature_id</span><span class="p">)</span>
+  <span class="n">WHERE</span> <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span> <span class="n">IN</span> <span class="p">(</span><span class="mi">289</span><span class="p">,</span> <span class="mi">287</span><span class="p">)</span>
+  <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span><span class="p">;</span>
 
-   <span class="n">cuid</span> <span class="o">|</span> <span class="n">length_km</span>
+ <span class="n">cuid</span> <span class="o">|</span> <span class="n">length_km</span>
 <span class="o">------+-----------</span>
-  <span class="mi">287</span> <span class="o">|</span>   <span class="mf">9371.30</span>
-  <span class="mi">289</span> <span class="o">|</span>  <span class="mf">11538.96</span>
-<span class="p">(</span><span class="mi">2</span> <span class="n">rows</span><span class="p">)</span>
+  <span class="mi">287</span> <span class="o">|</span>   <span class="mf">9371.21</span>
+  <span class="mi">289</span> <span class="o">|</span>  <span class="mf">11534.82</span>
+
+   
   
 </pre></div>
 </div>
