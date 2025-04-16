@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#fwa-waterbodies">fwa_waterbodies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fwa-waterbodies-upstream-area">fwa_waterbodies_upstream_area</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fwa-watersheds-upstream-area">fwa_watersheds_upstream_area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#psf-pse-conservation-units-streams">psf.pse_conservation_units_streams</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="04_functions.html">Function reference</a></li>
@@ -494,6 +495,45 @@ ON l.watershed_feature_id = ua.watershed_feature_id
 </tr>
 </tbody>
 </table>
+</section>
+<section id="psf-pse-conservation-units-streams">
+<h2>psf.pse_conservation_units_streams<a class="headerlink" href="#psf-pse-conservation-units-streams" title="Link to this heading"></a></h2>
+<p>Lookup relating Pacific Salmon Explorer Conservation Units to FWA streams</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>linear_feature_id</p></td>
+<td><p>bigint</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>cuid</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p>For example, to find length of all streams associated with CU 289 (Morice) and CU 287 (Bulkley):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">select</span> 
+    <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">length_km</span>
+  <span class="kn">from</span><span class="w"> </span><span class="nn">bcfishpass.streams</span> <span class="n">s</span>
+  <span class="n">join</span> <span class="n">dfo</span><span class="o">.</span><span class="n">pse_conservation_units_streams</span> <span class="n">cu</span> <span class="n">using</span> <span class="p">(</span><span class="n">linear_feature_id</span><span class="p">)</span>
+  <span class="n">where</span> <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">289</span><span class="p">,</span> <span class="mi">287</span><span class="p">)</span>
+  <span class="n">group</span> <span class="n">by</span> <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span><span class="p">;</span>
+
+   <span class="n">cuid</span> <span class="o">|</span> <span class="n">length_km</span>
+<span class="o">------+-----------</span>
+  <span class="mi">287</span> <span class="o">|</span>   <span class="mf">9371.30</span>
+  <span class="mi">289</span> <span class="o">|</span>  <span class="mf">11538.96</span>
+<span class="p">(</span><span class="mi">2</span> <span class="n">rows</span><span class="p">)</span>
+  
+</pre></div>
+</div>
 </section>
 </section>
 
