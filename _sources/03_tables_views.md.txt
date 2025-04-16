@@ -184,6 +184,4 @@ For example, to find length of all streams associated with CU 289 (Morice) and C
   287 |   9371.21
   289 |  11534.82
 
-   
-  
 ```  
