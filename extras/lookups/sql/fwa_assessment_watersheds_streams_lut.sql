@@ -40,7 +40,7 @@ FROM overlay;
 
 -- Insert features that only touch
 -- Where one stream matches more than one watershed, just arbitrarily return
--- the watershed with the lowest id
+-- the watershed with the lowest id (but ensure they are in the same group)
 -- Note that we do not try and re-insert records that have already been
 -- matched in the first step.
 INSERT INTO fwapg.fwa_assessment_watersheds_streams_lut_:wsg
@@ -51,6 +51,7 @@ FROM whse_basemapping.fwa_stream_networks_sp s
 INNER JOIN whse_basemapping.fwa_assessment_watersheds_poly p
 ON ST_Intersects(s.geom, p.geom)
 AND ST_Touches(s.geom, p.geom)
+AND s.watershed_group_code = p.watershed_group_code
 WHERE s.edge_type != 6010
 AND s.watershed_group_code = :'wsg'
 ORDER BY linear_feature_id, watershed_feature_id
