@@ -1178,10 +1178,10 @@ with segment as (
     v_measure AS measure,
     s.downstream_route_measure,
     s.upstream_route_measure,
-    s.wscode_ltree as wscode,
-    s.localcode_ltree as localcode,
+    s.wscode,
+    s.localcode,
     s.geom
-  FROM whse_basemapping.fwa_stream_networks_sp AS s
+  FROM whse_basemapping.fwa_streams AS s
   WHERE s.blue_line_key = v_blue_line_key
   AND round(s.downstream_route_measure::numeric, 4) <= round(v_measure::numeric, 4)
   AND round(s.upstream_route_measure::numeric, 4) > round(v_measure::numeric, 4)
@@ -1212,7 +1212,7 @@ cut as (
 -- find everything downstream
 dnstr as (
   select a.*
-  from whse_basemapping.fwa_stream_networks_sp a
+  from whse_basemapping.fwa_streams a
   inner join segment b on fwa_downstream(
     b.blue_line_key,
     b.downstream_route_measure,
@@ -1220,8 +1220,8 @@ dnstr as (
     b.localcode,
     a.blue_line_key,
     a.downstream_route_measure,
-    a.wscode_ltree,
-    a.localcode_ltree
+    a.wscode,
+    a.localcode
     )
 )
 
@@ -1261,263 +1261,119 @@ left outer join whse_basemapping.fwa_stream_networks_mean_annual_precip p ON s.w
 left outer join whse_basemapping.fwa_stream_networks_order_max om on s.blue_line_key = om.blue_line_key
 left outer join whse_basemapping.fwa_stream_networks_order_parent op on s.blue_line_key = op.blue_line_key
 union all
-select
-  dn.linear_feature_id,
-  s.edge_type,
-  s.blue_line_key,
-  s.watershed_key,
-  s.wscode_ltree as wscode,
-  s.localcode_ltree as localcode,
-  s.watershed_group_code,
-  s.downstream_route_measure,
-  s.upstream_route_measure,
-  s.length_metre,
-  s.waterbody_key,
-  s.gnis_name,
-  s.stream_order,
-  s.stream_magnitude,
-  s.feature_code,
-  s.gradient,
-  s.left_right_tributary,
-  op.stream_order_parent,
-  om.stream_order_max,
-  ua.upstream_area_ha,
-  p.map_upstream,
-  cw.channel_width,
-  cw.channel_width_source,
-  d.mad_m3s,
-  s.geom as geom
+select *
 from dnstr dn
-inner join whse_basemapping.fwa_stream_networks_sp s on dn.linear_feature_id = s.linear_feature_id
-left outer join whse_basemapping.fwa_streams_watersheds_lut l on s.linear_feature_id = l.linear_feature_id
-inner join whse_basemapping.fwa_watersheds_upstream_area ua on l.watershed_feature_id = ua.watershed_feature_id
-left outer join whse_basemapping.fwa_stream_networks_channel_width cw on dn.linear_feature_id = cw.linear_feature_id
-left outer join whse_basemapping.fwa_stream_networks_discharge d on dn.linear_feature_id = d.linear_feature_id
-left outer join whse_basemapping.fwa_stream_networks_mean_annual_precip p ON s.wscode_ltree = p.wscode_ltree AND s.localcode_ltree = p.localcode_ltree
-left outer join whse_basemapping.fwa_stream_networks_order_max om on s.blue_line_key = om.blue_line_key
-left outer join whse_basemapping.fwa_stream_networks_order_parent op on s.blue_line_key = op.blue_line_key
 order by wscode desc, localcode desc, downstream_route_measure desc;
 
 
 END
 
 $$
+LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
+
+COMMENT ON FUNCTION whse_basemapping.FWA_DownstreamTrace IS 'Return stream network downstream of provided location';
+
+
+
+--DROP FUNCTION fwa_networktrace(integer,double precision,double precision);
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_NetworkTrace
+-- Return stream network path between the provided locations
+-- (breaking stream at given locations if locations are farther from existing endpoints than the provided tolerance)
+-- -------------------------------------------------------------------------------------------------------------------------
+
+
+CREATE OR REPLACE FUNCTION postgisftw.FWA_NetworkTrace(
+  blue_line_key_a integer,
+  measure_a float,
+  blue_line_key_b integer,
+  measure_b float,
+  tolerance float default 1,
+  aggregate_path boolean default true
+)
+
+RETURNS TABLE (
+  linear_feature_id        bigint                      ,
+  edge_type                integer                     ,
+  blue_line_key            integer                     ,
+  watershed_key            integer                     ,
+  wscode                   ltree                       ,
+  localcode                ltree                       ,
+  watershed_group_code     character varying(4)        ,
+  downstream_route_measure double precision            ,
+  upstream_route_measure   double precision            ,
+  length_metre             double precision            ,
+  waterbody_key            integer                     ,
+  gnis_name                character varying(80)       ,
+  stream_order             integer                     ,
+  stream_magnitude         integer                     ,
+  feature_code             character varying(10)       ,
+  gradient                 double precision            ,
+  left_right_tributary     character varying(7)        ,
+  stream_order_parent      integer                     ,
+  stream_order_max         integer                     ,
+  upstream_area_ha         double precision            ,
+  map_upstream             integer                     ,
+  channel_width            double precision            ,
+  channel_width_source     text                        ,
+  mad_m3s                  double precision            ,
+  geom                     geometry(LineStringZM,3005)
+)
+
+AS
+
+$$
+
+DECLARE
+   v_blkey_a    integer := blue_line_key_a;
+   v_measure_a  float   := measure_a;
+   v_blkey_b    integer := blue_line_key_b;
+   v_measure_b  float   := measure_b;
+   v_tolerance  float   := tolerance;
+   v_aggregate_path boolean := aggregate_path;
+
+BEGIN
+
+RETURN QUERY
+
+-- trace downstream from both locations, the portion of the
+-- traces that are not common to both is the path between the points
+
+-- return source features
+WITH p1 AS (
+  SELECT *
+  FROM fwa_downstreamtrace(v_blkey_a, v_measure_a, v_tolerance)
+),
+
+p2 AS (
+  SELECT *
+  FROM fwa_downstreamtrace(v_blkey_b, v_measure_b, v_tolerance)
+)
+
+SELECT * FROM (
+
+  SELECT p1.*
+  FROM p1
+  LEFT JOIN p2 ON p1.linear_feature_id = p2.linear_feature_id
+  WHERE p2.linear_feature_id IS NULL
+
+  UNION ALL
+
+  SELECT p2.*
+  FROM p2
+  LEFT JOIN p1 ON p2.linear_feature_id = p1.linear_feature_id
+  WHERE p1.linear_feature_id IS NULL
+
+) AS f
+WHERE f.blue_line_key = f.watershed_key -- do not return side channels, just the network path
+ORDER BY wscode DESC, localcode DESC, downstream_route_measure DESC;
+
+
+-- return a single line (aggregate the geometries)
+
+END
+
+$$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.FWA_DownstreamTrace IS 'Return stream network downstream of provided location';
-
---DROP FUNCTION postgisftw.FWA_SlopeAlongInterval(integer, integer,integer,integer,integer);
--- -------------------------------------------------------------------------------------------------------------------------
--- FWA_slopealonginterval - measure (upstream) slope at set intervals along a stream
--- -------------------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION postgisftw.FWA_SlopeAlongInterval(
-    blue_line_key integer,
-    interval_length integer DEFAULT 100,
-    distance_upstream integer DEFAULT 100,
-    start_measure integer DEFAULT 0,
-    end_measure integer DEFAULT NULL
-)
-
-
-RETURNS TABLE
-    (
-        idx                      integer,
-        downstream_measure       numeric,
-        downstream_z             numeric,
-        upstream_measure         numeric,
-        upstream_z               numeric,
-        gradient                 numeric
-    )
-
-AS
-
-$$
-
-DECLARE
-
-   v_blkey          integer := blue_line_key;
-   v_interval       integer := interval_length;
-   v_distance_upstream integer := distance_upstream;
-   v_measure_start  integer := start_measure;
-   v_measure_end    integer := end_measure;
-   v_measure_max    numeric;
-   v_measure_min    numeric;
-
-BEGIN
-
--- find min and max measures of the stream
--- (round measures to avoid floating point issues)
-SELECT
-  min(round(s.downstream_route_measure::numeric, 3)) as min_measure,
-  max(round(s.upstream_route_measure::numeric, 3)) as max_measure
-FROM whse_basemapping.fwa_stream_networks_sp s
-WHERE s.blue_line_key = v_blkey
-INTO v_measure_min, v_measure_max;
-
--- Check that the provided measure actually falls within the min/max measures of stream
--- (if portions of the stream do not exist in the db there will simply be gaps in returned points)
-IF v_measure_start < v_measure_min OR v_measure_start > v_measure_max THEN
-  RAISE EXCEPTION 'Input start_measure value does not exist in FWA';
-END IF;
-
--- if no end point provided, process the entire stream
-IF v_measure_end IS NULL THEN
-  v_measure_end := floor(v_measure_max);
-END IF;
-
-IF v_measure_end > v_measure_max THEN
-  RAISE NOTICE 'Value: %', v_measure_end;
-  RAISE EXCEPTION 'Input end_measure value does not exist in FWA';
-END IF;
-
-IF v_measure_end <= v_measure_start THEN
-  RAISE EXCEPTION 'Input end_measure value must be more than input start_measure value';
-END IF;
-
-IF (v_measure_end - v_measure_start) < v_interval THEN
-  RAISE EXCEPTION 'Distance between start_measure and end_measure is less than input interval_length';
-END IF;
-
-
-RETURN QUERY
-
-with dnstr as (
-  select
-    index as idx,
-    downstream_route_measure as dnstr_measure,
-    st_z(geom) as dnstr_z
-  from fwa_locatealonginterval(v_blkey, v_interval, v_measure_start, v_measure_end)
-),
-
-upstr as (
-  select
-    index as idx,
-    downstream_route_measure as upstr_measure,
-    st_z(geom) as upstr_z
-  from fwa_locatealonginterval(v_blkey, v_interval, (v_measure_start + v_distance_upstream), v_measure_end)
-)
-
-select
-  d.idx,
-  d.dnstr_measure::numeric as downstream_route_measure,
-  round(d.dnstr_z::numeric, 2) as downstream_z,
-  u.upstr_measure::numeric as upstream_route_measure,
-  round(u.upstr_z::numeric, 2) as upstream_z,
-  round(((u.upstr_z - d.dnstr_z) / (u.upstr_measure - d.dnstr_measure))::numeric, 3) as gradient
-from dnstr d
-inner join upstr u on d.idx = u.idx;
-
-END;
-
-$$
-LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
-
-COMMENT ON FUNCTION postgisftw.FWA_SlopeAlongInterval IS 'Return a table (n, downstream_route_measure, downstream_z, upstream_route_measure, upstream_z, gradient), measuring slope at equal intervals';
-
--- -------------------------------------------------------------------------------------------------------------------------
--- fwa_segmentalonginterval
--- chop stream (blkey) into equal interval linestrings
--- -------------------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION postgisftw.FWA_SegmentAlongInterval(
-    blue_line_key integer,
-    interval_length integer DEFAULT 100,
-    start_measure integer DEFAULT 0,
-    end_measure integer DEFAULT NULL
-)
-
--- note that multipart geometries are returned in order to support non-contiguous stream geoms
--- (ie, cross border or similar)
-
-RETURNS TABLE
-    (
-        index                    integer,
-        downstream_route_measure double precision,
-        upstream_route_measure   double precision,
-        geom                     geometry(MultiLineString, 3005)
-    )
-
-AS
-
-$$
-
-DECLARE
-
-   v_blkey          integer := blue_line_key;
-   v_interval       integer := interval_length;
-   v_measure_start  integer := start_measure;
-   v_measure_end    integer := end_measure;
-   v_measure_max    numeric;
-   v_measure_min    numeric;
-
-BEGIN
-
--- find min and max measures of the stream
--- (round measures to avoid floating point issues)
-SELECT
-  min(round(s.downstream_route_measure::numeric, 3)) as min_measure,
-  max(round(s.upstream_route_measure::numeric, 3)) as max_measure
-FROM whse_basemapping.fwa_stream_networks_sp s
-WHERE s.blue_line_key = v_blkey
-INTO v_measure_min, v_measure_max;
-
--- Check that the provided measure actually falls within the min/max measures of stream
--- (if portions of the stream do not exist in the db there will simply be gaps in returned points)
-IF v_measure_start < v_measure_min OR v_measure_start > v_measure_max THEN
-  RAISE EXCEPTION 'Input start_measure value does not exist in FWA';
-END IF;
-
-IF v_measure_end > v_measure_max THEN
-  RAISE EXCEPTION 'Input end_measure value does not exist in FWA';
-END IF;
-
-IF v_measure_end <= v_measure_start THEN
-  RAISE EXCEPTION 'Input end_measure value must be more than input start_measure value';
-END IF;
-
-IF (v_measure_end - v_measure_start) < v_interval THEN
-  RAISE EXCEPTION 'Distance between start_measure and end_measure is less than input interval_length';
-END IF;
-
--- if no end point provided, process the entire stream
-IF v_measure_end IS NULL THEN
-  v_measure_end := v_measure_max;
-END IF;
-
-RETURN QUERY
-
-
-WITH start_pts as
-(
-  SELECT
-    generate_series(0, v_measure_end / v_interval) as n,
-    v_blkey as blue_line_key,
-    generate_series(v_measure_start, v_measure_end, v_interval) as downstream_route_measure
-),
-
-intervals as (
-  SELECT
-    n,
-    s.blue_line_key,
-    s.downstream_route_measure,
-    coalesce(lead(s.downstream_route_measure) OVER (ORDER BY n), v_measure_end) AS upstream_route_measure
-  FROM start_pts s
-)
-
-select
-  i.n::integer as index,
-  i.downstream_route_measure::double precision,
-  i.upstream_route_measure::double precision,
-  ST_Multi(st_union(ST_LocateBetween(s.geom, i.downstream_route_measure, i.upstream_route_measure))) as geom
-FROM intervals i
-inner join whse_basemapping.fwa_stream_networks_sp s on s.blue_line_key = i.blue_line_key
-AND s.downstream_route_measure <= i.downstream_route_measure
-AND s.upstream_route_measure > i.downstream_route_measure
-GROUP BY i.n, i.blue_line_key, i.downstream_route_measure, i.upstream_route_measure
-ORDER BY i.n;
-
-END;
-
-$$
-LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
-
-COMMENT ON FUNCTION postgisftw.FWA_SegmentAlongInterval IS 'Return a table (index, downstream_route_measure, upstream_route_measure, geom), representing segments along a stream between specified locations at specified interval';
+COMMENT ON FUNCTION postgisftw.FWA_NetworkTrace IS 'Return stream network path between the provided locations';
