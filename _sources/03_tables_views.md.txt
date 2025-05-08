@@ -63,9 +63,9 @@ Named streams of BC, aggregated per watershed group and simplified using a 25m t
 | `geom` | `geometry(MultiLineString,3005)` | The geometry of the named stream, an aggregation of the source features and simpified by 25m |
 
 
-## whse_basemapping.fwa_streams_vw
+## whse_basemapping.fwa_streams
 
-View of FWA stream networks and value-added attributes
+FWA stream networks plus value-added attributes
 
 | Column | Type | Description |
 |--------|------|-------------|
