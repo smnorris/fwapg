@@ -239,6 +239,8 @@ data/WBD_National_GDB.zip:
 		set -e; $(PSQL) -c "truncate whse_basemapping.$$table" ; \
 		set -e; $(PSQL) -c "\copy whse_basemapping.$$table FROM PROGRAM 'curl -s https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/$$table.csv.gz | gunzip' delimiter ',' csv header" ; \
 	done
+	# materialize above to whse_basemapping.fwa_streams, holding the value-added data (for fast upstr/dnstr queries)
+	$(PSQL) -f db/sql/extras.sql
 
 # same with conservation unit to streams lookup table
 .make/psf:
