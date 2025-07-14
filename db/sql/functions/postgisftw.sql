@@ -1663,3 +1663,132 @@ $$
 LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
 COMMENT ON FUNCTION postgisftw.FWA_NetworkTrace IS 'Return stream network path between the provided locations';
+
+
+-- draft fwa_upstream() as service
+
+CREATE OR REPLACE FUNCTION postgisftw.FWA_Upstream(
+    blue_line_key_a integer,
+    downstream_route_measure_a double precision,
+    upstream_route_measure_a double precision,
+    wscode_a ltree,
+    localcode_a ltree,
+    blue_line_key_b integer,
+    downstream_route_measure_b double precision,
+    wscode_b ltree,
+    localcode_b ltree,
+    include_equivalents boolean default False,
+    tolerance double precision default .001
+)
+RETURNS table
+  (
+      upstream boolean
+  )
+
+AS
+
+$$
+
+
+WITH codes as
+  (
+    SELECT
+      wscode_a::ltree as wscode_ltree_a,
+      localcode_a::ltree as localcode_ltree_a,
+      wscode_b::ltree as wscode_ltree_b,
+      localcode_b::ltree as localcode_ltree_b
+  )
+
+SELECT
+  -- b is a child of a, always
+  wscode_ltree_b <@ wscode_ltree_a AND
+
+    -- conditional upstream join logic, based on whether watershed codes are equivalent
+  (
+    CASE
+       -- first, consider simple case - streams where wscode and localcode are equivalent
+       WHEN include_equivalents IS False AND
+          wscode_ltree_a = localcode_ltree_a AND
+          (
+              -- upstream tribs
+              (blue_line_key_b != blue_line_key_a) OR
+
+              -- on same blue line
+              (blue_line_key_b = blue_line_key_a AND
+               downstream_route_measure_b >= upstream_route_measure_a + tolerance)
+          )
+          -- exclude distributaries with equivalent codes and different blkeys
+          AND NOT (
+            wscode_ltree_a = wscode_ltree_b AND
+            localcode_ltree_a = localcode_ltree_b AND
+            blue_line_key_a != blue_line_key_b
+          )
+       THEN TRUE
+
+       -- next, the more complicated case - where wscode and localcode are not equal
+       WHEN include_equivalents IS False AND
+         wscode_ltree_a != localcode_ltree_a AND
+          (
+                -- on same blue line
+              (blue_line_key_b = blue_line_key_a AND
+               downstream_route_measure_b >= upstream_route_measure_a + tolerance)
+              OR
+              -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
+              (wscode_ltree_b > localcode_ltree_a AND
+               NOT wscode_ltree_b <@ localcode_ltree_a)
+              OR
+              -- capture side channels: b is the same watershed code, with larger localcode
+              (wscode_ltree_b = wscode_ltree_a
+               AND localcode_ltree_b > localcode_ltree_a)
+          )
+        THEN TRUE
+
+      -- run the same process, but return true for locations at the same measure
+      -- (within tolerance)
+       WHEN include_equivalents IS True AND
+          wscode_ltree_a = localcode_ltree_a AND
+          (
+              -- upstream tribs
+              (blue_line_key_b != blue_line_key_a) OR
+
+              -- on same blue line
+              (blue_line_key_b = blue_line_key_a AND
+               (downstream_route_measure_b > upstream_route_measure_a OR
+                abs(upstream_route_measure_a - downstream_route_measure_b) <= tolerance)
+              )
+          )
+          -- exclude distributaries with equivalent codes and different blkeys
+          AND NOT (
+            wscode_ltree_a = wscode_ltree_b AND
+            localcode_ltree_a = localcode_ltree_b AND
+            blue_line_key_a != blue_line_key_b
+          )
+       THEN TRUE
+
+       -- next, the more complicated case - where wscode and localcode are not equal
+       WHEN include_equivalents IS True AND
+         wscode_ltree_a != localcode_ltree_a AND
+          (
+              -- on same blue line
+              (blue_line_key_b = blue_line_key_a AND
+               (downstream_route_measure_b > upstream_route_measure_a OR
+                abs(upstream_route_measure_a - downstream_route_measure_b) <= tolerance)
+              )
+              OR
+              -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
+              (wscode_ltree_b > localcode_ltree_a AND
+               NOT wscode_ltree_b <@ localcode_ltree_a)
+              OR
+              -- capture side channels: b is the same watershed code, with larger localcode
+              (wscode_ltree_b = wscode_ltree_a
+               AND localcode_ltree_b > localcode_ltree_a)
+          )
+        THEN TRUE
+
+        ELSE FALSE
+    END
+  )
+FROM codes
+$$ language 'sql' immutable parallel safe;
+
+COMMENT ON FUNCTION postgisftw.FWA_Upstream IS 'Evaluate if a set of watershed codes/measures is upstream of another set of watershed codes/measures';

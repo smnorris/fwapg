@@ -9,8 +9,7 @@ CREATE OR REPLACE FUNCTION whse_basemapping.FWA_NetworkTrace(
   measure_a float,
   blue_line_key_b integer,
   measure_b float,
-  tolerance float default 1,
-  aggregate_path boolean default true
+  tolerance float default 1
 )
 
 RETURNS TABLE (
@@ -51,7 +50,6 @@ DECLARE
    v_blkey_b    integer := blue_line_key_b;
    v_measure_b  float   := measure_b;
    v_tolerance  float   := tolerance;
-   v_aggregate_path boolean := aggregate_path;
 
 BEGIN
 
