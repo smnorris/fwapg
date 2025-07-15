@@ -684,7 +684,7 @@ Return upstream 100m slopes at 100m intervals along the Bonaparte River, from 10
 
 [FWA_SlopeAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_slopealonginterval.html)
 
-Make the same request as the [example above](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_slopealonginterval/items.json?blue_line_key=356363594&interval_length=100&distance_upstream=100&start_measure=1000&end_measure=2000)
+Make the same request as the [example above](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_slopealonginterval/items.json?blue_line_key=356363594&interval_length=100\&distance_upstream=100\&start_measure=1000\&end_measure=2000)
 
 
 ## FWA_StreamsAsMVT
@@ -878,6 +878,7 @@ select * from FWA_UpstreamTrace(354153927, 350);
 
 [FWA_UpstreamTrace](https://features.hillcrestgeo.ca/fwa/functions/fwa_upstreamtrace.html)
 
+(FWA_WatershedAtMeasure)=
 ## FWA_WatershedAtMeasure
 
 ### Synopsis
