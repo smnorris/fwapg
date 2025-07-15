@@ -499,7 +499,15 @@ Return a table of paths (aggregated stream network linestrings) connecting the p
 Stream network geometries are split at the locations provided, if the stream endpoints are not located within the distance specified by the tolerance.
 The function will return one path if the provided locations are flow connected (upstream/downstream), two paths if they are not.
 
-Fields included are as per [`whse_basemapping.fwa_streams`](https://smnorris.github.io/fwapg/03_tables_views.html#whse-basemapping-fwa-streams).
+| field                     | type                  | description                                 |
+| :-------------------------| --------------------- |-------------------------------------------- |
+| `id`                      | integer               | 0 based index of returned features          |
+| `from_blue_line_key`      | integer               | blue_line_key of starting point / point a   |
+| `from_measure`            | double precision      | measure value at starting point / point a   |
+| `to_blue_line_key`        | integer               | blue_line_key of ending point / point b     |
+| `to_measure`              | double precision      | measure value at ending point / point b     |
+| `geom`                    | geometry(LinestringZ, 3005) | geometry of the path                  |
+
 
 ### Example 1
 
