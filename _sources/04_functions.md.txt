@@ -501,7 +501,7 @@ The function will return one path if the provided locations are flow connected (
 
 | field                     | type                  | description                                 |
 | :-------------------------| --------------------- |-------------------------------------------- |
-| `id`                      | integer               | 0 based index of returned features          |
+| `id`                      | integer               | 1 based index of returned features          |
 | `from_blue_line_key`      | integer               | blue_line_key of starting point / point a   |
 | `from_measure`            | double precision      | measure value at starting point / point a   |
 | `to_blue_line_key`        | integer               | blue_line_key of ending point / point b     |
