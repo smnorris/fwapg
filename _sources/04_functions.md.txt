@@ -378,6 +378,195 @@ Make the same request as the example above, but
 [at 10km](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100)
 
 
+## FWA_NetworkTrace
+
+### Synopsis
+
+```sql
+FWA_NetworkTrace(
+  blue_line_key_a INTEGER,
+  measure_a FLOAT,
+  blue_line_key_b INTEGER,
+  measure_b FLOAT,
+  tolerance FLOAT DEFAULT 1
+)
+```
+
+### Description
+
+Return a table of all stream network features that connect the provided locations, not including side-channels.
+Stream network geometries are split at the locations provided, if the stream endpoints are not located within the distance specified by the tolerance.
+Fields included are as per [`whse_basemapping.fwa_streams`](https://smnorris.github.io/fwapg/03_tables_views.html#whse-basemapping-fwa-streams).
+
+Note that the function will return data for any provided locations, even if the locations are not connected by the source stream network (ie the connection is marine).
+
+### Example 1
+
+Return stream segments between a point on a trib to Chipman Creek and a point on the Chemainus River upstream of its confluence with Chipman Creek:
+
+```sql
+  SELECT 
+    linear_feature_id, 
+    blue_line_key, 
+    downstream_route_measure,
+    channel_width
+  FROM fwa_networktrace(354132308, 2000, 354154440, 37100);
+```
+
+```
+  linear_feature_id | blue_line_key | downstream_route_measure | channel_width 
+-------------------+---------------+--------------------------+---------------
+         710035813 |     354132308 |         1012.21665141576 |              
+         710275878 |     354132308 |                        0 |              
+         710276079 |     354155015 |         3461.16658988312 |         14.05
+         710035785 |     354155015 |         3303.08602877688 |         14.23
+         710276267 |     354155015 |         3128.21026243096 |         14.23
+...
+         710035875 |     354154440 |         35217.0414128426 |         26.16
+         710277390 |     354154440 |         34335.5545669658 |         12.38
+         710277402 |     354154440 |         34080.2453081494 |         10.22
+         710277776 |     354154440 |         32101.5933103956 |         16.35
+         710277690 |     354154440 |         31792.5224498383 |          23.1
+
+```
+
+
+### Example 2
+
+Return stream segments between a point high in the Shushwap watershed and the Fraser River at Chilliwack:
+
+```sql
+  SELECT 
+    linear_feature_id, 
+    blue_line_key, 
+    downstream_route_measure,
+    channel_width
+  FROM fwa_networktrace(356135133, 200, 356364114, 96830);
+```
+```
+  linear_feature_id | blue_line_key | downstream_route_measure | channel_width 
+-------------------+---------------+--------------------------+---------------
+         703007983 |     356135133 |                        0 |          3.97
+         703008157 |     356317350 |         3909.84772689516 |         10.35
+         703008165 |     356317350 |         3752.92413279951 |         10.38
+         703008171 |     356317350 |         3574.52153685271 |         12.23
+         703008202 |     356317350 |         3437.52168976849 |         12.25
+...
+         701348760 |     356364114 |         97872.6823525415 |       1098.79
+         701348775 |     356364114 |         97748.0754848264 |       1150.12
+         701348786 |     356364114 |         97691.4227605892 |       1168.85
+         701348810 |     356364114 |         97382.5273775604 |       1167.24
+         701348868 |     356364114 |                    96830 |       1011.92
+
+```
+
+
+
+### Web service
+
+
+Make the same requests as the examples above:
+
+- [Chipman Creek - Chemainus River](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktrace/items.html?blue_line_key_a=354132308&measure_a=2000&blue_line_key_b=354154440&measure_b=37100)
+- [Upper Shushwap - Fraser @ Chillwack](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktrace/items.html?blue_line_key_a=356135133&measure_a=200&blue_line_key_b=356364114&measure_b=96830)
+
+
+#### Marine examples
+
+Paths returned are the most direct route a fish or paddler could take between two locations, exluding portions of the path that are marine or not in BC:
+
+- between [opposite side of Finlayson Arm](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktrace/items.html?blue_line_key_a=354142279&measure_a=1000&blue_line_key_b=354106004&measure_b=200)
+
+
+- between [Chilliwack and Nelson](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktrace/items.html?blue_line_key_a=356364114&measure_a=96830&blue_line_key_b=356570348&measure_b=41162)
+
+
+## FWA_NetworkTraceAgg
+
+### Synopsis
+
+```sql
+FWA_NetworkTraceAgg(
+  blue_line_key_a INTEGER,
+  measure_a FLOAT,
+  blue_line_key_b INTEGER,
+  measure_b FLOAT,
+  tolerance FLOAT DEFAULT 1
+)
+```
+
+### Description
+
+Return a table of paths (aggregated stream network linestrings) connecting the provided locations, not including side-channels.
+Stream network geometries are split at the locations provided, if the stream endpoints are not located within the distance specified by the tolerance.
+The function will return one path if the provided locations are flow connected (upstream/downstream), two paths if they are not.
+
+Fields included are as per [`whse_basemapping.fwa_streams`](https://smnorris.github.io/fwapg/03_tables_views.html#whse-basemapping-fwa-streams).
+
+### Example 1
+
+Return the path between a point on a trib to Chipman Creek and a point on the Chemainus River upstream of its confluence with Chipman Creek:
+
+```sql
+  SELECT 
+    id,
+    from_blue_line_key,
+    from_measure,
+    to_blue_line_key,
+    to_measure,
+    ST_AsText(geom) as geom
+  FROM fwa_networktraceagg(354132308, 2000, 354154440, 37100);
+```
+
+```
+ id | from_blue_line_key | from_measure | to_blue_line_key |    to_measure    | geom 
+----+--------------------+--------------+------------------+------------------+-----
+  1 |          354132308 |         2000 |        354155015 |                0 | LINESTRING Z (...
+  2 |          354154440 |        37100 |        354154440 | 31792.5224498383 | LINESTRING Z (...
+
+```
+
+
+### Example 2
+
+Return the path between a point high in the Shushwap watershed and the Fraser River at Chilliwack:
+
+```sql
+  SELECT 
+    id,
+    from_blue_line_key,
+    from_measure,
+    to_blue_line_key,
+    to_measure,
+    ST_AsText(geom) as geom
+  FROM fwa_networktraceagg(356135133, 200, 356364114, 96830);
+```
+```
+  id | from_blue_line_key | from_measure | to_blue_line_key | to_measure | geom
+ ----+--------------------+--------------+------------------+------------+-----                                                                                                                 
+  1  |          356135133 |          200 |        356364114 |      96830 | LINESTRING Z 
+```
+
+### Web service
+
+[FWA_NetworkTraceAgg](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktraceagg.html)
+
+Make the same requests as the examples above:
+
+- [Chipman Creek - Chemainus River](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktraceagg/items.html?blue_line_key_a=354132308&measure_a=2000&blue_line_key_b=354154440&measure_b=37100)
+- [Upper Shushwap - Fraser @ Chillwack](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktraceagg/items.html?blue_line_key_a=356135133&measure_a=200&blue_line_key_b=356364114&measure_b=96830)
+
+
+#### Marine examples
+
+As with `FWA_NetworkTrace()`, paths returned are the most direct route a fish or paddler could take between two locations, exluding portions of the path that are marine or not in BC:
+
+- between [opposite side of Finlayson Arm](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=354142279&measure_a=1000&blue_line_key_b=354106004&measure_b=200)
+
+
+- between [Chilliwack and Nelson](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=356364114&measure_a=96830&blue_line_key_b=356570348&measure_b=41162)
+
+
 ## FWA_SegmentAlongInterval
 
 ### Synopsis
