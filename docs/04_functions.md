@@ -561,10 +561,10 @@ Make the same requests as the examples above:
 
 As with `FWA_NetworkTrace()`, paths returned are the most direct route a fish or paddler could take between two locations, exluding portions of the path that are marine or not in BC:
 
-- between [opposite side of Finlayson Arm](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=354142279&measure_a=1000&blue_line_key_b=354106004&measure_b=200)
+- between [opposite side of Finlayson Arm](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=354142279\&measure_a=1000\&blue_line_key_b=354106004\&measure_b=200)
 
 
-- between [Chilliwack and Nelson](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=356364114&measure_a=96830&blue_line_key_b=356570348&measure_b=41162)
+- between [Chilliwack and Nelson](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=356364114\&measure_a=96830\&blue_line_key_b=356570348\&measure_b=41162)
 
 
 ## FWA_SegmentAlongInterval
