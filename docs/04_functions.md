@@ -467,8 +467,8 @@ Return stream segments between a point high in the Shushwap watershed and the Fr
 
 Make the same requests as the examples above:
 
-- [Chipman Creek - Chemainus River](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktrace/items.html?blue_line_key_a=354132308&measure_a=2000&blue_line_key_b=354154440&measure_b=37100)
-- [Upper Shushwap - Fraser @ Chillwack](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktrace/items.html?blue_line_key_a=356135133&measure_a=200&blue_line_key_b=356364114&measure_b=96830)
+- <a href="https://features.hillcrestgeo.ca/fwa/functions/fwa_networktrace/items.html?blue_line_key_a=354132308&measure_a=2000&blue_line_key_b=354154440&measure_b=37100">Chipman Creek - Chemainus River</a>
+- <a href="https://features.hillcrestgeo.ca/fwa/functions/fwa_networktrace/items.html?blue_line_key_a=356135133&measure_a=200&blue_line_key_b=356364114&measure_b=96830">Upper Shushwap - Fraser @ Chillwack</a>
 
 
 #### Marine examples
