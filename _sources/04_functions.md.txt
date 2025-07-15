@@ -374,8 +374,7 @@ Mapping the returned features:
 
 [FWA_LocateAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval.html)
 
-Make the same request as the example above, but
-[at 10km](https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100)
+Make the same request as the example above, but <a href="https://features.hillcrestgeo.ca/fwa/functions/fwa_locatealonginterval/items.html?blue_line_key=359572348&start_measure=1597489&interval_length=10000&end_measure=1706733&limit=100">at 10km</a>
 
 
 ## FWA_NetworkTrace
@@ -475,10 +474,9 @@ Make the same requests as the examples above:
 
 Paths returned are the most direct route a fish or paddler could take between two locations, exluding portions of the path that are marine or not in BC:
 
-- between [opposite side of Finlayson Arm](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktrace/items.html?blue_line_key_a=354142279&measure_a=1000&blue_line_key_b=354106004&measure_b=200)
+- between <a href="https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktrace/items.html?blue_line_key_a=354142279&measure_a=1000&blue_line_key_b=354106004&measure_b=200">opposite sides of Finlayson Arm</a>
 
-
-- between [Chilliwack and Nelson](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktrace/items.html?blue_line_key_a=356364114&measure_a=96830&blue_line_key_b=356570348&measure_b=41162)
+- between <a href="https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktrace/items.html?blue_line_key_a=356364114&measure_a=96830&blue_line_key_b=356570348&measure_b=41162">Chilliwack and Nelson</a>
 
 
 ## FWA_NetworkTraceAgg
@@ -553,18 +551,18 @@ Return the path between a point high in the Shushwap watershed and the Fraser Ri
 
 Make the same requests as the examples above:
 
-- [Chipman Creek - Chemainus River](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktraceagg/items.html?blue_line_key_a=354132308&measure_a=2000&blue_line_key_b=354154440&measure_b=37100)
-- [Upper Shushwap - Fraser @ Chillwack](https://features.hillcrestgeo.ca/fwa/functions/fwa_networktraceagg/items.html?blue_line_key_a=356135133&measure_a=200&blue_line_key_b=356364114&measure_b=96830)
+- <a href="https://features.hillcrestgeo.ca/fwa/functions/fwa_networktraceagg/items.html?blue_line_key_a=354132308&measure_a=2000&blue_line_key_b=354154440&measure_b=37100">Chipman Creek - Chemainus River</a>
+- <a href="https://features.hillcrestgeo.ca/fwa/functions/fwa_networktraceagg/items.html?blue_line_key_a=356135133&measure_a=200&blue_line_key_b=356364114&measure_b=96830">Upper Shushwap - Fraser @ Chillwack</a>
 
 
 #### Marine examples
 
 As with `FWA_NetworkTrace()`, paths returned are the most direct route a fish or paddler could take between two locations, exluding portions of the path that are marine or not in BC:
 
-- between [opposite side of Finlayson Arm](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=354142279\&measure_a=1000\&blue_line_key_b=354106004\&measure_b=200)
+- between <a href="https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=354142279&measure_a=1000&blue_line_key_b=354106004&measure_b=200">opposite sides of Finlayson Arm</a>
 
+- between <a href="https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=356364114&measure_a=96830&blue_line_key_b=356570348&measure_b=41162">Chilliwack and Nelson</a>
 
-- between [Chilliwack and Nelson](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_networktraceagg/items.html?blue_line_key_a=356364114\&measure_a=96830\&blue_line_key_b=356570348\&measure_b=41162)
 
 
 ## FWA_SegmentAlongInterval
@@ -684,7 +682,7 @@ Return upstream 100m slopes at 100m intervals along the Bonaparte River, from 10
 
 [FWA_SlopeAlongInterval](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_slopealonginterval.html)
 
-Make the same request as the [example above](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_slopealonginterval/items.json?blue_line_key=356363594&interval_length=100\&distance_upstream=100\&start_measure=1000\&end_measure=2000)
+Make the same request as the [example above](https://features.hillcrestgeo.ca/fwa/functions/postgisftw.fwa_slopealonginterval/items.json?blue_line_key=356363594&interval_length=100&distance_upstream=100&start_measure=1000&end_measure=2000)
 
 
 ## FWA_StreamsAsMVT
