@@ -136,10 +136,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#fwa-watershedatmeasure">FWA_WatershedAtMeasure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id40">Synopsis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id41">Description</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id42">Examples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id43">Web service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id41">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id42">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id43">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id44">Web service</a></li>
 </ul>
 </li>
 </ul>
@@ -1115,9 +1115,9 @@ on which it lies, split the source stream segment and only include the portion u
 </section>
 </section>
 <section id="fwa-watershedatmeasure">
-<h2>FWA_WatershedAtMeasure<a class="headerlink" href="#fwa-watershedatmeasure" title="Link to this heading"></a></h2>
-<section id="id40">
-<h3>Synopsis<a class="headerlink" href="#id40" title="Link to this heading"></a></h3>
+<span id="id40"></span><h2>FWA_WatershedAtMeasure<a class="headerlink" href="#fwa-watershedatmeasure" title="Link to this heading"></a></h2>
+<section id="id41">
+<h3>Synopsis<a class="headerlink" href="#id41" title="Link to this heading"></a></h3>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span>
 <span class="w">    </span><span class="n">blue_line_key</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span>
 <span class="w">    </span><span class="n">downstream_route_measure</span><span class="w"> </span><span class="nb">float</span>
@@ -1125,8 +1125,8 @@ on which it lies, split the source stream segment and only include the portion u
 </pre></div>
 </div>
 </section>
-<section id="id41">
-<h3>Description<a class="headerlink" href="#id41" title="Link to this heading"></a></h3>
+<section id="id42">
+<h3>Description<a class="headerlink" href="#id42" title="Link to this heading"></a></h3>
 <p>Given a point defined by its position on the FWA stream network (<code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>,<code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>), return a table containing a polygon geometry that defines the point’s upstream watershed.</p>
 <p>Watershed delineation following this set of rules, in order of descending priority:</p>
 <ol class="arabic simple">
@@ -1200,8 +1200,8 @@ watershed in which it falls, then that watershed is included in the aggregation<
 </tbody>
 </table>
 </section>
-<section id="id42">
-<h3>Examples<a class="headerlink" href="#id42" title="Link to this heading"></a></h3>
+<section id="id43">
+<h3>Examples<a class="headerlink" href="#id43" title="Link to this heading"></a></h3>
 <ol class="arabic">
 <li><p>Extract the geometry of the watershed upstream of the Cowichan River at Hwy 19:</p>
 <div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span><span class="w"> </span><span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">);</span>
@@ -1246,8 +1246,8 @@ watershed in which it falls, then that watershed is included in the aggregation<
 </li>
 </ol>
 </section>
-<section id="id43">
-<h3>Web service<a class="headerlink" href="#id43" title="Link to this heading"></a></h3>
+<section id="id44">
+<h3>Web service<a class="headerlink" href="#id44" title="Link to this heading"></a></h3>
 <p><a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_watershedatmeasure.html">FWA_WatershedAtMeasure</a></p>
 </section>
 </section>
