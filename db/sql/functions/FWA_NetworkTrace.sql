@@ -4,13 +4,14 @@
 -- Return stream network between two locations.
 -- (breaking stream at given locations if locations are farther from existing endpoints than the provided tolerance)
 -- -------------------------------------------------------------------------------------------------------------------------
+-- DROP FUNCTION whse_basemapping.FWA_NetworkTrace(integer, float, integer, float, float);
+
 CREATE OR REPLACE FUNCTION whse_basemapping.FWA_NetworkTrace(
   blue_line_key_a integer,
   measure_a float,
   blue_line_key_b integer,
   measure_b float,
-  tolerance float default 1,
-  aggregate_path boolean default true
+  tolerance float default 1
 )
 
 RETURNS TABLE (
@@ -45,17 +46,6 @@ AS
 
 $$
 
-DECLARE
-   v_blkey_a    integer := blue_line_key_a;
-   v_measure_a  float   := measure_a;
-   v_blkey_b    integer := blue_line_key_b;
-   v_measure_b  float   := measure_b;
-   v_tolerance  float   := tolerance;
-   v_aggregate_path boolean := aggregate_path;
-
-BEGIN
-
-RETURN QUERY
 
 -- trace downstream from both locations, the portion of the
 -- traces that are not common to both is the path between the points
@@ -63,12 +53,12 @@ RETURN QUERY
 -- return source features
 WITH p1 AS (
   SELECT *
-  FROM fwa_downstreamtrace(v_blkey_a, v_measure_a, v_tolerance)
+  FROM fwa_downstreamtrace($1, $2, $5)
 ),
 
 p2 AS (
   SELECT *
-  FROM fwa_downstreamtrace(v_blkey_b, v_measure_b, v_tolerance)
+  FROM fwa_downstreamtrace($3, $4, $5)
 )
 
 SELECT * FROM (
@@ -130,12 +120,8 @@ WHERE f.blue_line_key = f.watershed_key -- do not return side channels, just the
 ORDER BY wscode DESC, localcode DESC, downstream_route_measure DESC;
 
 
--- return a single line (aggregate the geometries)
-
-END
-
 $$
-LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
+LANGUAGE 'sql' IMMUTABLE STRICT PARALLEL SAFE;
 
 COMMENT ON FUNCTION whse_basemapping.FWA_NetworkTrace IS 'Return stream network path between the provided locations';
 

@@ -1522,20 +1522,18 @@ LANGUAGE 'plpgsql' IMMUTABLE PARALLEL SAFE;
 
 COMMENT ON FUNCTION postgisftw.FWA_SegmentAlongInterval IS 'Return a table (index, downstream_route_measure, upstream_route_measure, geom), representing segments along a stream between specified locations at specified interval';
 
-
--- DROP FUNCTION postgisftw.fwa_networktrace(integer, double precision, integer, double precision, double precision, double precision);
--- -------------------------------------------------------------------------------------------------------------------------
 -- FWA_NetworkTrace
 -- Return stream network between two locations.
 -- (breaking stream at given locations if locations are farther from existing endpoints than the provided tolerance)
 -- -------------------------------------------------------------------------------------------------------------------------
+-- DROP FUNCTION postgisftw.FWA_NetworkTrace(integer, float, integer, float, float);
+
 CREATE OR REPLACE FUNCTION postgisftw.FWA_NetworkTrace(
   blue_line_key_a integer,
   measure_a float,
   blue_line_key_b integer,
   measure_b float,
-  tolerance float default 1,
-  aggregate_path boolean default true
+  tolerance float default 1
 )
 
 RETURNS TABLE (
@@ -1570,17 +1568,6 @@ AS
 
 $$
 
-DECLARE
-   v_blkey_a    integer := blue_line_key_a;
-   v_measure_a  float   := measure_a;
-   v_blkey_b    integer := blue_line_key_b;
-   v_measure_b  float   := measure_b;
-   v_tolerance  float   := tolerance;
-   v_aggregate_path boolean := aggregate_path;
-
-BEGIN
-
-RETURN QUERY
 
 -- trace downstream from both locations, the portion of the
 -- traces that are not common to both is the path between the points
@@ -1588,12 +1575,12 @@ RETURN QUERY
 -- return source features
 WITH p1 AS (
   SELECT *
-  FROM fwa_downstreamtrace(v_blkey_a, v_measure_a, v_tolerance)
+  FROM fwa_downstreamtrace($1, $2, $5)
 ),
 
 p2 AS (
   SELECT *
-  FROM fwa_downstreamtrace(v_blkey_b, v_measure_b, v_tolerance)
+  FROM fwa_downstreamtrace($3, $4, $5)
 )
 
 SELECT * FROM (
@@ -1655,11 +1642,290 @@ WHERE f.blue_line_key = f.watershed_key -- do not return side channels, just the
 ORDER BY wscode DESC, localcode DESC, downstream_route_measure DESC;
 
 
--- return a single line (aggregate the geometries)
+$$
+LANGUAGE 'sql' IMMUTABLE STRICT PARALLEL SAFE;
 
-END
+COMMENT ON FUNCTION whse_basemapping.FWA_NetworkTrace IS 'Return stream network path between the provided locations';
+
+-- select * from fwa_networktrace(356135133, 200, 356364114, 96830)
+-- select * from fwa_networktrace(354132308, 2000, 354154440, 37100)
+
+-- DROP FUNCTION postgisftw.fwa_networktraceagg(integer, double precision, integer, double precision, double precision, double precision);
+-- -------------------------------------------------------------------------------------------------------------------------
+-- FWA_NetworkTraceAgg
+-- Return paths between two locations as one or two linestrings.
+-- (breaking stream at given locations if locations are farther from existing endpoints than the provided tolerance)
+-- -------------------------------------------------------------------------------------------------------------------------
+
+
+CREATE OR REPLACE FUNCTION postgisftw.FWA_NetworkTraceAgg(
+  blue_line_key_a integer,
+  measure_a float,
+  blue_line_key_b integer,
+  measure_b float,
+  tolerance float default 1
+)
+
+RETURNS TABLE (
+  id                       integer,
+  from_blue_line_key       integer,
+  from_measure             double precision,
+  to_blue_line_key         integer,
+  to_measure               double precision,
+  geom                     geometry(LineStringZM,3005)
+)
+
+AS
 
 $$
-LANGUAGE 'plpgsql' IMMUTABLE STRICT PARALLEL SAFE;
 
-COMMENT ON FUNCTION postgisftw.FWA_NetworkTrace IS 'Return stream network path between the provided locations';
+  -- trace downstream from both locations, the portion of the
+  -- traces that are not common to both is the path between the points
+
+  WITH t1 AS (
+    SELECT 1 as id, *
+    FROM fwa_downstreamtrace($1, $2, $5)
+    WHERE blue_line_key = watershed_key
+  ),
+
+  t2 AS (
+    SELECT 2 as id, *
+    FROM fwa_downstreamtrace($3, $4, $5)
+    WHERE blue_line_key = watershed_key
+  ),
+
+  -- if the origins are flow-connected (ie downstream/upstream of the other),
+  -- the split source stream needs to be added to the result (the linear feature id
+  -- is common to both traces and excluded below, but a portion of it needs to be included)
+  remainder AS (
+    SELECT
+      s.linear_feature_id,
+      s.edge_type,
+      s.blue_line_key,
+      s.watershed_key,
+      s.wscode,
+      s.localcode,
+      s.watershed_group_code,
+      least(t1.upstream_route_measure, t2.upstream_route_measure) as downstream_route_measure,
+      greatest(t1.upstream_route_measure, t2.upstream_route_measure) as upstream_route_measure,
+      greatest(t1.upstream_route_measure, t2.upstream_route_measure) - least(t1.upstream_route_measure, t2.upstream_route_measure) as length_metre,
+      s.waterbody_key,
+      s.gnis_name,
+      s.stream_order,
+      s.stream_magnitude,
+      s.feature_code,
+      s.gradient,
+      s.left_right_tributary,
+      s.stream_order_parent,
+      s.stream_order_max,
+      s.upstream_area_ha,
+      s.map_upstream,
+      s.channel_width,
+      s.channel_width_source,
+      s.mad_m3s,
+      st_force3d(st_locatebetween(s.geom,
+        least(t1.upstream_route_measure, t2.upstream_route_measure),
+        greatest(t1.upstream_route_measure, t2.upstream_route_measure)
+      ))  as geom
+    FROM t1
+    INNER JOIN t2 ON t1.linear_feature_id = t2.linear_feature_id
+    AND t1.upstream_route_measure != t2.upstream_route_measure
+    -- join to source streams so we don't have to compare the two geoms to find the full length segment
+    INNER JOIN whse_basemapping.fwa_streams s ON s.linear_feature_id = t1.linear_feature_id
+  ),
+
+  t1_agg AS (
+    SELECT
+      t1.id,
+      first(t1.blue_line_key) as from_blue_line_key,
+      first(t1.upstream_route_measure) as from_measure,
+      last(t1.blue_line_key) as to_blue_line_key,
+      last(t1.downstream_route_measure) as to_measure,
+      st_linemerge(st_union(t1.geom)) as geom
+    FROM t1
+    LEFT JOIN t2 ON t1.linear_feature_id = t2.linear_feature_id
+    WHERE t2.linear_feature_id IS NULL
+    GROUP BY t1.id
+  ),
+
+  t2_agg AS (
+    SELECT
+      t2.id,
+      first(t2.blue_line_key) as from_blue_line_key,
+      first(t2.upstream_route_measure) as from_measure,
+      last(t2.blue_line_key) as to_blue_line_key,
+      last(t2.downstream_route_measure) as to_measure,
+      st_linemerge(st_union(t2.geom)) as geom
+    FROM t2
+    LEFT JOIN t1 ON t2.linear_feature_id = t1.linear_feature_id
+    WHERE t1.linear_feature_id IS NULL
+    GROUP BY t2.id
+  ),
+
+  -- determin which trace the remainder should be aggregated with
+  r_agg as (
+    select
+      coalesce(t1_agg.id, t2_agg.id) as id,
+      r.blue_line_key as from_blue_line_key,
+      r.upstream_route_measure as from_measure,
+      r.blue_line_key as to_blue_line_key,
+      r.downstream_route_measure as to_measure,
+      r.geom
+    from remainder r
+    left outer join t1_agg on round(r.upstream_route_measure) = round(t1_agg.to_measure)
+    left outer join t2_agg on round(r.upstream_route_measure) = round(t2_agg.to_measure)
+  ),
+
+  all_agg as (
+    select * from t1_agg
+    union all
+    select * from t2_agg
+    union all
+    select * from r_agg
+  )
+
+  select
+    id,
+    first(from_blue_line_key) as from_blue_line_key,
+    first(from_measure) as from_measure,
+    last(to_blue_line_key) as to_blue_line_key,
+    last(to_measure) as to_measure,
+    ST_RemoveRepeatedPoints(st_linemerge(st_union(st_multi(geom), .01))) as geom
+  from all_agg
+  group by id
+
+$$
+
+LANGUAGE 'sql' IMMUTABLE STRICT PARALLEL SAFE;
+
+COMMENT ON FUNCTION postgisftw.FWA_NetworkTrace IS 'Return aggregated stream network path(s) between the provided locations';
+
+-- select * from postgisftw.fwa_networktraceagg(354142279, 1000, 354106004, 200)    -- non-flow connected, marine separated, 2 features
+
+-- draft fwa_upstream() as service
+
+CREATE OR REPLACE FUNCTION postgisftw.FWA_Upstream(
+    blue_line_key_a integer,
+    downstream_route_measure_a double precision,
+    upstream_route_measure_a double precision,
+    wscode_a ltree,
+    localcode_a ltree,
+    blue_line_key_b integer,
+    downstream_route_measure_b double precision,
+    wscode_b ltree,
+    localcode_b ltree,
+    include_equivalents boolean default False,
+    tolerance double precision default .001
+)
+RETURNS table
+  (
+      upstream boolean
+  )
+
+AS
+
+$$
+
+
+WITH codes as
+  (
+    SELECT
+      wscode_a::ltree as wscode_ltree_a,
+      localcode_a::ltree as localcode_ltree_a,
+      wscode_b::ltree as wscode_ltree_b,
+      localcode_b::ltree as localcode_ltree_b
+  )
+
+SELECT
+  -- b is a child of a, always
+  wscode_ltree_b <@ wscode_ltree_a AND
+
+    -- conditional upstream join logic, based on whether watershed codes are equivalent
+  (
+    CASE
+       -- first, consider simple case - streams where wscode and localcode are equivalent
+       WHEN include_equivalents IS False AND
+          wscode_ltree_a = localcode_ltree_a AND
+          (
+              -- upstream tribs
+              (blue_line_key_b != blue_line_key_a) OR
+
+              -- on same blue line
+              (blue_line_key_b = blue_line_key_a AND
+               downstream_route_measure_b >= upstream_route_measure_a + tolerance)
+          )
+          -- exclude distributaries with equivalent codes and different blkeys
+          AND NOT (
+            wscode_ltree_a = wscode_ltree_b AND
+            localcode_ltree_a = localcode_ltree_b AND
+            blue_line_key_a != blue_line_key_b
+          )
+       THEN TRUE
+
+       -- next, the more complicated case - where wscode and localcode are not equal
+       WHEN include_equivalents IS False AND
+         wscode_ltree_a != localcode_ltree_a AND
+          (
+                -- on same blue line
+              (blue_line_key_b = blue_line_key_a AND
+               downstream_route_measure_b >= upstream_route_measure_a + tolerance)
+              OR
+              -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
+              (wscode_ltree_b > localcode_ltree_a AND
+               NOT wscode_ltree_b <@ localcode_ltree_a)
+              OR
+              -- capture side channels: b is the same watershed code, with larger localcode
+              (wscode_ltree_b = wscode_ltree_a
+               AND localcode_ltree_b > localcode_ltree_a)
+          )
+        THEN TRUE
+
+      -- run the same process, but return true for locations at the same measure
+      -- (within tolerance)
+       WHEN include_equivalents IS True AND
+          wscode_ltree_a = localcode_ltree_a AND
+          (
+              -- upstream tribs
+              (blue_line_key_b != blue_line_key_a) OR
+
+              -- on same blue line
+              (blue_line_key_b = blue_line_key_a AND
+               (downstream_route_measure_b > upstream_route_measure_a OR
+                abs(upstream_route_measure_a - downstream_route_measure_b) <= tolerance)
+              )
+          )
+          -- exclude distributaries with equivalent codes and different blkeys
+          AND NOT (
+            wscode_ltree_a = wscode_ltree_b AND
+            localcode_ltree_a = localcode_ltree_b AND
+            blue_line_key_a != blue_line_key_b
+          )
+       THEN TRUE
+
+       -- next, the more complicated case - where wscode and localcode are not equal
+       WHEN include_equivalents IS True AND
+         wscode_ltree_a != localcode_ltree_a AND
+          (
+              -- on same blue line
+              (blue_line_key_b = blue_line_key_a AND
+               (downstream_route_measure_b > upstream_route_measure_a OR
+                abs(upstream_route_measure_a - downstream_route_measure_b) <= tolerance)
+              )
+              OR
+              -- tributaries: b wscode > a localcode and b wscode is not a child of a localcode
+              (wscode_ltree_b > localcode_ltree_a AND
+               NOT wscode_ltree_b <@ localcode_ltree_a)
+              OR
+              -- capture side channels: b is the same watershed code, with larger localcode
+              (wscode_ltree_b = wscode_ltree_a
+               AND localcode_ltree_b > localcode_ltree_a)
+          )
+        THEN TRUE
+
+        ELSE FALSE
+    END
+  )
+FROM codes
+$$ language 'sql' immutable parallel safe;
+
+COMMENT ON FUNCTION postgisftw.FWA_Upstream IS 'Evaluate if a set of watershed codes/measures is upstream of another set of watershed codes/measures';
