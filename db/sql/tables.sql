@@ -754,6 +754,75 @@ comment on table hydrosheds.hybas_lev12_v1c IS 'HydroBasins for North America fr
 -- ---------------------------------------------------------------------------------------------------------------------
 -- extras
 
+create table whse_basemapping.fwa_streams (
+  linear_feature_id        bigint  primary key         ,
+  edge_type                integer                     ,
+  blue_line_key            integer                     ,
+  watershed_key            integer                     ,
+  wscode                   ltree                       ,
+  localcode                ltree                       ,
+  watershed_group_code     character varying(4)        ,
+  downstream_route_measure double precision            ,
+  upstream_route_measure   double precision            ,
+  length_metre             double precision            ,
+  waterbody_key            integer                     ,
+  gnis_name                character varying(80)       ,
+  stream_order             integer                     ,
+  stream_magnitude         integer                     ,
+  feature_code             character varying(10)       ,
+  gradient                 double precision            ,
+  left_right_tributary     character varying(7)        ,
+  stream_order_parent      integer                     ,
+  stream_order_max         integer                     ,
+  upstream_area_ha         double precision            ,
+  map_upstream             integer                     ,
+  channel_width            double precision            ,
+  channel_width_source     text                        ,
+  mad_m3s                  double precision            ,
+  geom                     geometry(LineStringZM,3005)
+);
+
+create index fwa_streams_edge_type_idx on whse_basemapping.fwa_streams (edge_type);
+create index fwa_streams_blue_line_key_idx on whse_basemapping.fwa_streams (blue_line_key);
+create index fwa_streams_blkey_measure_idx on whse_basemapping.fwa_streams (blue_line_key, downstream_route_measure);
+create index fwa_streams_watershed_key_idx on whse_basemapping.fwa_streams (watershed_key);
+create index fwa_streams_waterbody_key_idx on whse_basemapping.fwa_streams (waterbody_key);
+create index fwa_streams_watershed_group_code_idx on whse_basemapping.fwa_streams (watershed_group_code);
+create index fwa_streams_gnis_name_idx on whse_basemapping.fwa_streams (gnis_name);
+create index fwa_streams_wsc_gist_idx on whse_basemapping.fwa_streams using gist (wscode);
+create index fwa_streams_wsc_btree_idx on whse_basemapping.fwa_streams using btree (wscode);
+create index fwa_streams_lc_gist_idx on whse_basemapping.fwa_streams using gist (localcode);
+create index fwa_streams_lc_btree_idx on whse_basemapping.fwa_streams using btree (localcode);
+create index fwa_streams_geom_idx on whse_basemapping.fwa_streams using gist (geom);
+
+
+comment on table whse_basemapping.fwa_streams is 'FWA stream networks and value-added attributes';
+comment on column whse_basemapping.fwa_streams.linear_feature_id is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.edge_type is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.blue_line_key is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.watershed_key is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.wscode is 'FWA watershed code as postgres ltree type, with trailing -000000 strings removed';
+comment on column whse_basemapping.fwa_streams.localcode is 'FWA local watershed code as postgres ltree type, with trailing -000000 strings removed';
+comment on column whse_basemapping.fwa_streams.watershed_group_code is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.downstream_route_measure is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.upstream_route_measure is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.length_metre is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.waterbody_key is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.gnis_name is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.stream_order is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.stream_magnitude is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.feature_code is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.gradient is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.left_right_tributary is 'See FWA documentation';
+comment on column whse_basemapping.fwa_streams.stream_order_parent is 'Stream order of parent stream at confluence with stream having `blue_line_key` of the stream segment';
+comment on column whse_basemapping.fwa_streams.stream_order_max is 'Maxiumum order of the stream with equivalent `blue_line_key` as given segment)';
+comment on column whse_basemapping.fwa_streams.upstream_area_ha is 'Area (ha) upstream of the stream segment (including all fundamental watersheds with equivalent watershed code)';
+comment on column whse_basemapping.fwa_streams.map_upstream is 'Area weighted average mean annual precipitation upstream of the stream segment, source ClimateBC';
+comment on column whse_basemapping.fwa_streams.channel_width is 'Channel width of the stream segment in metres, with source as per channel_width_source';
+comment on column whse_basemapping.fwa_streams.channel_width_source is 'Data source for channel_width at given segment, with values (FIELD_MEASURMENT, FWA_RIVERS_POLY, MODELLED). FIELD_MEASUREMENT is derived from PSCIS and FISS data, MODELLED is taken from Thorley et al, 2021';
+comment on column whse_basemapping.fwa_streams.mad_m3s is 'Modelled mean annual discharge at the stream segment (Pacific Climate Impacts Consortium, University of Victoria, (January 2020) VIC-GL BCCAQ CMIP5: Gridded Hydrologic Model Output)';
+
+
 create table whse_basemapping.fwa_waterbodies_upstream_area (
     linear_feature_id bigint primary key,
     upstream_lake_ha double precision,
@@ -810,3 +879,4 @@ create table psf.pse_conservation_units_streams (
 
 create index on psf.pse_conservation_units_streams (linear_feature_id);
 create index on psf.pse_conservation_units_streams (cuid);
+

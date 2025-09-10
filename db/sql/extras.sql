@@ -1,4 +1,30 @@
-create table whse_basemapping.fwa_streams as
+insert into whse_basemapping.fwa_streams (
+  linear_feature_id,
+  edge_type,
+  blue_line_key,
+  watershed_key,
+  wscode,
+  localcode,
+  watershed_group_code,
+  downstream_route_measure,
+  upstream_route_measure,
+  length_metre,
+  waterbody_key,
+  gnis_name,
+  stream_order,
+  stream_magnitude,
+  feature_code,
+  gradient,
+  left_right_tributary,
+  stream_order_parent,
+  stream_order_max,
+  upstream_area_ha,
+  map_upstream,
+  channel_width,
+  channel_width_source,
+  mad_m3s,
+  geom
+)
 select
   s.linear_feature_id,
   s.edge_type,
@@ -33,45 +59,3 @@ left outer join whse_basemapping.fwa_stream_networks_order_max om on s.blue_line
 left outer join whse_basemapping.fwa_stream_networks_mean_annual_precip p on s.wscode_ltree = p.wscode_ltree and s.localcode_ltree = p.localcode_ltree
 left outer join whse_basemapping.fwa_stream_networks_channel_width cw on s.linear_feature_id = cw.linear_feature_id
 left outer join whse_basemapping.fwa_stream_networks_discharge mad on s.linear_feature_id = mad.linear_feature_id;
-
-alter table whse_basemapping.fwa_streams add PRIMARY KEY (linear_feature_id);
-
-create index fwa_streams_edge_type_idx on whse_basemapping.fwa_streams (edge_type);
-create index fwa_streams_blue_line_key_idx on whse_basemapping.fwa_streams (blue_line_key);
-create index fwa_streams_blkey_measure_idx on whse_basemapping.fwa_streams (blue_line_key, downstream_route_measure);
-create index fwa_streams_watershed_key_idx on whse_basemapping.fwa_streams (watershed_key);
-create index fwa_streams_waterbody_key_idx on whse_basemapping.fwa_streams (waterbody_key);
-create index fwa_streams_watershed_group_code_idx on whse_basemapping.fwa_streams (watershed_group_code);
-create index fwa_streams_gnis_name_idx on whse_basemapping.fwa_streams (gnis_name);
-create index fwa_streams_wsc_gist_idx on whse_basemapping.fwa_streams using gist (wscode);
-create index fwa_streams_wsc_btree_idx on whse_basemapping.fwa_streams using btree (wscode);
-create index fwa_streams_lc_gist_idx on whse_basemapping.fwa_streams using gist (localcode);
-create index fwa_streams_lc_btree_idx on whse_basemapping.fwa_streams using btree (localcode);
-create index fwa_streams_geom_idx on whse_basemapping.fwa_streams using gist (geom);
-
-
-comment on table whse_basemapping.fwa_streams is 'FWA stream networks and value-added attributes';
-comment on column whse_basemapping.fwa_streams.linear_feature_id is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.edge_type is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.blue_line_key is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.watershed_key is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.wscode is 'FWA watershed code as postgres ltree type, with trailing -000000 strings removed';
-comment on column whse_basemapping.fwa_streams.localcode is 'FWA local watershed code as postgres ltree type, with trailing -000000 strings removed';
-comment on column whse_basemapping.fwa_streams.watershed_group_code is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.downstream_route_measure is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.upstream_route_measure is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.length_metre is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.waterbody_key is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.gnis_name is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.stream_order is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.stream_magnitude is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.feature_code is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.gradient is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.left_right_tributary is 'See FWA documentation';
-comment on column whse_basemapping.fwa_streams.stream_order_parent is 'Stream order of parent stream at confluence with stream having `blue_line_key` of the stream segment';
-comment on column whse_basemapping.fwa_streams.stream_order_max is 'Maxiumum order of the stream with equivalent `blue_line_key` as given segment)';
-comment on column whse_basemapping.fwa_streams.upstream_area_ha is 'Area (ha) upstream of the stream segment (including all fundamental watersheds with equivalent watershed code)';
-comment on column whse_basemapping.fwa_streams.map_upstream is 'Area weighted average mean annual precipitation upstream of the stream segment, source ClimateBC';
-comment on column whse_basemapping.fwa_streams.channel_width is 'Channel width of the stream segment in metres, with source as per channel_width_source';
-comment on column whse_basemapping.fwa_streams.channel_width_source is 'Data source for channel_width at given segment, with values (FIELD_MEASURMENT, FWA_RIVERS_POLY, MODELLED). FIELD_MEASUREMENT is derived from PSCIS and FISS data, MODELLED is taken from Thorley et al, 2021';
-comment on column whse_basemapping.fwa_streams.mad_m3s is 'Modelled mean annual discharge at the stream segment (Pacific Climate Impacts Consortium, University of Victoria, (January 2020) VIC-GL BCCAQ CMIP5: Gridded Hydrologic Model Output)';
