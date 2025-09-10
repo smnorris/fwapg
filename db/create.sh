@@ -10,7 +10,6 @@ echo "ALTER DATABASE :db SET search_path TO public,whse_basemapping,usgs,hydrosh
   $PSQL -v db=$(echo $DATABASE_URL | cut -d "/" -f 4)
 
 $PSQL -f sql/tables.sql
-$PSQL -f sql/views.sql
 $PSQL -f sql/functions/CDB_MakeHexagon.sql
 $PSQL -f sql/functions/ST_Safe_Repair.sql
 $PSQL -f sql/functions/FWA_Downstream.sql
@@ -27,4 +26,7 @@ $PSQL -f sql/functions/FWA_IndexPoint.sql
 $PSQL -f sql/functions/FWA_LocateAlong.sql
 $PSQL -f sql/functions/FWA_LocateAlongInterval.sql
 $PSQL -f sql/functions/FWA_UpstreamTrace.sql
+$PSQL -f sql/functions/FWA_NetworkTrace.sql
+$PSQL -f sql/functions/FWA_NetworkTraceAgg.sql
+$PSQL -f sql/extras.sql
 $PSQL -f sql/functions/postgisftw.sql  # pg_fs/pg_ts functions
