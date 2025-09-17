@@ -50,7 +50,7 @@ Indexes:
 
 ## Source data lineage
 
-Climate BC web and api do not seem to provide urls to climate rasters. For easier builds, `Normal_1991_2020` `MAP.tif` from https://climatena.ca/spatialData (downloaded 2025-09-17) is cached on NRS object storage:
+ClimateBC / ClimateNA web and api do not seem to provide urls to climate rasters. For easier builds, `Normal_1991_2020` `MAP.tif` from https://climatena.ca/spatialData (downloaded 2025-09-17) is cached on NRS object storage:
 
     aws s3 cp MAP.tif s3://bchamp/fwapg
     aws s3api put-object-acl --bucket bchamp --key fwapg/MAP.tif --acl public-read
