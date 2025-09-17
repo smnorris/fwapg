@@ -52,5 +52,5 @@ Indexes:
 
 Climate BC web and api do not seem to provide urls to climate rasters. For easier builds, `Normal_1991_2020` `MAP.tif` from https://climatebc.ca/SpatialData (downloaded 2024-02-04) is cached on S3:
 
-    aws s3 cp MAP.tif s3://bcfishpass/
-    aws s3api put-object-acl --bucket bcfishpass --key MAP.tif --acl public-read
+    aws s3 cp MAP.tif s3://bchamp/fwapg
+    aws s3api put-object-acl --bucket bchamp --key fwapg/MAP.tif --acl public-read
