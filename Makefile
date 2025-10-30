@@ -57,62 +57,17 @@ clean_db:
 data/FWA_BC.gdb.zip: .make/db
 	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/FWA_BC.gdb.zip
 
-data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip: .make/db
-	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/FWA_LINEAR_BOUNDARIES_SP.gdb.zip
+data/fwa_linear_boundaries_sp.parquet: .make/db
+	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_linear_boundaries_sp.parquet
 
-data/FWA_WATERSHEDS_POLY.gdb.zip: .make/db
-	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/FWA_WATERSHEDS_POLY.gdb.zip
+data/fwa_watersheds_poly.parquet: .make/db
+	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_watersheds_poly.parquet
 
-data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
-	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/FWA_STREAM_NETWORKS_SP.gdb.zip
+data/fwa_stream_networks_sp.parquet: .make/db
+	curl -o $@ https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_stream_networks_sp.parquet
 
-# load the larger tables per watershed group
-.make/fwa_stream_networks_sp: data/FWA_STREAM_NETWORKS_SP.gdb.zip .make/db
-	# drop/create load table
-	$(PSQL) -c "drop table if exists fwapg.fwa_stream_networks_sp"
-	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_stream_networks_sp
-	# load from file to staging table to target table
-	for wsg in $(GROUPS) ; do \
-		set -e ; $(PSQL) -c "truncate fwapg.fwa_stream_networks_sp" ; \
-		set -e; ogr2ogr \
-			-f PostgreSQL \
-			PG:$(DATABASE_URL) \
-			--config PG_USE_COPY YES \
-			-nln fwapg.fwa_stream_networks_sp \
-			-append \
-			-update \
-			data/FWA_STREAM_NETWORKS_SP.gdb.zip \
-			$$wsg  ; \
-		set -e ; $(PSQL) -f load/spatial_chunked/fwa_stream_networks_sp.sql -v wsg=$$wsg ; \
-	done
-	$(PSQL) -c "drop table fwapg.fwa_stream_networks_sp"
-	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_stream_networks_sp"
-	# apply data fixes
-	$(PSQL) -f load/fixes/fwa_stream_networks_sp.sql
-	touch $@
 
-.make/fwa_linear_boundaries_sp: data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip .make/db
-	$(PSQL) -c "drop table if exists fwapg.fwa_linear_boundaries_sp"
-	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_linear_boundaries_sp
-	# load from file to staging table
-	for wsg in $(GROUPS) ; do \
-		set -e ; $(PSQL) -c "truncate fwapg.fwa_linear_boundaries_sp" ; \
-		set -e; ogr2ogr \
-			-f PostgreSQL \
-			PG:$(DATABASE_URL) \
-			--config PG_USE_COPY YES \
-			-nln fwapg.fwa_linear_boundaries_sp \
-			-append \
-			-update \
-			data/FWA_LINEAR_BOUNDARIES_SP.gdb.zip \
-			$$wsg  ; \
-		set -e ; $(PSQL) -f load/spatial_chunked/fwa_linear_boundaries_sp.sql -v wsg=$$wsg ; \
-	done
-	$(PSQL) -c "drop table fwapg.fwa_linear_boundaries_sp"
-	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_linear_boundaries_sp"
-	touch $@
-
-.make/fwa_watersheds_poly: data/FWA_WATERSHEDS_POLY.gdb.zip .make/db
+.make/fwa_watersheds_poly: data/fwa_watersheds_poly.parquet .make/db
 	$(PSQL) -c "drop table if exists fwapg.fwa_watersheds_poly"
 	bcdata bc2pg --db_url $(DATABASE_URL) --schema fwapg --schema_only -c 1 -t whse_basemapping.fwa_watersheds_poly
 	# load from file to staging table
@@ -125,7 +80,7 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 			-nln fwapg.fwa_watersheds_poly \
 			-append \
 			-update \
-			data/FWA_WATERSHEDS_POLY.gdb.zip \
+			data/fwa_watersheds_poly.parquet \
 			$$wsg  ; \
 		set -e ; $(PSQL) -f load/spatial_chunked/fwa_watersheds_poly.sql -v wsg=$$wsg ; \
 	done
@@ -133,8 +88,9 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 	$(PSQL) -c "vacuum analyze whse_basemapping.fwa_watersheds_poly"
 	touch $@
 
-# load smaller spatial tables from FWA_BC.gdb
-.make/fwa_%: load/spatial/fwa_%.sql .make/db data/FWA_BC.gdb.zip
+
+# load spatial tables
+.make/fwa_%: load/spatial/fwa_%.sql .make/db
 	# delete existing load table
 	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	# create empty load table
@@ -146,12 +102,10 @@ data/FWA_STREAM_NETWORKS_SP.gdb.zip: .make/db
 		-nln fwapg.$(subst .make/,,$@) \
 		-append \
 		-update \
-		-nlt PROMOTE_TO_MULTI \
-		data/FWA_BC.gdb.zip \
+		/vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$(subst .make/,,$@).parquet \
 		$(subst .make/,,$@)
-	$(PSQL) -c "truncate whse_basemapping.$(subst .make/,,$@)"
+	# load to target
 	set -e ; $(PSQL) -f $<
-	$(PSQL) -c "drop table if exists fwapg.$(subst .make/,,$@)"
 	touch $@
 
 # load non spatial tables
