@@ -5,13 +5,21 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
 0.7.0 (2025-)
 ------------------
-- add new function FWA_SegmentAlongInterval, returning regularly spaced stream segments
-- add new function FWA_SlopeAlongInterval, returning regularly spaced slope measurements
-- add new function FWA_DownstreamTrace, returning streams_vw records downstream of a point location
-- update dependencies in dockerfile
-- cache data on BC object storage for faster repeated downloads
+- postgres >=17 compatibility
+- new functions:
+  + FWA_SegmentAlongInterval, returns regularly spaced stream segments
+  + FWA_SlopeAlongInterval, returns regularly spaced slope measurements
+  + FWA_DownstreamTrace, returns stream records downstream of a point location
+  + FWA_NetworkTrace, returns stream records between two point locations
+  + FWA_NetworkTraceAgg, returns aggregated stream paths between two point locations
+- new data:
+  + include watershed boundaries for trans-boundary watersheds (courtesy of Dan Weller at DFO)
+  + add a lookup relating streams to PSE conservation units
+  + include value added data (discharge/channel width etc) directly in new table whse_basemapping.fwa_streams
+- cache source data on BC object storage as parquet/gzipped csv
+  (for faster downloads and to enable direct remote access via tools like duckdb)
+- simplify maintenance by building/loading with bash scripts instead of Makefile
 - misc bug fixes
-- note that PG17 is not yet supported
 
 0.6.1 (2024-04-08)
 ------------------
