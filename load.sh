@@ -83,5 +83,21 @@ ogr2ogr \
 
 $PSQL -f load/fwa_stream_networks_sp.sql  # load to output table
 
+
+# ---------------------
+# load non-spatial csv tables with COPY
+# ---------------------
+tables=(
+  edge_type_codes
+  streams_20k_50k
+  waterbodies_20k_50k
+  waterbody_type_codes
+  watershed_type_codes
+)
+for table in "${tables[@]}"; do
+  $PSQL -c "truncate whse_basemapping.fwa_$table"
+  $PSQL -c "\copy whse_basemapping.fwa_$table FROM PROGRAM 'curl -s https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$table.csv.gz | gunzip' delimiter ',' csv header"
+done
+
 # clean up
 $PSQL -c "VACUUM ANALYZE"

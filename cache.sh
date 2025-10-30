@@ -298,6 +298,22 @@ ogr2ogr -f Parquet /vsis3/bchamp/fwapg/fwa_wetlands_poly.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_WETLANDS_POLY"
 
+# non spatial tables are written to gzipped csv, no need for parquet
+tables=(
+  FWA_EDGE_TYPE_CODES
+  FWA_STREAMS_20K_50K
+  FWA_WATERBODIES_20K_50K
+  FWA_WATERBODY_TYPE_CODES
+  FWA_WATERSHED_TYPE_CODES
+)
+for table in "${tables[@]}";
+do
+  echo "Processing $table"
+  lower=$(echo "$table" | tr '[:upper:]' '[:lower:]')
+  ogr2ogr -f CSV /vsistdout/ \
+    /tmp/FWA_BC.gdb.zip \
+    $table | awk 'NR==1{print tolower($0); next}1' | gzip | aws s3 cp - s3://bchamp/fwapg/$lower.csv.gz --acl public-read
+done
 
 # --------------
 # process multi table sources
