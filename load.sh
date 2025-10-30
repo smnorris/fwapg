@@ -33,8 +33,6 @@ for table in "${tables[@]}"; do
     -update \
     -preserve_fid \
     -nln whse_basemapping.fwa_$table \
-    -dialect SQLite \
-    -sql "SELECT * FROM fwa_$table ORDER BY RANDOM()" \
     /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$table.parquet
 done
 
@@ -58,8 +56,6 @@ for table in "${tables[@]}"; do
     -update \
     -preserve_fid \
     -nln whse_basemapping.fwa_$table \
-    -dialect SQLite \
-    -sql "SELECT * FROM fwa_$table ORDER BY RANDOM()" \
     data/fwa_$table.parquet
 done
 
@@ -124,6 +120,7 @@ groups=$(ogr2ogr -f CSV /vsistdout/ \
 )
 for table in "${tables[@]}"; do
   echo "Loading whse_basemapping.fwa_$table"
+  $PSQL -c "truncate whse_basemapping.fwa_$table"
   for wsg in $groups; do
     echo $wsg
     $PSQL -f load/fwa_$table.sql -v wsg=$wsg
@@ -188,7 +185,7 @@ for table in "${tables[@]}"; do
   $PSQL -c "\copy whse_basemapping.$table FROM PROGRAM 'curl -s https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/$table.csv.gz | gunzip' delimiter ',' csv header"
 done
 # materialize above data to whse_basemapping.fwa_streams, holding the value-added data (for fast upstr/dnstr queries)
-$PSQL -f db/sql/extras.sql
+$PSQL -f load/fwa_streams.sql
 
 
 # clean up
