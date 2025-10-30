@@ -1,3 +1,0 @@
-insert into whse_basemapping.fwa_waterbody_type_codes
-select waterbody_type, waterbody_description
-from fwapg.fwa_waterbody_type_codes;
