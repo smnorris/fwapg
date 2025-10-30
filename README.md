@@ -18,8 +18,8 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 ## Quickstart
 
 1. Ensure all requirements/dependencies are met/installed:
-    - access to a PostgreSQL (13-16, 17 is not yet supported) database with the PostGIS extension (>=3.1) installed
-    - GDAL >=3.4
+    - access to a PostgreSQL (>13) database with the PostGIS extension
+    - GDAL >=3.6
     - Python 3
     - [`bcdata`](https://github.com/smnorris/bcdata)
     - [`make`](https://www.gnu.org/software/make/)/`unzip`/`curl`/`awscli`/ etc (see Dockerfile)
@@ -32,7 +32,8 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
         git clone https://github.com/smnorris/fwapg.git
         cd fwapg
-        make
+        cd data && ./create.sh && cd ..  # load extensions, create schemas/tables
+        ./load.sh                        # load the data
 
 The full load takes some time - but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
 
