@@ -22,6 +22,6 @@ $PSQL -f sql/cu_planarized.sql
 $PSQL -f sql/cu_streams.sql
 
 # dump to file and upload to object storage
-$PSQL -c "\copy psf.pse_conservation_units_streams TO 'pse_conservation_units_streams.csv' DELIMITER ',' CSV HEADER;"
-gzip pse_conservation_units_streams.csv
-echo 'psf.pse_conservation_units_streams.csv dumped to zipped csv'
+$PSQL -c "\copy whse_basemapping.fwa_streams_pse_conservation_units_lut TO 'fwa_streams_pse_conservation_units_lut.csv' DELIMITER ',' CSV HEADER;"
+gzip fwa_streams_pse_conservation_units_lut.csv
+echo 'fwa_streams_pse_conservation_units_lut.csv dumped to gzipped csv'

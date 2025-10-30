@@ -872,11 +872,11 @@ create table whse_basemapping.fwa_stream_networks_channel_width (
     channel_width double precision
 );
 
-create table psf.pse_conservation_units_streams (
+create table whse_basemapping.fwa_streams_pse_conservation_units_lut (
     linear_feature_id bigint,
     cuid integer
 );
 
-create index on psf.pse_conservation_units_streams (linear_feature_id);
-create index on psf.pse_conservation_units_streams (cuid);
+create index on whse_basemapping.fwa_streams_pse_conservation_units_lut (linear_feature_id);
+create index on whse_basemapping.fwa_streams_pse_conservation_units_lut (cuid);
 
