@@ -50,7 +50,7 @@ tables=(
   watersheds_poly
 )
 for table in "${tables[@]}"; do
-  curl -o data/$table.parquet https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/$table.parquet
+  curl -o data/fwa_$table.parquet https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$table.parquet
   $PSQL -c "truncate whse_basemapping.fwa_$table"
   ogr2ogr \
     -f PostgreSQL \
@@ -67,7 +67,7 @@ done
 
 
 # ---------------------
-# streams require an extra step - adding measures to the geometries
+# streams are loaded to a temp table (for adding measures to the geometries)
 # ---------------------
 
 curl -o data/fwa_stream_networks_sp.parquet https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_stream_networks_sp.parquet
@@ -77,10 +77,11 @@ ogr2ogr \
   PG:$DATABASE_URL \
   --config PG_USE_COPY YES \
   -preserve_fid \
+  -lco GEOMETRY_NAME=geom \
   -nln fwapg.fwa_stream_networks_sp \
   data/fwa_stream_networks_sp.parquet
 
-$PSQL -f load/fwa_stream_networks_sp.sql
+$PSQL -f load/fwa_stream_networks_sp.sql  # load to output table
 
 # clean up
 $PSQL -c "VACUUM ANALYZE"
