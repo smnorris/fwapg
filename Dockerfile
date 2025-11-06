@@ -32,6 +32,6 @@ WORKDIR /home/fwapg
 
 COPY ["db", "db/"]
 COPY ["extras", "extras/"]
-COPY [".env.docker", "Makefile", "./"]
+COPY [".env.docker", "load.sh", "./"]
 
 ENV PATH="/opt/venv/bin:$PATH"
