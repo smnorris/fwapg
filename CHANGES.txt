@@ -3,6 +3,10 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.7.0.post1 (2025-11-06)
+------------------
+- fix Dockerfile in v0.7.0 tag
+
 0.7.0 (2025-11-06)
 ------------------
 - postgres >=17 compatibility
