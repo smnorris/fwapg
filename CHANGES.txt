@@ -3,7 +3,7 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.7.0 (2025-)
+0.7.0 (2025-11-06)
 ------------------
 - postgres >=17 compatibility
 - new functions:
@@ -13,7 +13,6 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
   + FWA_NetworkTrace, returns stream records between two point locations
   + FWA_NetworkTraceAgg, returns aggregated stream paths between two point locations
 - new data:
-  + include watershed boundaries for trans-boundary watersheds (courtesy of Dan Weller at DFO)
   + add a lookup relating streams to PSE conservation units
   + include value added data (discharge/channel width etc) directly in new table whse_basemapping.fwa_streams
 - cache source data on BC object storage as parquet/gzipped csv
