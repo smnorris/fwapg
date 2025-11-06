@@ -1,12 +1,12 @@
 -- relate CUs to FWA streams
-drop table if exists psf.pse_conservation_units_streams;
+drop table if exists whse_basemapping.fwa_streams_pse_conservation_units_lut;
 
-create table psf.pse_conservation_units_streams (
+create table whse_basemapping.fwa_streams_pse_conservation_units_lut (
 	linear_feature_id bigint,
 	cuid integer
 );
 
-insert into psf.pse_conservation_units_streams (
+insert into whse_basemapping.fwa_streams_pse_conservation_units_lut (
   linear_feature_id,
   cuid
 )

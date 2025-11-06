@@ -1,3 +1,17 @@
+-- EXTENSIONS
+create extension if not exists postgis with schema public;
+create extension if not exists ltree with schema public;
+create extension if not exists intarray with schema public;
+
+-- SCHEMAS
+create schema fwapg;
+create schema if not exists whse_basemapping;
+create schema if not exists usgs;
+create schema if not exists psf;
+create schema if not exists hydrosheds;
+create schema if not exists postgisftw;        -- for functions served by pg_featureserv
+
+-- TABLES
 create table whse_basemapping.fwa_assessment_watersheds_poly (
     watershed_feature_id integer primary key,
     watershed_group_id integer,
@@ -367,7 +381,7 @@ create index fwa_rivers_lc_gist_idx on whse_basemapping.fwa_rivers_poly using gi
 create index fwa_rivers_lc_btree_idx on whse_basemapping.fwa_rivers_poly using btree (localcode_ltree);
 create index fwa_rivers_geom_idx on whse_basemapping.fwa_rivers_poly using gist (geom);
 
--- ---------------------------------------------------------------------------------------------------------------------  
+-- ---------------------------------------------------------------------------------------------------------------------
 
 create table whse_basemapping.fwa_stream_networks_sp (
   linear_feature_id bigint primary key,
@@ -872,11 +886,10 @@ create table whse_basemapping.fwa_stream_networks_channel_width (
     channel_width double precision
 );
 
-create table psf.pse_conservation_units_streams (
+create table whse_basemapping.fwa_streams_pse_conservation_units_lut (
     linear_feature_id bigint,
     cuid integer
 );
 
-create index on psf.pse_conservation_units_streams (linear_feature_id);
-create index on psf.pse_conservation_units_streams (cuid);
-
+create index on whse_basemapping.fwa_streams_pse_conservation_units_lut (linear_feature_id);
+create index on whse_basemapping.fwa_streams_pse_conservation_units_lut (cuid);

@@ -1,3 +1,0 @@
-insert into whse_basemapping.fwa_edge_type_codes
-select edge_type, edge_description
-from fwapg.fwa_edge_type_codes;

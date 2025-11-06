@@ -1,4 +1,4 @@
-FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
+FROM ghcr.io/osgeo/gdal:ubuntu-full-3.10.3
 
 RUN apt-get update && apt-get --assume-yes upgrade \
     && apt-get -qq install -y --no-install-recommends postgresql-common \
