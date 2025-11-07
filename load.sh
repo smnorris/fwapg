@@ -115,7 +115,7 @@ tables=(
   streams_watersheds_lut
 )
 groups=$(ogr2ogr -f CSV /vsistdout/ \
-  /vsis3/bchamp/fwapg/fwa_watershed_groups_poly.parquet \
+  /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_watershed_groups_poly.parquet \
   -sql "select distinct watershed_group_code from fwa_watershed_groups_poly order by watershed_group_code" | tail -n +2
 )
 for table in "${tables[@]}"; do
