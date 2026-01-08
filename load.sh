@@ -92,6 +92,11 @@ for table in "${tables[@]}"; do
 done
 
 # ---------------------
+# apply fixes that have not yet made it in to data source
+# ---------------------
+$PSQL -f fixes/fixes.sql
+
+# ---------------------
 # load smaller value added tables
 # ---------------------
 tables=(
