@@ -20,6 +20,7 @@ tables=(
   obstructions_sp
   rivers_poly
   watershed_groups_poly
+  watersheds_xborder_poly
   wetlands_poly
 )
 

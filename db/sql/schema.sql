@@ -504,6 +504,34 @@ create index fwa_watersheds_geom_idx on whse_basemapping.fwa_watersheds_poly usi
 
 -- ---------------------------------------------------------------------------------------------------------------------
 
+-- cross border watershed polygons, provided by DFO
+create table whse_basemapping.fwa_watersheds_xborder_poly (
+  watershed_feature_id       integer primary key     ,
+  watershed_group_id         integer not null        ,
+  watershed_key              integer not null        ,
+  fwa_watershed_code         character varying(143) not null,
+  local_watershed_code       character varying(143) not null,
+  watershed_group_code       character varying(4) not null,
+  watershed_order            integer                 ,
+  watershed_magnitude        integer                 ,
+  local_watershed_order      integer                 ,
+  local_watershed_magnitude  integer                 ,
+  feature_code               character varying(10)   ,
+  wscode_ltree ltree generated always as (replace(replace(fwa_watershed_code, '-000000', ''), '-', '.')::ltree) stored,
+  localcode_ltree ltree generated always as (replace(replace(local_watershed_code, '-000000', ''), '-', '.')::ltree) stored,
+  geom                       public.geometry(multipolygon,3005)
+ );
+create index fwa_wsd_xborder_watershed_key_idx on whse_basemapping.fwa_watersheds_xborder_poly (watershed_key);
+create index fwa_wsd_xborder_watershed_group_code_idx on whse_basemapping.fwa_watersheds_xborder_poly (watershed_group_code);
+create index fwa_wsd_xborder_watershed_group_id_idx on whse_basemapping.fwa_watersheds_xborder_poly (watershed_group_id);
+create index fwa_wsd_xborder_wsc_gist_idx on whse_basemapping.fwa_watersheds_xborder_poly using gist (wscode_ltree);
+create index fwa_wsd_xborder_wsc_btree_idx on whse_basemapping.fwa_watersheds_xborder_poly using btree (wscode_ltree);
+create index fwa_wsd_xborder_lc_gist_idx on whse_basemapping.fwa_watersheds_xborder_poly using gist (localcode_ltree);
+create index fwa_wsd_xborder_lc_btree_idx on whse_basemapping.fwa_watersheds_xborder_poly using btree (localcode_ltree);
+create index fwa_wsd_xborder_geom_idx on whse_basemapping.fwa_watersheds_xborder_poly using gist (geom);
+
+-- ---------------------------------------------------------------------------------------------------------------------
+
 create table whse_basemapping.fwa_wetlands_poly (
     waterbody_poly_id integer primary key,
     watershed_group_id integer,
