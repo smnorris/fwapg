@@ -46,4 +46,12 @@ BEGIN;
     SET local_watershed_code = fwa_watershed_code
     WHERE watershed_feature_id = 10380498;
 
+    -- Dan's watershed updates were all made in 2022, prior to GeoBC fixes in the Chilliwack
+    -- This isn't a Dan fix but on load of xborder watersheds, it looks like this watershed 
+    -- was missed in the Chilliwack updates, the wscodes don't make sense - update here for now.
+    UPDATE whse_basemapping.fwa_watersheds_poly
+    SET fwa_watershed_code = '100-064535-057628-998041-058384-751932-445415-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000',
+        local_watershed_code = '100-064535-057628-998041-058384-751932-445415-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000-000000'
+    WHERE watershed_feature_id = 8449465;
+
 COMMIT;
