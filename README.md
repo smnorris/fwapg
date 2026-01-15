@@ -32,7 +32,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
 
         git clone https://github.com/smnorris/fwapg.git
         cd fwapg
-        cd data && ./create.sh && cd ..  # load extensions, create schemas/tables
+        cd db && ./create.sh && cd ..    # load extensions, create schemas/tables
         ./load.sh                        # load the data
 
 The full load takes some time - but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
