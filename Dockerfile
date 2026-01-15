@@ -16,6 +16,7 @@ RUN apt-get update && apt-get --assume-yes upgrade \
     && apt-get -qq install -y --no-install-recommends python3-dev \
     && apt-get -qq install -y --no-install-recommends python3-venv \
     && apt-get -qq install -y --no-install-recommends python3-psycopg2 \
+    && apt-get -qq install -y --no-install-recommends jq \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.21.zip" -o "awscliv2.zip" \

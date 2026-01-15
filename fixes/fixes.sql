@@ -38,7 +38,7 @@ BEGIN;
     -- that form inner rings with the greater watershed with this wscode?  That can be left up to the province.
     UPDATE whse_basemapping.fwa_watersheds_poly
     SET local_watershed_code = '100.190442.506118.553154.518315.909924.867616.125039.561050.938874'
-    WHERE watershed_feature_id = 9633006
+    WHERE watershed_feature_id = 9633006;
     
     -- this fix associates the watershed with the correct stream but it appears as if the better fix
     -- would be to split 10380498 and include the south portion within 10373702
