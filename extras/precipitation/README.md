@@ -54,10 +54,7 @@ Indexes:
 ### Climate BC
 
 ClimateBC mean annual precipitation is used for watersheds in BC - but ClimateBC web and api do not seem to provide stable urls to required climate rasters. 
-For easier builds, `Normal_1991_2020` `MAP.tif` from https://climatena.ca/spatialData (manually downloaded 2025-09-17) is cached on NRS object storage:
-
-    aws s3 cp MAP.tif s3://bchamp/fwapg
-    aws s3api put-object-acl --bucket bchamp --key fwapg/MAP.tif --acl public-read
+For easier builds, `Normal_1991_2020` `MAP.tif` from https://climatena.ca/spatialData (manually downloaded 2025-09-17) is cached on NRS object storage.
 
 ### climr
 
@@ -115,8 +112,3 @@ Note that the download and processing could be modifed to be done fully in R, or
           -i "A=data/climr.tif" \
           --calc "A[1]+A[2]+A[3]+A[4]+A[5]+A[6]+A[7]+A[8]+A[9]+A[10]+A[11]+A[12]" \
           -o data/MAP_climr.tif
-
-    Then upload/cache for future use:
-
-        aws s3 cp data/MAP_climr.tif s3://bchamp/fwapg/MAP_climr.tif
-        aws s3api put-object-acl --bucket bchamp --key fwapg/MAP_climr.tif --acl public-read
