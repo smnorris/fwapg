@@ -34,7 +34,7 @@ its position along that stream line.
 ## Modifications for load to fwapg
 
 - collect data of interest (trans boundary watersheds only) from provided files into a single table 
-- add several data fixes to ``../fixes/fixes.sql` (additional data fixes from the DFO file will be submitted to GeoBC at a later date)
+- add several data fixes to `../fixes/fixes.sql` (additional data fixes from the DFO file will be submitted to GeoBC at a later date)
 - conduct rough QA of boundaries and codes
 - update watershed codes in the Chilliwack drainage to reflect FWA wscode updates
 - dump resulting table to `fwa_watersheds_xborder_poly.parquet` and load to NR object storage
