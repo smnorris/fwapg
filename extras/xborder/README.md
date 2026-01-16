@@ -5,7 +5,7 @@ Compiling this data was a manual process, no scripts are included.
 
 ## Source 
 
-Data provided by DFO: Dan Weller; daniel.weller@dfo-mpo.gc.ca; 2024-06-19
+Data provided by DFO: Dan Weller, 2024-06-19
 
 ## Description
 Modification to the FWA Fundamnetal Watersheds dataset to include cross-border areas that drain

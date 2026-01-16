@@ -283,22 +283,6 @@ begin
         FROM FWA_SliceWatershedAtPoint(v_blkey, v_measure) slice
         ),
 
-        -- find any upstream contributing area outside of BC (but not including Alaska panhandle)
-        exbc AS
-         (
-          SELECT hydrosheds.hydroshed(h.hybas_id) AS geom
-          FROM ref_point s
-          INNER JOIN hydrosheds.hybas_lev12_v1c h
-          ON ST_Intersects(h.geom, s.geom_pt)
-          WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.measure_pt) IN ('AB_120','YTNWT_60')
-          UNION ALL
-          SELECT FWA_Huc12(h.huc12) AS geom
-          FROM ref_point s
-          INNER JOIN usgs.wbdhu12 h
-          ON ST_intersects(h.geom, s.geom_pt)
-          WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.measure_pt) = 'USA_49'
-        ),
-
         -- aggregate the result and dump to singlepart
         agg as
         (

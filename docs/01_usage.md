@@ -2,6 +2,9 @@
 
 This document presumes a working familiarity with FWA data and spatial SQL queries with PostgreSQL/PostGIS.
 
+## Installation / setup
+
+See the README 
 
 ## Upstream / downstream analysis
 
