@@ -54,7 +54,7 @@ $PSQL -c "CREATE UNLOGGED TABLE fwapg.discharge03_wsd (
 # note that dropping the non-wscode/pk/geom indexes does not seem to help.
 # As with all upstream queries, pre-aggregating data at given levels in the tree would help a lot - 
 # but this query still completes in <1h, so pre-processing is not a high priority.
-parallel --joblog discharge_log2.tsv --jobs 5 $PSQL -f sql/discharge03_wsd.sql -v wsg={1} ::: $WSGS
+parallel --jobs 5 $PSQL -f sql/discharge03_wsd.sql -v wsg={1} ::: $WSGS
 $PSQL -c "ANALYZE whse_basemapping.fwa_watersheds_upstream_area"
 
 ## For habitat modelling, it is easier if discharge is per-stream,
