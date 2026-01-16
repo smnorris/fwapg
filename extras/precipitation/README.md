@@ -10,11 +10,6 @@ Mean annual precipitation (MAP) referenced to FWA watersheds and streams
 
 The output table can be joined to streams or points on the FWA watershed network.
 
-## Requirements
-
-Raster processing is done with `rasterstats`:
-
-    pip install rasterstats
 
 ## Usage
 
@@ -58,9 +53,9 @@ For easier builds, `Normal_1991_2020` `MAP.tif` from https://climatena.ca/spatia
 
 ### climr
 
-Precipitation for watershed areas outside of BC taken from  downloaded from the [climr climate mosaics](https://bcgov.github.io/climr/articles/methods_mosaic.html).
+Precipitation for watershed areas not covered by ClimateBC was derived from the [climr climate mosaics](https://bcgov.github.io/climr/articles/methods_mosaic.html).
 
-Monthly data was downloaded with the `climr` package in R Studio (2026-01-14, climr v0.2.2), then combined into a single annual raster and cached to NRS object storage.
+Monthly data was downloaded with the `climr` package in R Studio (2026-01-14, climr v0.2.2), then combined into a single annual raster (and cached to NRS object storage for convenience).
 Note that the download and processing could be modifed to be done fully in R, or via direct connect to the climr database.
 
 1. In RStudio (noting that bbox is (xmin, xmax, ymin, ymax), re-order coordinates if taken from `st_extent` or similar)
