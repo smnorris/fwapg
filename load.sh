@@ -20,6 +20,7 @@ tables=(
   obstructions_sp
   rivers_poly
   watershed_groups_poly
+  watersheds_xborder_poly
   wetlands_poly
 )
 
@@ -92,6 +93,11 @@ for table in "${tables[@]}"; do
 done
 
 # ---------------------
+# apply fixes that have not yet made it in to data source
+# ---------------------
+$PSQL -f fixes/fixes.sql
+
+# ---------------------
 # load smaller value added tables
 # ---------------------
 tables=(
@@ -128,43 +134,9 @@ for table in "${tables[@]}"; do
 done
 
 # ---------------------
-# load watershed boundaries for washington, idaho, montana and alaska
+# load xborder watersheds into the general watersheds table
 # ---------------------
-curl -o /tmp/WBD_National_GDB.zip \
-    https://prd-tnm.s3.amazonaws.com/StagedProducts/Hydrography/WBD/National/GDB/WBD_National_GDB.zip
-$PSQL -c "truncate usgs.wbdhu12"
-ogr2ogr \
-  -f PostgreSQL \
-  PG:$DATABASE_URL  \
-  --config PG_USE_COPY YES \
-  -t_srs EPSG:3005 \
-  -nln usgs.wbdhu12 \
-  -append \
-  -where "states LIKE '%%CN%%' \
-  OR states LIKE '%%WA%%' \
-  OR states LIKE '%%AK%%' \
-  OR states LIKE '%%ID%%' \
-  OR states LIKE '%%MT%%'" \
-  /tmp/WBD_National_GDB.zip \
-  WBDHU12
-
-# ---------------------
-# For YT, NWT, AB watersheds, use hydrosheds https://www.hydrosheds.org/
-# As source hydrosheds shapefiles must be manually downloaded, this uses a cached copy
-# ---------------------
-$PSQL -c "truncate hydrosheds.hybas_lev12_v1c"
-ogr2ogr \
-  -f PostgreSQL \
-  PG:$DATABASE_URL \
-  --config PG_USE_COPY YES \
-  -t_srs EPSG:3005 \
-  -nln hydrosheds.hybas_lev12_v1c \
-  -append \
-  -update \
-  -preserve_fid \
-  -where "hybas_id is not null" \
-  -nlt PROMOTE_TO_MULTI \
-  /vsizip/vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/hydrosheds.gpkg.zip
+$PSQL -f load/fwa_watersheds_xborder_poly.sql
 
 # ---------------------
 # for larger lookups/datasets (generated via scripts in /extras), download cached pre-processed data

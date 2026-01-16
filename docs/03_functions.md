@@ -910,10 +910,7 @@ watershed in which it falls, then that fundamental watershed is not included in 
 4. If the point is < 50 m upstream from the bottom of the fundamental
 watershed in which it falls, then that watershed is included in the aggregation
 
-For cross-boundary watersheds, the function returns non-BC areas using these data sources:
-
-- USGS [huc12 watersheds](https://www.usgs.gov/core-science-systems/ngp/national-hydrography/watershed-boundary-dataset?qt-science_support_page_related_con=4#qt-science_support_page_related_con) for USA (WA, ID, MT only)
-- [hydrosheds](https://www.hydrosheds.org) watersheds for other neighbouring jurisdictions
+For trans-boundary watersheds, the results include non-BC areas (not present in the FWA) thanks to data [provided by DFO](https://github.com/smnorris/fwapg/tree/main/extras/xborder).
 
 The table returned includes these columns:
 
@@ -981,7 +978,7 @@ The `refine_method` field in the output table has several possible values:
      100.064535.057628 | 100.064535.057628.634957 | 33478.28 | LAKE           |
     ```
 
-    Mapped, the geometry looks like this - FWA heights of land in BC, HUC12 heights of land in the USA:
+    Mapped, the geometry looks like this - the USA portion of the watershed is included:
 
     ![watershed](images/watershed6.png)
 

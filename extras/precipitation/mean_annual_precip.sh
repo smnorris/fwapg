@@ -8,9 +8,8 @@ mkdir -p data
 
 # ----------
 # Download cached ClimateBC Normals 1991-2020 MAP raster from S3
-# todo - is this available from climr db or some other more-easily downloaded source?
 # ----------
-wget --trust-server-names -qNP data https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/MAP.tif
+curl -o data/MAP.tif https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/MAP.tif
 
 # ----------
 # Derive MAP per fundamental watershed poly
@@ -45,11 +44,11 @@ parallel --no-run-if-empty \
 
 
 # ----------
-# For watersheds with NULL MAP values output from above, try and get precip at a point in the poly
+# For watersheds with NULL MAP values output from above (generally where climate bc raster has no coverage), \
+# get precip from climr raster instead
 # ----------
-$PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_pt"
-$PSQL -c "CREATE TABLE fwapg.mean_annual_precip_load_pt (watershed_feature_id integer, watershed_group_code text, map numeric)"
-
+$PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_climr_ply"
+$PSQL -c "CREATE TABLE fwapg.mean_annual_precip_load_climr_ply (watershed_feature_id integer PRIMARY KEY, watershed_group_code text, map numeric)"
 $PSQL -t -c "SELECT
     json_build_object(
       'type', 'FeatureCollection',
@@ -59,16 +58,19 @@ $PSQL -t -c "SELECT
       SELECT
         a.watershed_feature_id,
         b.watershed_group_code,
-        st_transform(ST_PointOnSurface(b.geom),4326) as geom
+        st_transform(b.geom,4326) as geom
       FROM fwapg.mean_annual_precip_load_ply a
       INNER JOIN whse_basemapping.fwa_watersheds_poly b
       ON a.watershed_feature_id = b.watershed_feature_id
       WHERE a.map IS NULL
     ) AS t" |
-  rio -q pointquery -r data/MAP.tif | \
-  jq '.features[].properties | [.watershed_feature_id, .watershed_group_code, .value]' | \
+  rio zonalstats \
+      -r data/MAP_climr.tif \
+      --all-touched \
+      --prefix 'map_' | \
+  jq '.features[].properties | [.watershed_feature_id, .watershed_group_code, .map_mean]' | \
   jq -r --slurp '.[] | @csv' | \
-  $PSQL -c "\copy fwapg.mean_annual_precip_load_pt FROM STDIN delimiter ',' csv"
+  $PSQL -c "\copy fwapg.mean_annual_precip_load_climr_ply FROM STDIN delimiter ',' csv"
 
 
 # ----------
@@ -124,18 +126,20 @@ $PSQL -c "CREATE INDEX ON whse_basemapping.fwa_stream_networks_mean_annual_preci
 $PSQL -c "CREATE INDEX ON whse_basemapping.fwa_stream_networks_mean_annual_precip USING GIST (localcode_ltree);"
 $PSQL -c "CREATE INDEX ON whse_basemapping.fwa_stream_networks_mean_annual_precip USING BTREE (localcode_ltree);"
 
-# now calculate area-weighted avg MAP upstream of every stream segment
+# now calculate area-weighted avg MAP upstream of every stream segment.
 # loop through watershed groups, don't bother trying to update in parallel
+# (this could be easily be done by running parallel inserts to a different temp table,
+# but this job does not need to be fast)
 for WSG in $WSGS
 do
-  $PSQL -X -v wsg="$WSG" < sql/map_upstream.sql
+  $PSQL -X -v wsg=$WSG -f sql/map_upstream.sql
 done
 
 # drop temp tables and source raster
 $PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_ply"
-$PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_pt"
+$PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_climr_load_ply"
 $PSQL -c "DROP TABLE IF EXISTS fwapg.mean_annual_precip_load_ln"
-rm data/MAP.tif*
+rm data/MAP*.tif
 
 # dump output to file
 $PSQL -c "\copy whse_basemapping.fwa_stream_networks_mean_annual_precip TO 'fwa_stream_networks_mean_annual_precip.csv' DELIMITER ',' CSV HEADER;"

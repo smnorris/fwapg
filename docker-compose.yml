@@ -32,27 +32,3 @@ services:
     depends_on:
       db:
         condition: service_healthy
-  featureserv:
-    image: pramsey/pg_featureserv:latest
-    container_name: fwapg-fs
-    ports:
-      - ${FS_PORT}:9000
-    volumes:
-      - "./:/home/fwapg"
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/fwapg
-    depends_on:
-      db:
-        condition: service_healthy
-  tileserv:
-    image: pramsey/pg_tileserv:latest
-    container_name: fwapg-ts
-    ports:
-      - ${TS_PORT}:7800
-    volumes:
-      - "./:/home/fwapg"
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/fwapg
-    depends_on:
-      db:
-        condition: service_healthy

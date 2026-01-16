@@ -13,7 +13,7 @@ Channel width is derived via three methods:
 
 To run these calculations and load the data:
 
-    make
+    ./channel_width.sh
 
 Note that a modelled channel width is generated for *all* segments in the stream network where no field measurement or river polygon is available. Filter the results as per your requirements (ie, remove network connections where a channel width value does not make sense - lakes, wetlands, etc)
 
@@ -32,6 +32,9 @@ Indexes:
     "fwa_stream_networks_channel_width_pkey" PRIMARY KEY, btree (linear_feature_id)
 ```
 
+## Archive
+
+The entire model output archive is available for [download as csv](https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_stream_networks_channel_width.csv.gz), or values per stream can be accessed via the [fwa api `fwa_streams` collection](https://features.hillcrestgeo.ca/fwa/collections/whse_basemapping.fwa_streams.html)
 
 ## References
 

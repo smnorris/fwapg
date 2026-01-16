@@ -4,8 +4,37 @@
 
 It is often useful to know how much area is upstream of a given location, and often this needs to be calculated for many locations. Rather than run the calculation each time it is required, we can run the calculation for all fundamental watersheds and cache the result in a lookup table. This calculates the upstream area for all watersheds, starting at the outlet of each watershed (ie, the area total includes the area of the fundamental watershed that is the starting point).
 
-**NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
+Trans-border ex-BC watersheds are temporarily in a separate table pending QA and update to watershed aggregation functions. Load the polygons to the fundamental watershed table temporarily to make the upstream calcs simple:
 
+    psql $DATABASE_URL -c "INSERT INTO whse_basemapping.fwa_watersheds_poly (
+       watershed_feature_id     ,
+       watershed_group_id       ,
+       watershed_key            ,
+       fwa_watershed_code       ,
+       local_watershed_code     ,
+       watershed_group_code     ,
+       watershed_order          ,
+       watershed_magnitude      ,
+       local_watershed_order    ,
+       local_watershed_magnitude,
+       feature_code             ,
+       geom                     
+    )
+    SELECT watershed_feature_id     ,
+       watershed_group_id       ,
+       watershed_key            ,
+       fwa_watershed_code       ,
+       local_watershed_code     ,
+       watershed_group_code     ,
+       watershed_order          ,
+       watershed_magnitude      ,
+       local_watershed_order    ,
+       local_watershed_magnitude,
+       feature_code             ,
+       geom                     
+    FROM whse_basemapping.fwa_watersheds_xborder_poly;"
+    
+    psql $DATABASE_URL "vacuum analyze whse_basemapping.fwa_watersheds_poly"
     ./fwa_watersheds_upstream_area.sh
 
 When working with watersheds, join to the lookup via `watershed_feature_id`. When working with streams, relate the streams to watersheds via the lookup `fwa_streams_watersheds_lut`:
@@ -22,8 +51,6 @@ When working with watersheds, join to the lookup via `watershed_feature_id`. Whe
 ## fwa_waterbodies_upstream_area
 
 As with upstream watershed area, it is often useful to know how much lake/reservoir/wetland is upstream of a given location, and often this needs to be calculated for many locations. Rather than run the calculation each time it is required, we can run the calculation for all streams and cache the result in a lookup table. Note that this is different than upstream watershed area above - we use streams as the lookup base rather than watersheds because waterbodies can be nested within fundamental watersheds.
-
-**NOTE** - output currently includes area upstream **WITHIN BC ONLY**, this will not be accurate in watersheds that have contributing drainage outside of BC!
 
     ./fwa_waterbodies_upstream_area.sh
 

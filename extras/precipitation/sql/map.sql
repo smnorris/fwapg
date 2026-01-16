@@ -36,9 +36,9 @@ SELECT
   b.wscode_ltree,
   b.localcode_ltree,
   b.watershed_group_code,
-  round(sum(ST_Area(b.geom)))::bigint as area,
+  greatest(round(sum(ST_Area(b.geom))), 1)::bigint as area, -- prevent rounding by zero errors by replacing 0 area with 1
   avg(a.map)::integer as map
-FROM fwapg.mean_annual_precip_load_pt a
+FROM fwapg.mean_annual_precip_load_climr_ply a
 INNER JOIN whse_basemapping.fwa_watersheds_poly b
 ON a.watershed_feature_id = b.watershed_feature_id
 WHERE 
@@ -48,7 +48,6 @@ WHERE
   b.watershed_group_code = :'wsg'
 GROUP BY b.wscode_ltree, b.localcode_ltree, b.watershed_group_code
 ON CONFLICT DO NOTHING;
-
 
 INSERT INTO whse_basemapping.fwa_stream_networks_mean_annual_precip (
   wscode_ltree,
