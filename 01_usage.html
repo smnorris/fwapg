@@ -1,0 +1,448 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; fwapg 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5a057da9"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Value added table/view reference" href="02_tables_views.html" />
+    <link rel="prev" title="fwapg" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            fwapg
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation-setup">Installation / setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#upstream-downstream-analysis">Upstream / downstream analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reference-a-single-point-to-the-stream-network">Reference a single point to the stream network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-many-points-to-stream-network">Reference many points to stream network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#check-results">Check results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#watershed-codes">Watershed codes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#query-downstream">Query downstream</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#query-upstream">Query upstream</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-watershed">Generate watershed</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="02_tables_views.html">Value added table/view reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_functions.html">Function reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">fwapg</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/01_usage.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<p>This document presumes a working familiarity with FWA data and spatial SQL queries with PostgreSQL/PostGIS.</p>
+<section id="installation-setup">
+<h2>Installation / setup<a class="headerlink" href="#installation-setup" title="Link to this heading"></a></h2>
+<p>See the README</p>
+</section>
+<section id="upstream-downstream-analysis">
+<h2>Upstream / downstream analysis<a class="headerlink" href="#upstream-downstream-analysis" title="Link to this heading"></a></h2>
+<p>The most typical use of <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> is to answer the question - “what is upstream or downstream of these points of interest”?  Before answering this question, we have to link the points of interest to the FWA streams.</p>
+<section id="reference-a-single-point-to-the-stream-network">
+<h3>Reference a single point to the stream network<a class="headerlink" href="#reference-a-single-point-to-the-stream-network" title="Link to this heading"></a></h3>
+<p>If you simply have a single point location as <code class="docutils literal notranslate"><span class="pre">X,Y</span></code> (plus coordinate system identifier), use the function <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code>.</p>
+<p>For example, to find the nearest point on the FWA stream network to location <code class="docutils literal notranslate"><span class="pre">-123.7028,</span> <span class="pre">48.3858</span></code>:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">7028</span><span class="p">,</span><span class="w"> </span><span class="mi">48</span><span class="p">.</span><span class="mi">3858</span><span class="p">,</span><span class="w"> </span><span class="mi">4326</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This snaps the input point to the closest stream - it returns information about the closest stream, minimum distance from input point to the stream, and the geometry of the closest point on the stream to the point:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>linear_feature_id |  gnis_name  | wscode_ltree | localcode_ltree | blue_line_key | downstream_route_measure | distance_to_stream | bc_ind | geom
+-------------------+-------------+--------------+-----------------+---------------+--------------------------+--------------------+--------+
+         710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.2530543284006 | 24.228 | t      |
+</pre></div>
+</div>
+<p>This function is available via the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> <a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_indexpoint.html">feature service</a> - you can experiment with it <a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_indexpoint/items.html?x=-123.7028&amp;amp;y=48.3858&amp;amp;srid=4326">directly</a> without having to install anything other than a web browser (zoom out to see the context in the default web map).</p>
+</section>
+<section id="reference-many-points-to-stream-network">
+<h3>Reference many points to stream network<a class="headerlink" href="#reference-many-points-to-stream-network" title="Link to this heading"></a></h3>
+<p>Referencing a single point is handy but generally it is necessary to join/snap an entire table of point geometries to FWA streams. We can download Environment Canada hydrometric stations as an example point dataset:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="c1"># download csv</span>
+<span class="w">  </span>wget<span class="w"> </span>http://dd.weather.gc.ca/hydrometric/doc/hydrometric_StationList.csv
+
+<span class="w">  </span><span class="c1"># clean the header</span>
+<span class="w">  </span>sed<span class="w"> </span><span class="s1">&#39;1s/.*/id,name,lat,lon,prov,timezone/&#39;</span><span class="w"> </span>hydrometric_StationList.csv<span class="w"> </span>&gt;<span class="w"> </span>hydrostn.csv
+
+<span class="w">  </span><span class="c1"># Create a table of BC Albers points from the input lat/lon values</span>
+<span class="w">  </span>ogr2ogr<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-s_srs<span class="w"> </span>EPSG:4326<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-t_srs<span class="w"> </span>EPSG:3005<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-f<span class="w"> </span>PostgreSQL<span class="w"> </span><span class="s2">&quot;PG:</span><span class="nv">$DATABASE_URL</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-lco<span class="w"> </span><span class="nv">GEOMETRY_NAME</span><span class="o">=</span>geom<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-oo<span class="w"> </span><span class="nv">X_POSSIBLE_NAMES</span><span class="o">=</span>lon*<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-oo<span class="w"> </span><span class="nv">Y_POSSIBLE_NAMES</span><span class="o">=</span>lat*<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-oo<span class="w"> </span><span class="nv">KEEP_GEOM_COLUMNS</span><span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-sql<span class="w"> </span><span class="s2">&quot;SELECT * FROM hydrostn WHERE prov=&#39;BC&#39;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-nln<span class="w"> </span>hydrostn<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>hydrostn.csv
+</pre></div>
+</div>
+<p>Because <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code> is a table returning function, matching many points to the stream network in a single query can be done with a <code class="docutils literal notranslate"><span class="pre">LATERAL</span></code> join. Note that <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code> accepts point geometries directly, but only as BC Albers (<code class="docutils literal notranslate"><span class="pre">EPSG:3005</span></code>). For this example, just query the first five hydrometric stations.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="w">  </span><span class="n">blue_line_key</span><span class="p">,</span>
+<span class="w">  </span><span class="n">downstream_route_measure</span><span class="p">,</span>
+<span class="w">  </span><span class="n">distance_to_stream</span>
+<span class="k">FROM</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn</span>
+<span class="w">  </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="w">   </span><span class="c1">-- only 5 stations for this example</span>
+<span class="p">)</span><span class="w"> </span><span class="n">pts</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">  </span><span class="k">FROM</span>
+<span class="w">  </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="c1">-- find up to 10 streams within 100m</span>
+<span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span> <span class="o">|</span> <span class="n">distance_to_stream</span>
+<span class="o">---------+-------------------------------------+---------------+--------------------------+--------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359571145</span> <span class="o">|</span>       <span class="mf">6095.5541123470175</span> <span class="o">|</span>             <span class="mf">41.466</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359233576</span> <span class="o">|</span>                        <span class="mi">0</span> <span class="o">|</span>             <span class="mf">47.233</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>     <span class="mi">359569942</span> <span class="o">|</span>       <span class="mf">42909.470879005145</span> <span class="o">|</span>             <span class="mf">47.372</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span>     <span class="mi">359571761</span> <span class="o">|</span>       <span class="mf">29215.311821971634</span> <span class="o">|</span>             <span class="mf">41.002</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>     <span class="mi">359573063</span> <span class="o">|</span>        <span class="mf">29005.40894424251</span> <span class="o">|</span>              <span class="mf">42.77</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>     <span class="mi">359571933</span> <span class="o">|</span>       <span class="mf">29316.915466924725</span> <span class="o">|</span>             <span class="mf">95.172</span>
+</pre></div>
+</div>
+</section>
+<section id="check-results">
+<h3>Check results<a class="headerlink" href="#check-results" title="Link to this heading"></a></h3>
+<p>Matching points with variable precision and accuracy to FWA streams can be a challenge. In the example above, station <code class="docutils literal notranslate"><span class="pre">07EA004</span></code> has two streams within 50m - which one is correct? Station <code class="docutils literal notranslate"><span class="pre">07EC002</span></code> is 95m from the nearest stream, is this too far to be confident about the match?</p>
+<p>For quality matching of points to streams it is essential to be familiar with the contents and lineage of the point data. Is there any information in the data that can improve the match? How were the points collected? These hydrometric station locations were likely digitized from paper maps that used a much different scale from FWA 1:20,000 mapping - using the closest point will not work reliably. However, the data in the <code class="docutils literal notranslate"><span class="pre">name</span></code> column is consistent and appears to be very reliable - we can improve the join based on matching to the FWA stream name:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="k">CREATE</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">pg_trgm</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">SELECT</span>
+<span class="w">    </span><span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">    </span><span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="w">    </span><span class="n">gnis_name</span><span class="p">,</span>
+<span class="w">    </span><span class="n">gnis_name</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">::</span><span class="nb">text</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">trgm_comparison</span>
+<span class="w">  </span><span class="k">FROM</span>
+<span class="w">  </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn</span>
+<span class="w">    </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="n">pts</span>
+<span class="w">  </span><span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span>
+<span class="w">  </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">    </span><span class="k">FROM</span>
+<span class="w">    </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">true</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">gnis_name</span>    <span class="o">|</span> <span class="n">trgm_comparison</span>
+<span class="o">---------+-------------------------------------+----------------+-----------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span> <span class="n">Ingenika</span> <span class="n">River</span> <span class="o">|</span> <span class="n">t</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>                <span class="o">|</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span> <span class="n">Finlay</span> <span class="n">River</span>   <span class="o">|</span> <span class="n">t</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span> <span class="n">Akie</span> <span class="n">River</span>     <span class="o">|</span> <span class="n">t</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span> <span class="n">Ospika</span> <span class="n">River</span>   <span class="o">|</span> <span class="n">t</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span> <span class="n">Omineca</span> <span class="n">River</span>  <span class="o">|</span> <span class="n">t</span>
+</pre></div>
+</div>
+<p>If this is good enough, the query can be adjusted to return only the stream within 100m where the point stream name matches the FWA stream name (according to <code class="docutils literal notranslate"><span class="pre">pg_trgm</span></code>):</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="w">  </span><span class="n">blue_line_key</span><span class="p">,</span>
+<span class="w">  </span><span class="n">downstream_route_measure</span>
+<span class="k">FROM</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn</span>
+<span class="w">  </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span>
+<span class="p">)</span><span class="w"> </span><span class="n">pts</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">  </span><span class="k">FROM</span>
+<span class="w">  </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">gnis_name</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">::</span><span class="nb">text</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span> <span class="n">blue_line_key</span> <span class="o">|</span> <span class="n">downstream_route_measure</span>
+<span class="o">---------+-------------------------------------+---------------+--------------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>     <span class="mi">359571145</span> <span class="o">|</span>       <span class="mf">6095.5541123470175</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>     <span class="mi">359569942</span> <span class="o">|</span>       <span class="mf">42909.470879005145</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span>     <span class="mi">359571761</span> <span class="o">|</span>       <span class="mf">29215.311821971634</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>     <span class="mi">359573063</span> <span class="o">|</span>        <span class="mf">29005.40894424251</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>     <span class="mi">359571933</span> <span class="o">|</span>       <span class="mf">29316.915466924725</span>
+</pre></div>
+</div>
+<p>This should produce a more reliable output than matching only on the closest stream. However, simply filtering on a true/false string comparison is likely still error prone - for the first station in the list, what would happen if Swanell River was within 100m? To ensure any subsequent upstream analysis are done on the correct stream system, matches for points in this dataset will generally have to have to be manually QA’ed.</p>
+<p>Other possible attributes for improving matches could include:</p>
+<ul class="simple">
+<li><p>1:50,000 watershed code (the FWA provides a lookup between 50k and 20k watershed codes)</p></li>
+<li><p>channel width or similar (compare to the FWA stream order, a point at 1m width should not be matched to a 5th order FWA stream)</p></li>
+</ul>
+<p>If no additional information is available, it may be best to filter results where there are &gt;1 matches within 100m (or whatever tolerance works with your data) and complete the matching of these points manually.</p>
+<p>To cut down on the code for below examples, we can create a table holding the results:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">hydrostn_events</span><span class="w"> </span><span class="k">AS</span>
+<span class="k">SELECT</span>
+<span class="w">  </span><span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="w">  </span><span class="n">i</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span>
+<span class="w">  </span><span class="n">i</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span>
+<span class="w">  </span><span class="n">i</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">i</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">i</span><span class="p">.</span><span class="n">distance_to_stream</span><span class="p">,</span>
+<span class="w">  </span><span class="n">i</span><span class="p">.</span><span class="n">geom</span><span class="p">::</span><span class="n">geometry</span><span class="p">(</span><span class="n">Point</span><span class="p">,</span><span class="w"> </span><span class="mi">3005</span><span class="p">)</span>
+<span class="k">FROM</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn</span>
+<span class="p">)</span><span class="w"> </span><span class="n">pts</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">  </span><span class="k">FROM</span>
+<span class="w">  </span><span class="n">FWA_IndexPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">gnis_name</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">pts</span><span class="p">.</span><span class="n">name</span><span class="p">::</span><span class="nb">text</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">pts</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="watershed-codes">
+<h3>Watershed codes<a class="headerlink" href="#watershed-codes" title="Link to this heading"></a></h3>
+<p>Once features are referenced to the stream network, determining what is upstream/downstream is done by comparing the watershed codes and the <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> / <code class="docutils literal notranslate"><span class="pre">route_measure</span></code> values.</p>
+<p>From the <a class="reference external" href="https://www2.gov.bc.ca/gov/content/data/geographic-data-services/topographic-data/freshwater">FWA user guide</a>, the watershed codes are <em>a hierarchical key that provides the ability to process both upstream and downstream queries</em>. The source FWA database stores these codes as strings, with trailing <code class="docutils literal notranslate"><span class="pre">-000000-</span></code> values to fill in the full 143 characters.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fwapg</span></code> translates the watershed code strings to <a class="reference external" href="https://www.postgresql.org/docs/current/ltree.html"><code class="docutils literal notranslate"><span class="pre">ltree</span></code></a> types for easier searching of the hierarchical tree-like structure (these codes are stored in columns <code class="docutils literal notranslate"><span class="pre">wscode_ltree</span></code> and <code class="docutils literal notranslate"><span class="pre">localcode_ltree</span></code> in the various tables).</p>
+<p>While the <code class="docutils literal notranslate"><span class="pre">ltree</span></code> module provides operators simple hierarchy queries (eg <code class="docutils literal notranslate"><span class="pre">ltree</span> <span class="pre">&#64;&gt;</span> <span class="pre">ltree</span></code>, is left argument an ancestor of right (or equal)), upstream/downstream queries are <a class="reference external" href="https://github.com/smnorris/fwapg/blob/main/sql/functions/FWA_Upstream.sql">not quite as simple</a> as ancestor/descendant queries of the codes. Therefore, functions <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code> and <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> are provided to make these operations simpler.</p>
+</section>
+<section id="query-downstream">
+<h3>Query downstream<a class="headerlink" href="#query-downstream" title="Link to this heading"></a></h3>
+<p>Using <code class="docutils literal notranslate"><span class="pre">FWA_Downstream</span></code> enables doing this with a join:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="w">  </span><span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">length_dnstr_km</span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn_events</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">e</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"> </span><span class="n">s</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">FWA_Downstream</span><span class="p">(</span>
+<span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">name</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">length_dnstr_km</span>
+<span class="o">---------+-------------------------------------+--------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>  <span class="mf">908.3217090864651</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>  <span class="mf">996.3101858316527</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span> <span class="mf">1011.4124142994692</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>  <span class="mf">834.4111401643679</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span>  <span class="mf">778.6774554185706</span>
+</pre></div>
+</div>
+<p>Note that this is only the downstream portion present in the FWA data - if the point is in the Columbia basin or similar, portions of stream not in BC are not included.</p>
+</section>
+<section id="query-upstream">
+<h3>Query upstream<a class="headerlink" href="#query-upstream" title="Link to this heading"></a></h3>
+<p>An upstream query is almost the same, using <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code>:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="w">  </span><span class="k">SUM</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">geom</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">length_upstr_km</span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn_events</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">e</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"> </span><span class="n">s</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">name</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="nb">id</span>    <span class="o">|</span>                <span class="n">name</span>                 <span class="o">|</span>   <span class="n">length_upstr_km</span>
+<span class="o">---------+-------------------------------------+--------------------</span>
+ <span class="mi">07</span><span class="n">EA004</span> <span class="o">|</span> <span class="n">INGENIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">SWANNELL</span> <span class="n">RIVER</span> <span class="o">|</span>  <span class="mf">8355.325367888996</span>
+ <span class="mi">07</span><span class="n">EA005</span> <span class="o">|</span> <span class="n">FINLAY</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">AKIE</span> <span class="n">RIVER</span>       <span class="o">|</span>   <span class="mf">41388.6738526307</span>
+ <span class="mi">07</span><span class="n">EA007</span> <span class="o">|</span> <span class="n">AKIE</span> <span class="n">RIVER</span> <span class="n">NEAR</span> <span class="n">THE</span> <span class="mi">760</span> <span class="n">M</span> <span class="n">CONTOUR</span>   <span class="o">|</span> <span class="mf">4999.9129992270255</span>
+ <span class="mi">07</span><span class="n">EB002</span> <span class="o">|</span> <span class="n">OSPIKA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">ALEY</span> <span class="n">CREEK</span>       <span class="o">|</span>  <span class="mf">5907.417221603829</span>
+ <span class="mi">07</span><span class="n">EC002</span> <span class="o">|</span> <span class="n">OMINECA</span> <span class="n">RIVER</span> <span class="n">ABOVE</span> <span class="n">OSILINKA</span> <span class="n">RIVER</span>  <span class="o">|</span> <span class="mf">10042.880207799402</span>
+</pre></div>
+</div>
+<p>As with the downstream query, only features within BC are returned. The above <code class="docutils literal notranslate"><span class="pre">length_upstr_km</span></code> will be incorrect for trans-boundary watersheds.</p>
+<p>More general upstream queries are possible as well:</p>
+<ul class="simple">
+<li><p>how many stations are upstream of Hope?</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn_events</span><span class="w"> </span><span class="n">e</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">  </span><span class="mi">356364114</span><span class="p">,</span><span class="w"> </span><span class="mi">160400</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">count</span>
+<span class="o">-------</span>
+    <span class="mi">83</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>how much additional stream network is isolated by the Site C dam? (ie, upstream of Site C, but not upstream of the Bennet Dam)</p></li>
+</ul>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="k">SUM</span><span class="p">(</span><span class="n">ST_Length</span><span class="p">(</span><span class="n">geom</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">length_km</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"> </span><span class="n">s</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">  </span><span class="mi">359572348</span><span class="p">,</span><span class="w"> </span><span class="mi">1597489</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;200.948755&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;200.948755.816999&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">  </span><span class="mi">359572348</span><span class="p">,</span><span class="w"> </span><span class="mi">1706733</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;200.948755&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;200.948755.871814&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>     <span class="n">length_km</span>
+<span class="o">--------------------</span>
+ <span class="mf">28974.584934736216</span>
+</pre></div>
+</div>
+</section>
+<section id="generate-watershed">
+<h3>Generate watershed<a class="headerlink" href="#generate-watershed" title="Link to this heading"></a></h3>
+<p>With <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code> in hand, creating a watershed boundary now seems straightforward - find the fundamental watersheds upstream and aggregate them. For example, to extract the watershed upstream of hydrometric station <code class="docutils literal notranslate"><span class="pre">08HA002</span></code> as a single polygon, using unaltered FWA linework:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ST_Union</span><span class="p">(</span><span class="n">w</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn_events</span><span class="w"> </span><span class="n">p</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_watersheds_poly</span><span class="w"> </span><span class="n">w</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
+<span class="w">  </span><span class="n">p</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="n">w</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">localcode_ltree</span>
+<span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;08HA002&#39;</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This successfully creates the watershed boundary:</p>
+<p><img alt="watershed" src="_images/watershed1.png" /></p>
+<p>But if we look closely at the fundamental watersheds near the point, the watershed boundary is a bit different from what might be expected:</p>
+<p><img alt="watershed" src="_images/watershed2.png" /></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> value for the stream at the point location is <code class="docutils literal notranslate"><span class="pre">920.252823.584332</span></code> - the three highlighted fundamental watersheds all have lower <code class="docutils literal notranslate"><span class="pre">local_watershed_code</span></code> values and are thus not returned by <code class="docutils literal notranslate"><span class="pre">FWA_Upstream</span></code>. This is typical for points found on FWA waterbodies - the fundamental watersheds making up waterbodies are defined by a complex set of rules.</p>
+<p><img alt="watershed" src="_images/watershed3.png" /></p>
+<p>To clean up this issue and others, <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> provides the function <a class="reference internal" href="#04_functions#FWA_WatershedAtMeasure"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code></span></a>.</p>
+<p>For a single point, we can provide the parameters (<code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code>, <code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code>) directly:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="mi">354155148</span><span class="p">,</span><span class="w"> </span><span class="mi">49129</span><span class="p">.</span><span class="mi">75</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Producing this output:</p>
+<p><img alt="watershed" src="_images/watershed4.png" /></p>
+<p>Like <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code>, this function is available via the <code class="docutils literal notranslate"><span class="pre">fwapg</span></code> <a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_watershedatmeasure.html">feature service</a> - you can experiment with it <a class="reference external" href="https://features.hillcrestgeo.ca/fwa/functions/fwa_watershedatmeasure/items.html?blue_line_key=354155148&amp;amp;downstream_route_measure=49129.75">directly</a> without having to install anything other than a web browser.</p>
+<p>Also like <code class="docutils literal notranslate"><span class="pre">FWA_IndexPoint</span></code>, <code class="docutils literal notranslate"><span class="pre">FWA_WatershedAtMeasure</span></code> is a table returning function. When joining to the source table, use a <code class="docutils literal notranslate"><span class="pre">LATERAL</span></code> join to run the query on each point. Note that this can be very resource intensive, you may want to restrict the query to just a handful of points.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">  </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">w</span><span class="p">.</span><span class="n">geom</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn_events</span><span class="w"> </span><span class="n">p</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span>
+<span class="p">(</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">true</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;08HA002&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="fwapg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="02_tables_views.html" class="btn btn-neutral float-right" title="Value added table/view reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Simon Norris.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

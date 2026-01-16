@@ -23,7 +23,6 @@ fwapg
    :maxdepth: 2
    :caption: Contents:
 
-   01_setup
-   02_usage
-   03_tables_views
-   04_functions
+   01_usage
+   02_tables_views
+   03_functions

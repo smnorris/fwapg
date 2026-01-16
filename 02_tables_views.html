@@ -1,0 +1,569 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Value added table/view reference &mdash; fwapg 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5a057da9"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Function reference" href="03_functions.html" />
+    <link rel="prev" title="Usage" href="01_usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            fwapg
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01_usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Value added table/view reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-approx-borders">fwa_approx_borders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-assessment-watersheds-lut">fwa_assessment_watersheds_lut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-assessment-watersheds-streams-lut">fwa_assessment_watersheds_streams_lut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-basins-poly">fwa_basins_poly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-bcboundary">fwa_bcboundary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-named-streams">fwa_named_streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#whse-basemapping-fwa-streams">whse_basemapping.fwa_streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-streams-watersheds-lut">fwa_streams_watersheds_lut</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-waterbodies">fwa_waterbodies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-waterbodies-upstream-area">fwa_waterbodies_upstream_area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fwa-watersheds-upstream-area">fwa_watersheds_upstream_area</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#psf-pse-conservation-units-streams">psf.pse_conservation_units_streams</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="03_functions.html">Function reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">fwapg</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Value added table/view reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/02_tables_views.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="value-added-table-view-reference">
+<h1>Value added table/view reference<a class="headerlink" href="#value-added-table-view-reference" title="Link to this heading"></a></h1>
+<section id="fwa-approx-borders">
+<h2>fwa_approx_borders<a class="headerlink" href="#fwa-approx-borders" title="Link to this heading"></a></h2>
+<p>Lines of latitude / longitude for 49N, 60N, -120W. These are used by fwapg for finding cross-border streams</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">approx_border_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>Unique identifer</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">border</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
+<td><p>A code identifying the border (USA49, YTNWT_60, AB_120)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geometry(LineString,3005)</span></code></p></td>
+<td><p>Geometry of the border line</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-assessment-watersheds-lut">
+<h2>fwa_assessment_watersheds_lut<a class="headerlink" href="#fwa-assessment-watersheds-lut" title="Link to this heading"></a></h2>
+<p>Some workflows require relating <code class="docutils literal notranslate"><span class="pre">fwa_assessment_watersheds_poly</span></code> to fundamental watersheds. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>watershed_feature_id</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>assmnt_watershed_id</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-assessment-watersheds-streams-lut">
+<h2>fwa_assessment_watersheds_streams_lut<a class="headerlink" href="#fwa-assessment-watersheds-streams-lut" title="Link to this heading"></a></h2>
+<p>Some workflows require relating <code class="docutils literal notranslate"><span class="pre">fwa_assessment_watersheds_poly</span></code> to stream segments. There are no existing keys in the data that maintain this link - the query requires a resource intensive spatial function.  Rather than running a spatial query every time, this lookup is provided.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>linear_feature_id</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>assmnt_watershed_id</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-basins-poly">
+<h2>fwa_basins_poly<a class="headerlink" href="#fwa-basins-poly" title="Link to this heading"></a></h2>
+<p>Large BC watersheds consisting of at least 2-3 watershed groups, used by fwapg for watershed pre-aggregation</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">basin_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>Basin unique identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">basin_name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
+<td><p>Basin name, eg Thompson River</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wscode_ltree</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ltree</span></code></p></td>
+<td><p>The watershed code associated with the stream at the outlet of the basin</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">localcode_ltree</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ltree</span></code></p></td>
+<td><p>The local watershed code associated with the stream at the outlet of the basin</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geometry(Polygon,3005)</span></code></p></td>
+<td><p>Geometry of the basin</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-bcboundary">
+<h2>fwa_bcboundary<a class="headerlink" href="#fwa-bcboundary" title="Link to this heading"></a></h2>
+<p>Boundary of BC as defined by FWA - used by FWA_WatershedAtMeasure()</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bcboundary_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>Boundary polygon id</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geometry(Polygon,3005)</span></code></p></td>
+<td><p>Boundary geometry</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-named-streams">
+<h2>fwa_named_streams<a class="headerlink" href="#fwa-named-streams" title="Link to this heading"></a></h2>
+<p>Named streams of BC, aggregated per watershed group and simplified using a 25m tolerance (primarily for mapping use)</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">named_streams_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>Named stream unique identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gnis_name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
+<td><p>The BCGNIS (BC Geographical Names Information System) name associated with the stream</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code></p></td>
+<td><p>The blue line key of the named stream, see FWA documentation for blue_line_key description</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stream_order</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>The maximum stream order associated with the stream name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">watershed_group_code</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
+<td><p>The watershed group code associated with the named stream</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geometry(MultiLineString,3005)</span></code></p></td>
+<td><p>The geometry of the named stream, an aggregation of the source features and simpified by 25m</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="whse-basemapping-fwa-streams">
+<h2>whse_basemapping.fwa_streams<a class="headerlink" href="#whse-basemapping-fwa-streams" title="Link to this heading"></a></h2>
+<p>FWA stream networks plus value-added attributes</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">linear_feature_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">edge_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">watershed_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wscode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ltree</span></code></p></td>
+<td><p>FWA watershed code as postgres ltree type, with trailing -000000 strings removed</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">localcode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ltree</span></code></p></td>
+<td><p>FWA local watershed code as postgres ltree type, with trailing -000000 strings removed</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">watershed_group_code</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">character</span> <span class="pre">varying(4)</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">precision</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upstream_route_measure</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">precision</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">length_metre</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">precision</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">waterbody_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gnis_name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">character</span> <span class="pre">varying(80)</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stream_order</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stream_magnitude</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">feature_code</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">character</span> <span class="pre">varying(10)</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gradient</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">precision</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">left_right_tributary</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">character</span> <span class="pre">varying(7)</span></code></p></td>
+<td><p>See FWA documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stream_order_parent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>Stream order of parent stream at confluence with stream having <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> of the stream segment</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stream_order_max</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>Maxiumum order of the stream with equivalent <code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code> as given segment)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upstream_area_ha</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">precision</span></code></p></td>
+<td><p>Area (ha) upstream of the stream segment (including all fundamental watersheds with equivalent watershed code)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">map_upstream</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>Area weighted average mean annual precipitation upstream of the stream segment, source ClimateBC</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">channel_width</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">precision</span></code></p></td>
+<td><p>Channel width of the stream segment in metres, with source as per channel_width_source</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">channel_width_source</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text</span></code></p></td>
+<td><p>Data source for channel_width at given segment, with values (FIELD_MEASURMENT, FWA_RIVERS_POLY, MODELLED). FIELD_MEASUREMENT is derived from PSCIS and FISS data, MODELLED is taken from Thorley et al, 2021</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mad_m3s</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">precision</span></code></p></td>
+<td><p>Modelled mean annual discharge at the stream segment (Pacific Climate Impacts Consortium, University of Victoria, (January 2020) VIC-GL BCCAQ CMIP5: Gridded Hydrologic Model Output)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">geom</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geometry(LineStringZM,3005)</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-streams-watersheds-lut">
+<h2>fwa_streams_watersheds_lut<a class="headerlink" href="#fwa-streams-watersheds-lut" title="Link to this heading"></a></h2>
+<p>A convenience lookup for quickly relating streams and fundamental watersheds</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">linear_feature_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code></p></td>
+<td><p>FWA stream segment unique identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">watershed_feature_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>FWA fundamental watershed unique identifer</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-waterbodies">
+<h2>fwa_waterbodies<a class="headerlink" href="#fwa-waterbodies" title="Link to this heading"></a></h2>
+<p>All FWA waterbodies in one table for convenience (lakes, wetlands, rivers, manmade waterbodies, glaciers).
+Note that this table is meant for connectivity purposes only, only features connected to the network are included (waterbodies with watershed code  <code class="docutils literal notranslate"><span class="pre">999.999999</span></code> are excluded). For column descriptions see FWA docs for the various waterbody tables.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">waterbody_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">waterbody_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">character</span> <span class="pre">varying(1)</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">blue_line_key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">downstream_route_measure</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">precision</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wscode_ltree</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ltree</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">localcode_ltree</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ltree</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-waterbodies-upstream-area">
+<h2>fwa_waterbodies_upstream_area<a class="headerlink" href="#fwa-waterbodies-upstream-area" title="Link to this heading"></a></h2>
+<p>A lookup storing area of lake/reservoir/wetland upstream of individual stream segments.
+Note that this table differs from <code class="docutils literal notranslate"><span class="pre">fwa_watersheds_upstream_area</span></code> noted above - we use streams as the lookup base rather than watersheds because waterbodies can be nested within fundamental watersheds.</p>
+<p><strong>NOTE</strong> - output currently includes area upstream <strong>WITHIN BC ONLY</strong>, this will not be accurate in watersheds that have contributing drainage outside of BC!</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>linear_feature_id</p></td>
+<td><p>bigint</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>upstream_lake_ha</p></td>
+<td><p>double precision</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>upstream_reservoir_ha</p></td>
+<td><p>double precision</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>upstream_wetland_ha</p></td>
+<td><p>double precision</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fwa-watersheds-upstream-area">
+<h2>fwa_watersheds_upstream_area<a class="headerlink" href="#fwa-watersheds-upstream-area" title="Link to this heading"></a></h2>
+<p>Area upstream (ha) for all fundamental watersheds as a lookup table. Area <em>includes</em> the area of the fundamental watershed indicated by the id.</p>
+<p><strong>NOTE</strong> - output currently includes area upstream <strong>WITHIN BC ONLY</strong>, this will not be accurate in watersheds that have contributing drainage outside of BC!</p>
+<p>When working with watersheds, join to this lookup directly via <code class="docutils literal notranslate"><span class="pre">watershed_feature_id</span></code>.
+When working with streams, relate the streams to watersheds via the lookup <code class="docutils literal notranslate"><span class="pre">fwa_streams_watersheds_lut</span></code>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SELECT
+  s.linear_feature_id,
+  ua.upstream_area_ha
+FROM whse_basemapping.fwa_stream_networks_sp s
+LEFT OUTER JOIN whse_basemapping.fwa_streams_watersheds_lut l
+ON s.linear_feature_id = l.linear_feature_id
+INNER JOIN whse_basemapping.fwa_watersheds_upstream_area ua
+ON l.watershed_feature_id = ua.watershed_feature_id
+</pre></div>
+</div>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>watershed_feature_id</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>upstream_area_ha</p></td>
+<td><p>double precision</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="psf-pse-conservation-units-streams">
+<h2>psf.pse_conservation_units_streams<a class="headerlink" href="#psf-pse-conservation-units-streams" title="Link to this heading"></a></h2>
+<p>Lookup relating Pacific Salmon Explorer Conservation Units to FWA streams</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>linear_feature_id</p></td>
+<td><p>bigint</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>cuid</p></td>
+<td><p>integer</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p>For example, to find length of all streams associated with CU 289 (Morice) and CU 287 (Bulkley):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">SELECT</span>
+    <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span><span class="p">,</span>
+    <span class="nb">round</span><span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">st_length</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">geom</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)::</span><span class="n">numeric</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="n">AS</span> <span class="n">length_km</span>
+  <span class="n">FROM</span> <span class="n">whse_basemapping</span><span class="o">.</span><span class="n">fwa_streams_vw</span> <span class="n">s</span>
+  <span class="n">JOIN</span> <span class="n">psf</span><span class="o">.</span><span class="n">pse_conservation_units_streams</span> <span class="n">cu</span> <span class="n">USING</span> <span class="p">(</span><span class="n">linear_feature_id</span><span class="p">)</span>
+  <span class="n">WHERE</span> <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span> <span class="n">IN</span> <span class="p">(</span><span class="mi">289</span><span class="p">,</span> <span class="mi">287</span><span class="p">)</span>
+  <span class="n">GROUP</span> <span class="n">BY</span> <span class="n">cu</span><span class="o">.</span><span class="n">cuid</span><span class="p">;</span>
+
+ <span class="n">cuid</span> <span class="o">|</span> <span class="n">length_km</span>
+<span class="o">------+-----------</span>
+  <span class="mi">287</span> <span class="o">|</span>   <span class="mf">9371.21</span>
+  <span class="mi">289</span> <span class="o">|</span>  <span class="mf">11534.82</span>
+
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="01_usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="03_functions.html" class="btn btn-neutral float-right" title="Function reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Simon Norris.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
