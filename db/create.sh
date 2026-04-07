@@ -28,4 +28,7 @@ $PSQL -f sql/FWA_LocateAlongInterval.sql
 $PSQL -f sql/FWA_UpstreamTrace.sql
 $PSQL -f sql/FWA_NetworkTrace.sql
 $PSQL -f sql/FWA_NetworkTraceAgg.sql
+$PSQL -f sql/FWA_SlopeAlongInterval.sql
+$PSQL -f sql/FWA_SegmentAlongInterval.sql
+$PSQL -f sql/FWA_StreamProfile.sql
 $PSQL -f sql/postgisftw.sql  # pg_fs/pg_ts functions
