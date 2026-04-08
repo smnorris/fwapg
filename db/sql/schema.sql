@@ -446,7 +446,7 @@ create table whse_basemapping.fwa_watershed_groups_poly (
     basin_id integer,
     geom public.geometry(multipolygon,3005)
 );
-create index fwa_watershed_groups_watershed_group_code_idx on whse_basemapping.fwa_watershed_groups_poly (watershed_group_code);
+create unique index fwa_watershed_groups_watershed_group_code_idx on whse_basemapping.fwa_watershed_groups_poly (watershed_group_code);
 create index fwa_watershed_groups_geom_idx on whse_basemapping.fwa_watershed_groups_poly using gist (geom);
 
 -- ---------------------------------------------------------------------------------------------------------------------
