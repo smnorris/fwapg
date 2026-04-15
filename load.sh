@@ -37,27 +37,31 @@ for table in "${tables[@]}"; do
     /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$table.parquet
 done
 
+WSD_GROUPS=$(ogr2ogr -f CSV /vsistdout/ \
+  /vsis3/bchamp/fwapg/fwa_watershed_groups_poly.parquet \
+  -sql "select distinct watershed_group_code from fwa_watershed_groups_poly order by watershed_group_code" | tail -n +2
+)
 
 # ---------------------
-# for larger tables, download the file directly then load to postgres
+# for larger tables iterate through watershed groups
 # ---------------------
-mkdir -p data
 tables=(
   linear_boundaries_sp
   watersheds_poly
 )
 for table in "${tables[@]}"; do
-  curl -o data/fwa_$table.parquet https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$table.parquet
   $PSQL -c "truncate whse_basemapping.fwa_$table"
-  ogr2ogr \
-    -f PostgreSQL \
-    PG:$DATABASE_URL \
-    --config PG_USE_COPY YES \
-    -append \
-    -update \
-    -preserve_fid \
-    -nln whse_basemapping.fwa_$table \
-    data/fwa_$table.parquet
+  for WSG in $WSD_GROUPS; do
+    ogr2ogr \
+      -f PostgreSQL \
+      PG:$DATABASE_URL \
+      --config PG_USE_COPY YES \
+      -append \
+      -update \
+      -preserve_fid \
+      -nln whse_basemapping.fwa_$table \
+      /vsis3/bchamp/fwapg/fwa_$table/$WSG.parquet
+  done
 done
 
 
