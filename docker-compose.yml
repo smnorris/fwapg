@@ -1,6 +1,8 @@
 services:
   db:
-    image: imresamu/postgis:17-3.5-bullseye
+    image: postgis/postgis
+    build:
+      context: https://github.com/postgis/docker-postgis.git#master:17-3.5
     shm_size: 16gb
     container_name: fwapg-db
     command: postgres -c default_statistics_target=100 -c max_connections=100 -c max_locks_per_transaction=64 -c checkpoint_timeout=30min -c maintenance_work_mem=1GB -c effective_cache_size=16GB -c work_mem=500MB -c max_wal_size=10GB -c wal_buffers=16MB -c shared_buffers=8GB
@@ -29,6 +31,13 @@ services:
       - PGUSER=postgres
       - PGPASSWORD=postgres
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/fwapg
+      - AWS_ENDPOINT_URL=https://nrs.objectstore.gov.bc.ca
+      - AWS_S3_ENDPOINT=nrs.objectstore.gov.bc.ca
+      - AWS_VIRTUAL_HOSTING=FALSE
+      - AWS_EC2_METADATA_DISABLED=true
+      - CPL_VSISTDIN_BUFFER_LIMIT=-1
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
     depends_on:
       db:
         condition: service_healthy
