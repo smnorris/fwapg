@@ -8,7 +8,8 @@ set -euxo pipefail
 # --------------
 # process single table sources
 # --------------
-curl -o /tmp/FWA_BC.gdb.zip ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip
+curl -o /tmp/FWA_BC.gdb.zip \
+  https://nrs.objectstore.gov.bc.ca/itqlyp/FWA_Public/FWA_BC.zip
 
 ogr2ogr -f Parquet /tmp/fwa_assessment_watersheds_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
@@ -367,7 +368,8 @@ WSD_GROUPS=$(ogr2ogr -f CSV /vsistdout/ \
 )
 
 # LINEAR BOUDNARIES
-curl -o /tmp/FWA_LINEAR_BOUNDARIES_SP.gdb.zip ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
+curl -o /tmp/FWA_LINEAR_BOUNDARIES_SP.gdb.zip \
+  https://nrs.objectstore.gov.bc.ca/itqlyp/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
 
 mkdir -p data/fwa_linear_boundaries_sp
 
@@ -398,7 +400,9 @@ ogr2ogr -f Parquet /vsis3/bchamp/fwapg/fwa_linear_boundaries_sp.parquet data/fwa
 
 
 # STREAM NETWORKS
-curl -o /tmp/FWA_STREAM_NETWORKS_SP.gdb.zip ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
+curl -o /tmp/FWA_STREAM_NETWORKS_SP.gdb.zip \
+  https://nrs.objectstore.gov.bc.ca/itqlyp/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
+
 mkdir -p data/fwa_stream_networks_sp
 for WSG in $WSD_GROUPS;
 do
@@ -438,7 +442,8 @@ ogr2ogr -f Parquet /vsis3/bchamp/fwapg/fwa_stream_networks_sp.parquet data/fwa_s
 
 
 # WATERSHEDS
-curl -o /tmp/FWA_WATERSHEDS_POLY.gdb.zip ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_WATERSHEDS_POLY.zip
+curl -o /tmp/FWA_WATERSHEDS_POLY.gdb.zip \
+  https://nrs.objectstore.gov.bc.ca/itqlyp/FWA_Public/FWA_WATERSHEDS_POLY.zip
 mkdir -p data/fwa_watersheds_poly
 for WSG in $WSD_GROUPS;
 do
