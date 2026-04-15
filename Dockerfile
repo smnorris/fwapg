@@ -1,4 +1,4 @@
-FROM ghcr.io/osgeo/gdal:ubuntu-full-3.12.1
+FROM ghcr.io/osgeo/gdal:ubuntu-full-3.12.3
 
 RUN apt-get update && apt-get --assume-yes upgrade \
     && apt-get -qq install -y --no-install-recommends postgresql-common \
@@ -19,17 +19,20 @@ RUN apt-get update && apt-get --assume-yes upgrade \
     && apt-get -qq install -y --no-install-recommends jq \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.21.zip" -o "awscliv2.zip" \
+RUN ARCH=$(uname -m) \
+    && curl "https://awscli.amazonaws.com/awscli-exe-linux-${ARCH}-2.22.21.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
-    && ./aws/install
+    && ./aws/install \
+    && rm -rf awscliv2.zip aws
+
+WORKDIR /home/fwapg
 
 RUN python3 -m venv /opt/venv && \
     /opt/venv/bin/python -m pip install -U pip && \
     /opt/venv/bin/python -m pip install --no-cache-dir --upgrade numpy && \
-    /opt/venv/bin/python -m pip install --no-cache-dir rasterstats && \
-    /opt/venv/bin/python -m pip install --no-cache-dir bcdata
+    /opt/venv/bin/python -m pip install --no-cache-dir bcdata==0.16.0 && \
+    /opt/venv/bin/python -m pip install --no-cache-dir rasterstats
 
-WORKDIR /home/fwapg
 
 COPY ["db", "db/"]
 COPY ["extras", "extras/"]
