@@ -1,0 +1,54 @@
+name: test-migration
+run-name: ${{ github.actor }} Test migration sql in ephemeral db
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'migrations/*.sql'
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres"
+  AWS_ENDPOINT_URL: "https://nrs.objectstore.gov.bc.ca"
+  AWS_S3_ENDPOINT: "nrs.objectstore.gov.bc.ca"
+  AWS_VIRTUAL_HOSTING: "FALSE"
+  AWS_EC2_METADATA_DISABLED: "true"
+  CPL_VSISTDIN_BUFFER_LIMIT: -1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+  AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+jobs:
+  test-migrations:
+    runs-on: ubuntu-latest
+    name: test-migration
+    container: ghcr.io/smnorris/fwapg:main
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+        DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Load test data
+        run: |
+          cd db && ./create.sh
+          ogr2ogr \
+            -f PostgreSQL \
+            PG:$DATABASE_URL \
+            --config PG_USE_COPY YES \
+            -append \
+            -update \
+            -preserve_fid \
+            -nln whse_basemapping.fwa_assessment_watersheds_poly \
+            -sql "SELECT * FROM fwa_assessment_watersheds_poly WHERE watershed_group_code in ('LNIC','BULK','HORS','ELKR')" \
+            /vsis3/bchamp/fwapg/fwa_assessment_watersheds_poly.parquet
