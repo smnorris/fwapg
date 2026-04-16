@@ -1,7 +1,5 @@
 BEGIN;
 
-  truncate whse_basemapping.fwa_stream_networks_sp;
-
   insert into whse_basemapping.fwa_stream_networks_sp (
     linear_feature_id,
     watershed_group_id,
