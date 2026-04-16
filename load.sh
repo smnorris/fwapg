@@ -37,44 +37,52 @@ for table in "${tables[@]}"; do
     /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$table.parquet
 done
 
+WSD_GROUPS=$(ogr2ogr -f CSV /vsistdout/ \
+  /vsis3/bchamp/fwapg/fwa_watershed_groups_poly.parquet \
+  -sql "select distinct watershed_group_code from fwa_watershed_groups_poly order by watershed_group_code" | tail -n +2
+)
 
 # ---------------------
-# for larger tables, download the file directly then load to postgres
+# for larger tables, load partitions one by one
+# (could use /vsis3/ and point at the prefix but that requires s3 credentials)
 # ---------------------
-mkdir -p data
 tables=(
   linear_boundaries_sp
   watersheds_poly
 )
 for table in "${tables[@]}"; do
-  curl -o data/fwa_$table.parquet https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$table.parquet
   $PSQL -c "truncate whse_basemapping.fwa_$table"
-  ogr2ogr \
-    -f PostgreSQL \
-    PG:$DATABASE_URL \
-    --config PG_USE_COPY YES \
-    -append \
-    -update \
-    -preserve_fid \
-    -nln whse_basemapping.fwa_$table \
-    data/fwa_$table.parquet
+  for WSG in $WSD_GROUPS; do
+    ogr2ogr \
+      -f PostgreSQL \
+      PG:$DATABASE_URL \
+      --config PG_USE_COPY YES \
+      -append \
+      -update \
+      -preserve_fid \
+      -nln whse_basemapping.fwa_$table \
+      /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_$table/$WSG.parquet
+  done
 done
 
 
 # ---------------------
 # streams are loaded to a temp table (for adding measures to the geometries)
 # ---------------------
-curl -o data/fwa_stream_networks_sp.parquet https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_stream_networks_sp.parquet
-$PSQL -c "drop table if exists fwapg.fwa_stream_networks_sp"
-ogr2ogr \
-  -f PostgreSQL \
-  PG:$DATABASE_URL \
-  --config PG_USE_COPY YES \
-  -preserve_fid \
-  -lco GEOMETRY_NAME=geom \
-  -nln fwapg.fwa_stream_networks_sp \
-  data/fwa_stream_networks_sp.parquet
-$PSQL -f load/fwa_stream_networks_sp.sql  # load to output table
+$PSQL -c "truncate whse_basemapping.fwa_stream_networks_sp;"
+for WSG in $WSD_GROUPS; do
+  ogr2ogr \
+    -f PostgreSQL \
+    PG:$DATABASE_URL \
+    --config PG_USE_COPY YES \
+    -preserve_fid \
+    -overwrite \
+    -lco GEOMETRY_NAME=geom \
+    -nln fwapg.fwa_stream_networks_sp \
+    /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_stream_networks_sp/$WSG.parquet
+  $PSQL -f load/fwa_stream_networks_sp.sql  # load to output table, drop temp table
+done
+
 
 
 # ---------------------

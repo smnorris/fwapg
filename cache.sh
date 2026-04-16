@@ -2,15 +2,20 @@
 set -euxo pipefail
 
 # ==============================================
-# cache data to object storage for (much) faster downloads
+# cache data to object storage for faster downloads / subset downloads
 # ==============================================
+
+# temp spot to write all files prior to upload 
+# (ogr needs to write these locally rather than direct to s3 beacause bbox sorting requires a temp gpkg)
+mkdir -p /tmp/fwapg
 
 # --------------
 # process single table sources
 # --------------
-curl -o /tmp/FWA_BC.gdb.zip ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_BC.zip
+curl -o /tmp/FWA_BC.gdb.zip \
+  https://nrs.objectstore.gov.bc.ca/itqlyp/FWA_Public/FWA_BC.zip
 
-ogr2ogr -f Parquet /tmp/fwa_assessment_watersheds_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_assessment_watersheds_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_assessment_watersheds_poly \
     -lco FID=watershed_feature_id \
@@ -42,7 +47,7 @@ ogr2ogr -f Parquet /tmp/fwa_assessment_watersheds_poly.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_ASSESSMENT_WATERSHEDS_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_bays_and_channels_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_bays_and_channels_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_bays_and_channels_poly \
     -lco FID=bay_and_channel_id \
@@ -58,7 +63,7 @@ ogr2ogr -f Parquet /tmp/fwa_bays_and_channels_poly.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_BAYS_AND_CHANNELS_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_coastlines_sp.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_coastlines_sp.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_coastlines_sp \
     -lco FID=linear_feature_id \
@@ -81,7 +86,7 @@ ogr2ogr -f Parquet /tmp/fwa_coastlines_sp.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_COASTLINES_SP"
 
-ogr2ogr -f Parquet /tmp/fwa_glaciers_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_glaciers_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_glaciers_poly \
     -lco FID=waterbody_poly_id \
@@ -113,7 +118,7 @@ ogr2ogr -f Parquet /tmp/fwa_glaciers_poly.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_GLACIERS_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_islands_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_islands_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_islands_poly \
     -lco FID=island_id \
@@ -135,7 +140,7 @@ ogr2ogr -f Parquet /tmp/fwa_islands_poly.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_ISLANDS_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_lakes_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_lakes_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_lakes_poly \
     -lco FID=waterbody_poly_id \
@@ -167,7 +172,7 @@ ogr2ogr -f Parquet /tmp/fwa_lakes_poly.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_LAKES_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_manmade_waterbodies_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_manmade_waterbodies_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_manmade_waterbodies_poly \
     -lco FID=waterbody_poly_id \
@@ -199,7 +204,7 @@ ogr2ogr -f Parquet /tmp/fwa_manmade_waterbodies_poly.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_MANMADE_WATERBODIES_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_named_point_features_sp.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_named_point_features_sp.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_named_point_features_sp \
     -lco FID=named_point_feature_id \
@@ -214,7 +219,7 @@ ogr2ogr -f Parquet /tmp/fwa_named_point_features_sp.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_NAMED_POINT_FEATURES_SP"
 
-ogr2ogr -f Parquet /tmp/fwa_named_watersheds_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_named_watersheds_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_named_watersheds_poly \
     -lco FID=named_watershed_id \
@@ -234,7 +239,7 @@ ogr2ogr -f Parquet /tmp/fwa_named_watersheds_poly.parquet \
        FEATURE_CODE AS feature_code
     FROM FWA_NAMED_WATERSHEDS_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_obstructions_sp.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_obstructions_sp.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_obstructions_sp \
     -lco FID=obstruction_id \
@@ -258,7 +263,7 @@ ogr2ogr -f Parquet /tmp/fwa_obstructions_sp.parquet \
        FEATURE_CODE AS feature_code
      FROM FWA_OBSTRUCTIONS_SP"
 
-ogr2ogr -f Parquet /tmp/fwa_rivers_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_rivers_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_rivers_poly \
     -lco FID=waterbody_poly_id \
@@ -290,7 +295,7 @@ ogr2ogr -f Parquet /tmp/fwa_rivers_poly.parquet \
     FEATURE_CODE AS feature_code
   FROM FWA_RIVERS_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_watershed_groups_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_watershed_groups_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_watershed_groups_poly \
     -lco FID=watershed_group_id \
@@ -305,7 +310,7 @@ ogr2ogr -f Parquet /tmp/fwa_watershed_groups_poly.parquet \
        FEATURE_CODE AS feature_code
      FROM FWA_WATERSHED_GROUPS_POLY"
 
-ogr2ogr -f Parquet /tmp/fwa_wetlands_poly.parquet \
+ogr2ogr -f Parquet /tmp/fwapg/fwa_wetlands_poly.parquet \
     /tmp/FWA_BC.gdb.zip \
     -nln fwa_wetlands_poly \
     -lco FID=waterbody_poly_id \
@@ -367,16 +372,20 @@ WSD_GROUPS=$(ogr2ogr -f CSV /vsistdout/ \
 )
 
 # LINEAR BOUDNARIES
-curl -o /tmp/FWA_LINEAR_BOUNDARIES_SP.gdb.zip ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
+curl -o /tmp/FWA_LINEAR_BOUNDARIES_SP.gdb.zip \
+  https://nrs.objectstore.gov.bc.ca/itqlyp/FWA_Public/FWA_LINEAR_BOUNDARIES_SP.zip
 
-mkdir -p data/fwa_linear_boundaries_sp
+mkdir -p /tmp/fwapg/fwa_linear_boundaries_sp
 
 for WSG in $WSD_GROUPS;
 do
-  ogr2ogr -f Parquet data/fwa_linear_boundaries_sp/$WSG.parquet \
+  ogr2ogr -f Parquet /tmp/fwapg/fwa_linear_boundaries_sp/$WSG.parquet \
     /tmp/FWA_LINEAR_BOUNDARIES_SP.gdb.zip \
     -nln fwa_linear_boundaries_sp \
     -lco FID=linear_feature_id \
+    -lco COMPRESSION=ZSTD \
+    -lco COMPRESSION_LEVEL=15 \
+    -lco SORT_BY_BBOX=YES \
     -sql "SELECT
       CAST(LINEAR_FEATURE_ID AS bigint) as linear_feature_id,
       CAST(WATERSHED_GROUP_ID AS integer) as watershed_group_id,
@@ -394,18 +403,21 @@ do
     FROM $WSG"
 done
 
-ogr2ogr -f Parquet /vsis3/bchamp/fwapg/fwa_linear_boundaries_sp.parquet data/fwa_linear_boundaries_sp fwa_linear_boundaries_sp
-
 
 # STREAM NETWORKS
-curl -o /tmp/FWA_STREAM_NETWORKS_SP.gdb.zip ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
-mkdir -p data/fwa_stream_networks_sp
+curl -o /tmp/FWA_STREAM_NETWORKS_SP.gdb.zip \
+  https://nrs.objectstore.gov.bc.ca/itqlyp/FWA_Public/FWA_STREAM_NETWORKS_SP.zip
+
+mkdir -p /tmp/fwapg/fwa_stream_networks_sp
 for WSG in $WSD_GROUPS;
 do
-  ogr2ogr -f Parquet data/fwa_stream_networks_sp/$WSG.parquet \
+  ogr2ogr -f Parquet /tmp/fwapg/fwa_stream_networks_sp/$WSG.parquet \
     /tmp/FWA_STREAM_NETWORKS_SP.gdb.zip \
     -nln fwa_stream_networks_sp \
     -lco FID=linear_feature_id \
+    -lco COMPRESSION=ZSTD \
+    -lco COMPRESSION_LEVEL=15 \
+    -lco SORT_BY_BBOX=YES \
     -sql "SELECT
       CAST(LINEAR_FEATURE_ID AS bigint) as linear_feature_id,
       CAST(WATERSHED_GROUP_ID AS integer) as watershed_group_id,
@@ -434,18 +446,21 @@ do
     FROM $WSG"
 done
 
-ogr2ogr -f Parquet /vsis3/bchamp/fwapg/fwa_stream_networks_sp.parquet data/fwa_stream_networks_sp fwa_stream_networks_sp
-
 
 # WATERSHEDS
-curl -o /tmp/FWA_WATERSHEDS_POLY.gdb.zip ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/FWA_Public/FWA_WATERSHEDS_POLY.zip
-mkdir -p data/fwa_watersheds_poly
+curl -o /tmp/FWA_WATERSHEDS_POLY.gdb.zip \
+  https://nrs.objectstore.gov.bc.ca/itqlyp/FWA_Public/FWA_WATERSHEDS_POLY.zip
+
+mkdir -p /tmp/fwapg/fwa_watersheds_poly
 for WSG in $WSD_GROUPS;
 do
-  ogr2ogr -f Parquet data/fwa_watersheds_poly/$WSG.parquet \
+  ogr2ogr -f Parquet /tmp/fwapg/fwa_watersheds_poly/$WSG.parquet \
     /tmp/FWA_WATERSHEDS_POLY.gdb.zip \
     -nln fwa_watersheds_poly \
     -lco FID=watershed_feature_id \
+    -lco COMPRESSION=ZSTD \
+    -lco COMPRESSION_LEVEL=15 \
+    -lco SORT_BY_BBOX=YES \
     -sql "SELECT
       CAST(WATERSHED_FEATURE_ID AS INTEGER) AS watershed_feature_id,
       CAST(WATERSHED_GROUP_ID AS INTEGER) AS watershed_group_id,
@@ -484,24 +499,8 @@ do
     FROM $WSG"
 done
 
-ogr2ogr -f Parquet /vsis3/bchamp/fwapg/fwa_watersheds_poly.parquet data/fwa_watersheds_poly fwa_watersheds_poly
 
 # --------------
-# make data public
+# upload
 # --------------
-aws s3 cp /tmp/fwa_assessment_watersheds_poly.parquet s3://bchamp/fwapg/fwa_assessment_watersheds_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_bays_and_channels_poly.parquet s3://bchamp/fwapg/fwa_bays_and_channels_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_coastlines_sp.parquet s3://bchamp/fwapg/fwa_coastlines_sp.parquet --acl public-read
-aws s3 cp /tmp/fwa_glaciers_poly.parquet s3://bchamp/fwapg/fwa_glaciers_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_islands_poly.parquet s3://bchamp/fwapg/fwa_islands_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_lakes_poly.parquet s3://bchamp/fwapg/fwa_lakes_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_linear_boundaries_sp.parquet s3://bchamp/fwapg/fwa_linear_boundaries_sp.parquet --acl public-read
-aws s3 cp /tmp/fwa_manmade_waterbodies_poly.parquet s3://bchamp/fwapg/fwa_manmade_waterbodies_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_named_point_features_sp.parquet s3://bchamp/fwapg/fwa_named_point_features_sp.parquet --acl public-read
-aws s3 cp /tmp/fwa_named_watersheds_poly.parquet s3://bchamp/fwapg/fwa_named_watersheds_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_obstructions_sp.parquet s3://bchamp/fwapg/fwa_obstructions_sp.parquet --acl public-read
-aws s3 cp /tmp/fwa_rivers_poly.parquet s3://bchamp/fwapg/fwa_rivers_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_stream_networks_sp.parquet s3://bchamp/fwapg/fwa_stream_networks_sp.parquet --acl public-read
-aws s3 cp /tmp/fwa_watershed_groups_poly.parquet s3://bchamp/fwapg/fwa_watershed_groups_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_watersheds_poly.parquet s3://bchamp/fwapg/fwa_watersheds_poly.parquet --acl public-read
-aws s3 cp /tmp/fwa_wetlands_poly.parquet s3://bchamp/fwapg/fwa_wetlands_poly.parquet --acl public-read
+aws s3 sync /tmp/fwapg/ s3://bchamp/fwapg --exclude "*" --include "*.parquet" --acl public-read
