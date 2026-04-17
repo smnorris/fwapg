@@ -34,8 +34,8 @@ See the Dockerfile for the full list of dependencies.
 
         git clone https://github.com/smnorris/fwapg.git
         cd fwapg
-        cd db && ./create.sh && cd ..    # load extensions, create schemas/tables
-        ./load.sh                        # load the data
+        psql $DATABASE_URL -f db/schema.sql # create db schema
+        ./load.sh                           # load the data
 
 The full load takes some time - but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
 
