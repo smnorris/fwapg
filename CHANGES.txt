@@ -3,6 +3,13 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
+0.8.0 (2026-04- )
+------------------
+- load db schema to docker container on build, enabling pull of functional (empty) database
+- consolidate all schema definition scripts into schema.sql
+- enable per watershed group data loads
+- add migrations folder and script for future changes
+
 0.7.1 (2025-11-07)
 ------------------
 - use public url when downloading watershed group codes
