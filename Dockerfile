@@ -5,7 +5,7 @@ RUN apt-get update && apt-get --assume-yes upgrade \
     && apt-get -qq install -y --no-install-recommends yes \
     && apt-get -qq install -y --no-install-recommends gnupg \
     && yes '' | sh /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh \
-    && apt-get -qq install -y --no-install-recommends postgresql-client-17 \
+    && apt-get -qq install -y --no-install-recommends postgresql-client-16 \
     && apt-get -qq install -y --no-install-recommends make \
     && apt-get -qq install -y --no-install-recommends g++ \
     && apt-get -qq install -y --no-install-recommends git \
