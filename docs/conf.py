@@ -22,7 +22,7 @@ copyright = '2026, Simon Norris'
 author = 'Simon Norris'
 
 # The full version, including alpha/beta/rc tags
-release = '0.7.2dev0'
+release = '0.7.2'
 
 
 # -- General configuration ---------------------------------------------------

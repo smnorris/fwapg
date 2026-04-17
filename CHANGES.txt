@@ -3,13 +3,12 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.7.2 (2026-04- )
+0.7.2 (2026-04-17)
 ------------------
 - pull source data from nrs.objectstore
 - consolidate all schema definition scripts into schema.sql
 - load db schema to docker container on build, enabling pull of functional (empty) database
-- add migrations folder and script for future changes
-- enable per watershed group data loads
+- add migrations scripts and docs to standardize how future changes are applied
 
 0.7.1 (2025-11-07)
 ------------------
