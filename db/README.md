@@ -35,7 +35,7 @@ Migrations accumulate in `db/migrations/` and are applied in order on any databa
 `schema.sql` is a `pg_dump` snapshot of the full database. 
 This is the authoritative definition for fresh installs. 
 It is **not** auto-updated by migrations — it must be manually regenerated when significant structural changes accumulate.	
-When this has occureed, regenerate `schema.sql` from a clean, fully-loaded database.
+When this has occured, regenerate `schema.sql` from a clean, fully-loaded database.
 
 **Recommended workflow:**
 
