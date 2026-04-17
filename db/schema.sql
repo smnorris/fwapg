@@ -1,7 +1,13 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 16.9 (Debian 16.9-1.pgdg110+1)
+-- Dumped by pg_dump version 16.13 (Ubuntu 16.13-1.pgdg24.04+1)
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -9,6 +15,7 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
 
 --
 -- Name: fwapg; Type: SCHEMA; Schema: -; Owner: -
@@ -7064,3 +7071,8 @@ CREATE INDEX fwa_wsd_xborder_wsc_btree_idx ON whse_basemapping.fwa_watersheds_xb
 --
 
 CREATE INDEX fwa_wsd_xborder_wsc_gist_idx ON whse_basemapping.fwa_watersheds_xborder_poly USING gist (wscode_ltree);
+
+
+--
+-- PostgreSQL database dump complete
+--
