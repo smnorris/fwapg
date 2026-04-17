@@ -5,10 +5,11 @@ All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
 0.8.0 (2026-04- )
 ------------------
-- load db schema to docker container on build, enabling pull of functional (empty) database
+- pull source data from nrs.objectstore
 - consolidate all schema definition scripts into schema.sql
-- enable per watershed group data loads
+- load db schema to docker container on build, enabling pull of functional (empty) database
 - add migrations folder and script for future changes
+- enable per watershed group data loads
 
 0.7.1 (2025-11-07)
 ------------------
