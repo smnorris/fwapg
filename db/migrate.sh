@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ./migrate.sh [migrations_dir]
+# Usage: ./migrate.sh [--dry-run] [migrations_dir]
 # Migration files are named: YYYYMMDDhhmm__description.sql
-# eg: 20240115143022__add_users.sql
-MIGRATIONS_DIR="${1:-migrations}"
+# eg: 202401151430__add_users_table.sql
+
+MIGRATIONS_DIR="migrations"
+DRY_RUN=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY_RUN=true ;;
+    -*) echo "ERROR: Unknown option: $arg"; exit 1 ;;
+    *)  MIGRATIONS_DIR="$arg" ;;
+  esac
+done
+
 DB_URL="${DATABASE_URL:-}"
 
 if [[ -z "$DB_URL" ]]; then
@@ -19,7 +30,8 @@ psql_cmd() {
 # ----------------------------------------------------------------
 # Bootstrap db_version table if it doesn't exist
 # ----------------------------------------------------------------
-psql_cmd <<-SQL
+psql_cmd <<-SQL > /dev/null
+  SET client_min_messages = WARNING;
   CREATE SCHEMA IF NOT EXISTS fwapg;
   CREATE TABLE IF NOT EXISTS fwapg.db_version (
     tag        TEXT        NOT NULL,
@@ -31,7 +43,7 @@ psql_cmd <<-SQL
 SQL
 
 # ----------------------------------------------------------------
-# Get current db version (timestamp of last applied migration).
+# Get current db version
 # ----------------------------------------------------------------
 current_version=$(psql_cmd -t -A -c "
   SELECT tag FROM fwapg.db_version ORDER BY applied_at DESC LIMIT 1;
@@ -67,6 +79,18 @@ IFS=$'\n' sorted=($(printf '%s\n' "${pending[@]}" | sort))
 unset IFS
 
 echo "Pending migrations: ${#sorted[@]}"
+
+# ----------------------------------------------------------------
+# Dry run — list pending migrations and exit
+# ----------------------------------------------------------------
+if [[ "$DRY_RUN" == true ]]; then
+  echo ""
+  echo "Dry run — the following migrations would be applied:"
+  for f in "${sorted[@]}"; do
+    echo "  $(basename "$f")"
+  done
+  exit 0
+fi
 
 # ----------------------------------------------------------------
 # Apply each migration in order
