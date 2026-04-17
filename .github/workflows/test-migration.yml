@@ -51,4 +51,4 @@ jobs:
             -preserve_fid \
             -nln whse_basemapping.fwa_assessment_watersheds_poly \
             -sql "SELECT * FROM fwa_assessment_watersheds_poly WHERE watershed_group_code in ('LNIC','BULK','HORS','ELKR')" \
-            /vsis3/bchamp/fwapg/fwa_assessment_watersheds_poly.parquet
+            /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_assessment_watersheds_poly.parquet
