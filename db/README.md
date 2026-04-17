@@ -3,7 +3,7 @@
 
 ## Current schema
 
-Entire current schema is in `schema.sql`. To load:
+FWA tables/functions/etc are defined in `schema.sql`. To load the schema:
 
 	psql $DATABASE_URL -f schema.sql
 
