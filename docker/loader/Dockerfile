@@ -34,7 +34,6 @@ RUN python3 -m venv /opt/venv && \
     /opt/venv/bin/python -m pip install --no-cache-dir rasterstats
 
 
-COPY ["db", "db/"]
 COPY ["extras", "extras/"]
 COPY [".env.docker", "load.sh", "./"]
 

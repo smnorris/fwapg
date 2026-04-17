@@ -23,7 +23,7 @@ See [documentation](https://smnorris.github.io/fwapg/) for setup and usage detai
     - Python 3
     - [`bcdata`](https://github.com/smnorris/bcdata)
 
-See the Dockerfile for the full list of dependencies.
+See the `docker/loader/Dockerfile` for the full list of dependencies.
     
 
 2. Ensure you have a `DATABASE_URL` environment variable set to point to your database, for example:
@@ -34,8 +34,8 @@ See the Dockerfile for the full list of dependencies.
 
         git clone https://github.com/smnorris/fwapg.git
         cd fwapg
-        cd db && ./create.sh && cd ..    # load extensions, create schemas/tables
-        ./load.sh                        # load the data
+        psql $DATABASE_URL -f db/schema.sql # create db schema
+        ./load.sh                           # load the data
 
 The full load takes some time - but once complete, you can run `fwapg` enabled queries with your favorite sql client. For example:
 
@@ -90,12 +90,23 @@ See [Usage](https://smnorris.github.io/fwapg/01_usage.html) for more examples.
 
 ## Development and testing
 
+See `db/README.md` for how to apply migrations.
+
 Extremely basic tests are included for selected functions.
 If changing a covered function, run the individual test. For example:
 
     psql -f tests/test_fwa_upstream.sql
 
 All results should be true.
+
+## Docker on ARM64
+
+On ARM64 platforms (eg MacOS), remember to build the postgis image before running `docker compose build` or `docker compose up -d`.
+Docker will pull this postgis image from the cache instead of attempting to download (an arm64 image is not currently published). 
+
+        docker build \
+          https://github.com/postgis/docker-postgis.git#master:16-3.5 \
+          -t postgis/postgis:16-3.5
 
 ## Documentation
 
