@@ -11,5 +11,6 @@ fi
 description="$1"
 timestamp=$(date +%Y%m%d%H%M)
 filename="${timestamp}__${description// /_}.sql"
+mkdir -p migrations
 touch migrations/"$filename"
 echo "Created migrations/$filename"
