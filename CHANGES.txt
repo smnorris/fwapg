@@ -3,7 +3,7 @@ Changes
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
 
-0.8.0 (2026-04- )
+0.7.2 (2026-04- )
 ------------------
 - pull source data from nrs.objectstore
 - consolidate all schema definition scripts into schema.sql
