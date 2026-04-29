@@ -38,7 +38,7 @@ for table in "${tables[@]}"; do
 done
 
 WSD_GROUPS=$(ogr2ogr -f CSV /vsistdout/ \
-  /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwa_watershed_groups_poly.parquet \
+  /vsicurl/https://nrs.objectstore.gov.bc.ca/bchamp/fwapg/fwa_watershed_groups_poly.parquet \
   -sql "select distinct watershed_group_code from fwa_watershed_groups_poly order by watershed_group_code" | tail -n +2
 )
 
