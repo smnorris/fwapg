@@ -1,7 +1,7 @@
 ## Stream discharge
 
-The [Pacific Climate Impacts Consortium](https://www.pacificclimate.org/) (PCIC) provides modelled base flow and runoff for the Peace, Fraser and Columbia basins. 
-Time series rasters (~30km2 resolution) are available for download as NetCDF and other formats [here](https://www.pacificclimate.org/data/gridded-hydrologic-model-output). 
+The [Pacific Climate Impacts Consortium](https://www.uvic.ca/pcic/index.php) (PCIC) provides modelled base flow and runoff for the Peace, Fraser and Columbia basins. 
+Time series rasters (~30km2 resolution) are available for download as NetCDF and other formats [here](https://www.uvic.ca/pcic/data-analysis-tools/data-portal/hydrology-gridded/index.php). 
 We combine base flow and runoff rasters to model discharge, then link the results to FWA fundamental watersheds and streams. 
 No upsampling of the PCIC data is performed (the discharge values could potentially be weighted via higher resolution precipitation data).
 
