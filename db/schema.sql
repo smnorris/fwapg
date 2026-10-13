@@ -1450,22 +1450,6 @@ begin
         FROM FWA_SliceWatershedAtPoint(v_blkey, v_measure) slice
         ),
 
-        -- find any upstream contributing area outside of BC (but not including Alaska panhandle)
-        exbc AS
-         (
-          SELECT hydrosheds.hydroshed(h.hybas_id) AS geom
-          FROM ref_point s
-          INNER JOIN hydrosheds.hybas_lev12_v1c h
-          ON ST_Intersects(h.geom, s.geom_pt)
-          WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.measure_pt) IN ('AB_120','YTNWT_60')
-          UNION ALL
-          SELECT FWA_Huc12(h.huc12) AS geom
-          FROM ref_point s
-          INNER JOIN usgs.wbdhu12 h
-          ON ST_intersects(h.geom, s.geom_pt)
-          WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.measure_pt) = 'USA_49'
-        ),
-
         -- aggregate the result and dump to singlepart
         agg as
         (
@@ -1505,14 +1489,6 @@ begin
                )
                END as geom
           FROM method m
-
-        -- add watersheds outside of BC
-        UNION ALL
-          SELECT
-            ST_Difference(exbc.geom, bc.geom) as geom
-          FROM exbc
-          INNER JOIN whse_basemapping.fwa_bcboundary bc
-          ON ST_Intersects(exbc.geom, bc.geom)
 
         ) as to_agg,
         method m
@@ -1629,24 +1605,6 @@ begin
           WHERE c.assmnt_watershed_id IS NULL
           AND d.watershed_group_id IS NULL
           AND g.basin_id NOT IN (SELECT basin_id FROM wsdbasins)
-        ),
-
-        -- find any upstream contributing area outside of BC (but not including Alaska panhandle)
-        exbc AS
-         (
-          SELECT
-            hydrosheds.hydroshed(h.hybas_id) AS geom
-          FROM outlet s
-          INNER JOIN hydrosheds.hybas_lev12_v1c h
-          ON ST_Intersects(h.geom, s.geom)
-          WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.downstream_route_measure) IN ('AB_120','YTNWT_60')
-          UNION ALL
-          SELECT
-            FWA_Huc12(h.huc12) AS geom
-          FROM outlet s
-          INNER JOIN usgs.wbdhu12 h
-          ON ST_intersects(h.geom, s.geom)
-          WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.downstream_route_measure) = 'USA_49'
         )
 
         -- aggregate the result
@@ -1669,12 +1627,6 @@ begin
           SELECT a.geom FROM wsdassmnt a
           UNION ALL
           SELECT p.geom FROM prelim p
-          UNION ALL
-          SELECT
-            ST_Difference(exbc.geom, bc.geom) as geom
-          FROM exbc
-          INNER JOIN whse_basemapping.fwa_bcboundary bc
-          ON ST_Intersects(exbc.geom, bc.geom)
         ) w
         GROUP BY o.wscode_ltree, o.localcode_ltree, refine_method;
 
@@ -3922,14 +3874,6 @@ begin
                END as geom
           FROM method m
 
-        -- add watersheds outside of BC
-        UNION ALL
-          SELECT
-            ST_Difference(exbc.geom, bc.geom) as geom
-          FROM exbc
-          INNER JOIN whse_basemapping.fwa_bcboundary bc
-          ON ST_Intersects(exbc.geom, bc.geom)
-
         ) as to_agg,
         method m
         GROUP BY m.wscode_ltree, m.localcode_ltree, m.refine_method)
@@ -4045,24 +3989,6 @@ begin
           WHERE c.assmnt_watershed_id IS NULL
           AND d.watershed_group_id IS NULL
           AND g.basin_id NOT IN (SELECT basin_id FROM wsdbasins)
-        ),
-
-        -- find any upstream contributing area outside of BC (but not including Alaska panhandle)
-        exbc AS
-         (
-          SELECT
-            hydrosheds.hydroshed(h.hybas_id) AS geom
-          FROM outlet s
-          INNER JOIN hydrosheds.hybas_lev12_v1c h
-          ON ST_Intersects(h.geom, s.geom)
-          WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.downstream_route_measure) IN ('AB_120','YTNWT_60')
-          UNION ALL
-          SELECT
-            FWA_Huc12(h.huc12) AS geom
-          FROM outlet s
-          INNER JOIN usgs.wbdhu12 h
-          ON ST_intersects(h.geom, s.geom)
-          WHERE FWA_UpstreamBorderCrossings(s.blue_line_key, s.downstream_route_measure) = 'USA_49'
         )
 
         -- aggregate the result
@@ -4085,12 +4011,6 @@ begin
           SELECT a.geom FROM wsdassmnt a
           UNION ALL
           SELECT p.geom FROM prelim p
-          UNION ALL
-          SELECT
-            ST_Difference(exbc.geom, bc.geom) as geom
-          FROM exbc
-          INNER JOIN whse_basemapping.fwa_bcboundary bc
-          ON ST_Intersects(exbc.geom, bc.geom)
         ) w
         GROUP BY o.wscode_ltree, o.localcode_ltree, refine_method;
 
