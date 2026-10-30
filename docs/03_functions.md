@@ -195,7 +195,9 @@ Return stream data downstream of Sheilds Lake:
 FWA_IndexPoint(
     point geometry(Point, 3005),
     tolerance float DEFAULT 5000,
-    num_features integer DEFAULT 1
+    num_features integer DEFAULT 1,
+    include_disconnected boolean DEFAULT true,
+    include_null_localcodes boolean DEFAULT true
 )
 
 FWA_IndexPoint(
@@ -203,7 +205,9 @@ FWA_IndexPoint(
     y float,
     srid integer,
     tolerance float DEFAULT 5000,
-    num_features integer DEFAULT 1
+    num_features integer DEFAULT 1,
+    include_disconnected boolean DEFAULT true,
+    include_null_localcodes boolean DEFAULT true
 )
 ```
 
@@ -221,12 +225,18 @@ Snaps a point to the stream network. Provided a point (as either a BC Albers poi
 | `downstream_route_measure`| double precision      | measure value of output point               |
 | `distance_to_stream`      | double precision      | distance from input point to output point   |
 | `bc_ind`                  | boolean               | Indicates if the source point is in BC      |
-| `geom`                    | geometry(Point, 3005) | The closest point on the FWA stream network |
+| `geom`                    | geometry(PointZM, 3005) | The closest point on the FWA stream network |
+
+At most one row is returned per stream (`blue_line_key`), on the stream's segment nearest the input point. The point is interpolated along that segment, so it carries the stream's z and m, and `downstream_route_measure` is its m: the measure `FWA_LocateAlong` and `FWA_WatershedAtMeasure` read. A point equally near two segments of one stream (the vertex they share) is matched to the segment starting at that vertex, the one its measure falls on; remaining ties go to the lowest `linear_feature_id`. Rows are ordered by distance, then `linear_feature_id`. A MultiPoint input is matched by its closest point. Cast `geom` with `ST_Force2D` before writing it to a 2D point column.
 
 ### Options
 
 `tolerance` - Return only stream feature(s) within this distance (metres) (default = `5000`)  
-`num_features` - Number of features to be returned (default = `1`)
+`num_features` - Number of features to be returned (default = `1`)  
+`include_disconnected` - Include disconnected streams, with watershed codes starting `999` (default = `true`)  
+`include_null_localcodes` - Include stream segments with no local watershed code (default = `true`)
+
+Both filters apply while the nearest 100 qualifying segments are found, before the nearest segment of each stream is chosen: a stream whose nearest segment is excluded is returned on its nearest segment that passes.
 
 ### Examples
 
@@ -238,7 +248,7 @@ Snaps a point to the stream network. Provided a point (as either a BC Albers poi
     ```
      linear_feature_id |  gnis_name  | wscode_ltree | localcode_ltree | blue_line_key | downstream_route_measure | distance_to_stream | bc_ind |                        geom
     -------------------+-------------+--------------+-----------------+---------------+--------------------------+--------------------+--------+----------------------------------------------------
-             710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.2530543284006 |             24.228 | t      | 0101000020BD0B0000D579287B42DC314198937D515C061741
+             710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.3003966398525 |             24.232 | t      | 01010000E0BD0B00000E39067042DC314128E68B645C0617410000000000000040EBFFB46CCEE47540
     ```
 
 2. Index a set of point geometries, finding up to 10 features within 100m:
@@ -265,12 +275,12 @@ Snaps a point to the stream network. Provided a point (as either a BC Albers poi
     ```
        id    | linear_feature_id |   gnis_name    |       wscode_ltree       |         localcode_ltree         | blue_line_key | downstream_route_measure | distance_to_stream | bc_ind |                        geom
     ---------+-------------------+----------------+--------------------------+---------------------------------+---------------+--------------------------+--------------------+--------+----------------------------------------------------
-     07EA004 |          68051401 | Ingenika River | 200.948755.992594        | 200.948755.992594.039418        |     359571145 |        6096.256539019577 |             41.319 | t      | 0101000020BD0B00007FFBC4C0C617304173BF3D23BAE83341
-     07EA004 |          68051402 |                | 200.948755.992594.042767 | 200.948755.992594.042767        |     359233576 |                        0 |              46.77 | t      | 0101000020BD0B000023DBF9FEB11730413108AC1CB3E83341
-     07EA005 |          49095881 | Finlay River   | 200.948755.999851        | 200.948755.999851.137838        |     359569942 |        42909.36746325051 |             47.258 | t      | 0101000020BD0B0000C3F5289C79E62F41508D976E90943441
-     07EA007 |          49083226 | Akie River     | 200.948755.999851.088011 | 200.948755.999851.088011.231827 |     359571761 |        29215.40257114563 |             40.442 | t      | 0101000020BD0B000037B9E4F44B4530410DDF6ACEC1B13441
-     07EB002 |         161051216 | Ospika River   | 200.948755.951156        | 200.948755.951156.201899        |     359573063 |       29005.449548147713 |             41.647 | t      | 0101000020BD0B0000D7D491C73F3131419708AD7A50943341
-     07EC002 |         115033725 | Omineca River  | 200.948755.944288        | 200.948755.944288.110746        |     359571933 |        29317.40902691083 |             95.125 | t      | 0101000020BD0B000054618DD09A9F3041A0D25C29F4873241
+     07EA004 |          68051401 | Ingenika River | 200.948755.992594        | 200.948755.992594.039418        |     359571145 |       6096.2561841955685 |             41.319 | t      | 01010000E0BD0B00007FFBC4C0C617304173BF3D23BAE8334100580E2DB2668540B895499541D0B740
+     07EA004 |          68051402 |                | 200.948755.992594.042767 | 200.948755.992594.042767        |     359233576 |                        0 |              46.77 | t      | 01010000E0BD0B000020DBF9FEB11730413008AC1CB3E8334100580E2DB26685400000000000000000
+     07EA005 |          49095881 | Finlay River   | 200.948755.999851        | 200.948755.999851.137838        |     359569942 |        42909.36760349425 |             47.258 | t      | 01010000E0BD0B0000C0F5289C79E62F41508D976E9094344100F0D24D62E58540366768C3ABF3E440
+     07EA007 |          49083226 | Akie River     | 200.948755.999851.088011 | 200.948755.999851.088011.231827 |     359571761 |       29215.402473396043 |             40.442 | t      | 01010000E0BD0B000035B9E4F44B4530410CDF6ACEC1B134416D61DA8043CC874061C61FC2D987DC40
+     07EB002 |         161051216 | Ospika River   | 200.948755.951156        | 200.948755.951156.201899        |     359573063 |       29005.449452996407 |             41.647 | t      | 01010000E0BD0B0000D6D491C73F3131419708AD7A5094334100C0CAA1451C87402A80D6C35C53DC40
+     07EC002 |         115033725 | Omineca River  | 200.948755.944288        | 200.948755.944288.110746        |     359571933 |       29317.409157117978 |             95.125 | t      | 01010000E0BD0B000057618DD09A9F3041A2D25C29F487324100BC490C020087402956A12F5AA1DC40
     ```
 
 ### Web service
@@ -290,6 +300,8 @@ FWA_LocateAlong(blue_line_key integer, downstream_route_measure float)
 ### Description
 
 Return a table containing a single point geometry corresponding to the position on the FWA stream network of input `blue_line_key`, `downstream_route_measure`.
+
+The point is located on the stream's highest segment whose measure range, closed at the top, holds the measure (both ends compared to 4 decimal places). A measure at a junction is therefore located on the segment starting there, and the measure at the top of the stream (the last m of its geometry, which `FWA_IndexPoint` returns there) is located on its top segment. A measure in the gap between one segment's recorded end and the next one's start, or beyond the top of the stream, returns no rows. `FWA_UpstreamTrace`, `FWA_DownstreamTrace`, `FWA_WatershedHex` and `FWA_WatershedStream` select their starting segment the same way (the last two compare the segment start unrounded), and `FWA_UpstreamBorderCrossings` accepts a measure at the top of the stream.
 
 ### Example
 

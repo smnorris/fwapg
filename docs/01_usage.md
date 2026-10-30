@@ -26,7 +26,7 @@ This snaps the input point to the closest stream - it returns information about 
 
     linear_feature_id |  gnis_name  | wscode_ltree | localcode_ltree | blue_line_key | downstream_route_measure | distance_to_stream | bc_ind | geom
     -------------------+-------------+--------------+-----------------+---------------+--------------------------+--------------------+--------+
-             710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.2530543284006 | 24.228 | t      |
+             710513719 | Sooke River | 930.023810   | 930.023810      |     354153927 |        350.3003966398525 | 24.232 | t      |
 
 This function is available via the `fwapg` [feature service](https://features.hillcrestgeo.ca/fwa/functions/fwa_indexpoint.html) - you can experiment with it [directly](https://features.hillcrestgeo.ca/fwa/functions/fwa_indexpoint/items.html?x=-123.7028&y=48.3858&srid=4326) without having to install anything other than a web browser (zoom out to see the context in the default web map).
 
@@ -182,7 +182,7 @@ SELECT
   i.wscode_ltree,
   i.localcode_ltree,
   i.distance_to_stream,
-  i.geom::geometry(Point, 3005)
+  ST_Force2D(i.geom)::geometry(Point, 3005) AS geom
 FROM
 (
   SELECT id, name, geom

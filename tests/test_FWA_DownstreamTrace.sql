@@ -26,3 +26,12 @@ from FWA_DownstreamTrace(354113580, 622);
 -- is stream getting cut correctly? (new length = difference in measures)
 select round(st_length(geom)::numeric, 4) = round((upstream_route_measure - downstream_route_measure)::numeric, 4) as result
 from FWA_DownstreamTrace(354153927, 100);
+
+
+-- a measure at a stream's head (the top segment's end m, here equal to its
+-- upstream_route_measure) is traced from there; one past the head is not
+SELECT count(*) = 4 as result
+FROM FWA_DownstreamTrace(354089767, 740.681385359615);
+
+SELECT count(*) = 0 as result
+FROM FWA_DownstreamTrace(354089767, 741.681385359615);
