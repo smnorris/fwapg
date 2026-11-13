@@ -119,18 +119,18 @@
 <span class="w">  </span>wget<span class="w"> </span>http://dd.weather.gc.ca/hydrometric/doc/hydrometric_StationList.csv
 
 <span class="w">  </span><span class="c1"># clean the header</span>
-<span class="w">  </span>sed<span class="w"> </span><span class="s1">&#39;1s/.*/id,name,lat,lon,prov,timezone/&#39;</span><span class="w"> </span>hydrometric_StationList.csv<span class="w"> </span>&gt;<span class="w"> </span>hydrostn.csv
+<span class="w">  </span>sed<span class="w"> </span><span class="s1">'1s/.*/id,name,lat,lon,prov,timezone/'</span><span class="w"> </span>hydrometric_StationList.csv<span class="w"> </span>&gt;<span class="w"> </span>hydrostn.csv
 
 <span class="w">  </span><span class="c1"># Create a table of BC Albers points from the input lat/lon values</span>
 <span class="w">  </span>ogr2ogr<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-s_srs<span class="w"> </span>EPSG:4326<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-t_srs<span class="w"> </span>EPSG:3005<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-f<span class="w"> </span>PostgreSQL<span class="w"> </span><span class="s2">&quot;PG:</span><span class="nv">$DATABASE_URL</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-f<span class="w"> </span>PostgreSQL<span class="w"> </span><span class="s2">"PG:</span><span class="nv">$DATABASE_URL</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-lco<span class="w"> </span><span class="nv">GEOMETRY_NAME</span><span class="o">=</span>geom<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-oo<span class="w"> </span><span class="nv">X_POSSIBLE_NAMES</span><span class="o">=</span>lon*<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-oo<span class="w"> </span><span class="nv">Y_POSSIBLE_NAMES</span><span class="o">=</span>lat*<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-oo<span class="w"> </span><span class="nv">KEEP_GEOM_COLUMNS</span><span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-sql<span class="w"> </span><span class="s2">&quot;SELECT * FROM hydrostn WHERE prov=&#39;BC&#39;&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-sql<span class="w"> </span><span class="s2">"SELECT * FROM hydrostn WHERE prov='BC'"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-nln<span class="w"> </span>hydrostn<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>hydrostn.csv
 </pre></div>
@@ -336,7 +336,7 @@
 <span class="w">  </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
 <span class="k">FROM</span><span class="w"> </span><span class="n">hydrostn_events</span><span class="w"> </span><span class="n">e</span>
 <span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
-<span class="w">  </span><span class="mi">356364114</span><span class="p">,</span><span class="w"> </span><span class="mi">160400</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;100.113848&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="mi">356364114</span><span class="p">,</span><span class="w"> </span><span class="mi">160400</span><span class="p">,</span><span class="w"> </span><span class="s1">'100'</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">'100.113848'</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
 <span class="w">  </span><span class="n">e</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">localcode_ltree</span>
 <span class="p">);</span>
 </pre></div>
@@ -353,10 +353,10 @@
 <span class="w">  </span><span class="k">SUM</span><span class="p">(</span><span class="n">ST_Length</span><span class="p">(</span><span class="n">geom</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">length_km</span>
 <span class="k">FROM</span><span class="w"> </span><span class="n">whse_basemapping</span><span class="p">.</span><span class="n">fwa_stream_networks_sp</span><span class="w"> </span><span class="n">s</span>
 <span class="k">WHERE</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
-<span class="w">  </span><span class="mi">359572348</span><span class="p">,</span><span class="w"> </span><span class="mi">1597489</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;200.948755&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;200.948755.816999&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="mi">359572348</span><span class="p">,</span><span class="w"> </span><span class="mi">1597489</span><span class="p">,</span><span class="w"> </span><span class="s1">'200.948755'</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">'200.948755.816999'</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
 <span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
 <span class="p">)</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="n">FWA_Upstream</span><span class="p">(</span>
-<span class="w">  </span><span class="mi">359572348</span><span class="p">,</span><span class="w"> </span><span class="mi">1706733</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;200.948755&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;200.948755.871814&#39;</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
+<span class="w">  </span><span class="mi">359572348</span><span class="p">,</span><span class="w"> </span><span class="mi">1706733</span><span class="p">,</span><span class="w"> </span><span class="s1">'200.948755'</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span><span class="w"> </span><span class="s1">'200.948755.871814'</span><span class="p">::</span><span class="n">ltree</span><span class="p">,</span>
 <span class="w">  </span><span class="n">s</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">localcode_ltree</span>
 <span class="p">);</span>
 </pre></div>
@@ -379,7 +379,7 @@
 <span class="w">  </span><span class="n">p</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">localcode_ltree</span><span class="p">,</span>
 <span class="w">  </span><span class="n">w</span><span class="p">.</span><span class="n">wscode_ltree</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">localcode_ltree</span>
 <span class="p">)</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;08HA002&#39;</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'08HA002'</span>
 <span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -407,7 +407,7 @@
 <span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
 <span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">FWA_WatershedAtMeasure</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">blue_line_key</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">downstream_route_measure</span><span class="p">)</span>
 <span class="p">)</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">true</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;08HA002&#39;</span><span class="p">;</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'08HA002'</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
