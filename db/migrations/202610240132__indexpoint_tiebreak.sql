@@ -1,19 +1,12 @@
 BEGIN;
 
--- Break exact distance ties in FWA_IndexPoint so the result no longer depends on
--- row order. A point nearest the vertex two segments of one stream share is
--- equally far from both, and DISTINCT ON (blue_line_key) ... ORDER BY
--- blue_line_key, distance_to_stream returned whichever row the plan reached
--- first. When that was the segment below the vertex, the measure returned
--- (its downstream_route_measure + length_metre) could fall short of the next
--- segment's start, and FWA_LocateAlong returned no point for it.
---
--- The tie now goes to the segment starting at the vertex: measures run
--- [downstream, upstream), so it is the segment a measure there falls on, and the
--- measure returned is its downstream_route_measure. A tie between segments that
--- do not share a vertex (a meander) also goes to the upper one, which is only a
--- fixed choice. The outer ORDER BY now sorts on the unrounded distance and breaks
--- ties on linear_feature_id.
+-- fixes:
+
+-- 1. ensure points equidistant to two segments on the same blkey are always matched to the same segment
+--   (geom length and measure inconsistencies make this important, a measure output from this func previously
+--   may not have actually been on the returned segment's geom)
+
+-- 2. order results by unrounded distance, plus by id for consistency with equidistant matches
 
 CREATE OR REPLACE FUNCTION whse_basemapping.fwa_indexpoint(point public.geometry, tolerance double precision DEFAULT 5000, num_features integer DEFAULT 1) RETURNS TABLE(linear_feature_id bigint, gnis_name text, wscode_ltree public.ltree, localcode_ltree public.ltree, blue_line_key integer, downstream_route_measure double precision, distance_to_stream double precision, bc_ind boolean, geom public.geometry)
     LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -84,13 +77,11 @@ FROM
             ORDER BY str.geom <-> (select geom from pt)
             LIMIT 100
         ) AS f
-    -- a point nearest the vertex two segments share is equally near both: take
-    -- the one starting there, the segment its measure falls on
-    ORDER BY blue_line_key, distance_to_stream, downstream_route_measure DESC, linear_feature_id
+    -- when two segments of the same stream are equidistant, order by measure in descending order to always return upper segment
+    ORDER BY blue_line_key, distance_to_stream, downstream_route_measure DESC
 ) b
 WHERE distance_to_stream <= $2
--- b. is the unrounded distance; the bare name is the rounded output column
-ORDER BY b.distance_to_stream asc, linear_feature_id
+ORDER BY b.distance_to_stream asc, linear_feature_id  -- order by unrounded distance, plus by id (so equidistant records are always in the same order)
 LIMIT $3
 
 $_$;
