@@ -2,6 +2,7 @@ Changes
 =======
 
 All issue numbers are relative to https://github.com/smnorris/fwapg/issues
+
 0.7.3 ()
 ------------------
 - fix FWA_IndexPoint() results on equidistant same stream results, plus ensure consistent result ordering (#203)
